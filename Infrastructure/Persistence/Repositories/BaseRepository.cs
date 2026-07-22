@@ -1,0 +1,37 @@
+using Domain.Common;
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Persistence.Repositories
+{
+    public abstract class BaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey> where TEntity : BaseEntity where TKey : notnull
+    {
+        protected readonly AppDbContext Context;
+        protected readonly DbSet<TEntity> DbSet;
+        public BaseRepository(AppDbContext context)
+        {
+            Context = context;
+            DbSet = Context.Set<TEntity>();
+        }
+
+        public virtual async Task<TEntity[]?> GetAll(CancellationToken cancellationToken = default)
+        {
+            return await DbSet.ToArrayAsync(cancellationToken);
+        }
+
+        public virtual async Task<bool> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            var result = await DbSet.AddAsync(entity, cancellationToken);
+            return result.State == EntityState.Added;
+        }
+
+        public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.FindAsync([id], cancellationToken);
+        }
+
+        public virtual void Remove(TEntity entity)
+        {
+            DbSet.Remove(entity);
+        }
+    }
+}
