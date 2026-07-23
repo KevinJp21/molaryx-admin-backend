@@ -29,6 +29,8 @@ namespace Domain.Entities
         public string Email { get; set; } = string.Empty;
         [Column("password")]
         public byte[] Password { get; set; } = null!;
+        [Column("salt")]
+        public byte[] Salt { get; set; } = null!;
         [Column("last_login")]
         public DateTime? LastLogin { get; set; }
 

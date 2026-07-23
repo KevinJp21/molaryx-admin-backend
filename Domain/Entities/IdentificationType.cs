@@ -11,5 +11,8 @@ namespace Domain.Entities
         public string Code { get; set; } = string.Empty;
         [Column("name")]
         public string Name { get; set; } = string.Empty;
+
+        // Navigation
+        public ICollection<User> User{ get; set; } = [];
     }
 }
