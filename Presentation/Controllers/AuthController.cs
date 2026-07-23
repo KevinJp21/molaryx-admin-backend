@@ -4,7 +4,7 @@ using Application.Features.Auth.Query.GetUser;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
 
-namespace WebAPI.Controllers
+namespace Presentation.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -20,28 +20,25 @@ namespace WebAPI.Controllers
         [Route("GetUser")]
         public async Task<ActionResult<ApiResponse<GetUserResponse>>> Get([FromQuery] GetUserQuery query, CancellationToken cancellationToken)
         {
-            var response = new ApiResponse<GetUserResponse>()
-            {
-                Ok = true,
-                Message = "Informacion de usuario obtenida de manera exitosa.",
-                Data = await _mediator.Send(query, cancellationToken)
-            };
 
-            return Ok(response);
+            return (
+                new ApiResponse<GetUserResponse>(
+                    "Información de usuario obtenida de manera exitosa.",
+                    await _mediator.Send(query, cancellationToken)
+                )
+            );
         }
 
         [HttpPost]
         [Route("Login")]
         public async Task<ActionResult<ApiResponse<LoginResponse>>> Get([FromBody] loginCommand body, CancellationToken cancellationToken)
         {
-            var response = new ApiResponse<LoginResponse>()
-            {
-                Ok = true,
-                Message = "Inicio de sesion de manera exitosa.",
-                Data = await _mediator.Send(body, cancellationToken)
-            };
-
-            return Ok(response);
+            return (
+                new ApiResponse<LoginResponse>(
+                    "Inicio de sesion de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
+                )
+            );
         }
     }
 }

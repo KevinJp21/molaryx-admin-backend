@@ -1,6 +1,6 @@
 using Shared.Options;
 
-namespace WebAPI.Config.Options
+namespace Presentation.Config.Options
 {
     public static class ConfigureOptions
     {

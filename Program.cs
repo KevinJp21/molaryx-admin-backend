@@ -1,8 +1,8 @@
 using Infrastructure.DependencyInjection;
 using Application.DependencyInjection;
-using WebAPI.Config.Jwt;
-using WebAPI.Config.Options;
-using WebAPI.Handlers;
+using Presentation.Config.Jwt;
+using Presentation.Config.Options;
+using Presentation.Handlers;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using Domain.Contracts.IServices;

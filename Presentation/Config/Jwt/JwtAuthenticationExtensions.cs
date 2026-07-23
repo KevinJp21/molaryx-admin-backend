@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Shared.Common;
 using Shared.Options;
 
-namespace WebAPI.Config.Jwt
+namespace Presentation.Config.Jwt
 {
     public static class JwtAuthenticationExtensions
     {
