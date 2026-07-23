@@ -6,7 +6,7 @@ namespace Domain.Entities
     public class IdentificationType : BaseEntity
     {
         [Column("id_identification_type")]
-        public string IdIdentificationType { get; set; } = string.Empty;
+        public short IdIdentificationType { get; set; }
         [Column("code")]
         public string Code { get; set; } = string.Empty;
         [Column("name")]

@@ -29,13 +29,12 @@ namespace Domain.Entities
         public string Email { get; set; } = string.Empty;
         [Column("password")]
         public byte[] Password { get; set; } = null!;
-        [Column("salt")]
-        public byte[] Salt { get; set; } = null!;
         [Column("last_login")]
         public DateTime? LastLogin { get; set; }
 
         // Navigation properties
         public UserStatus UserStatus { get; set; } = null!;
         public IdentificationType IdentificationType { get; set; } = null!;
+        public ICollection<UserSession> UserSession{ get; set; } = [];
     }
 }

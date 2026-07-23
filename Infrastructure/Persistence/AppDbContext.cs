@@ -7,6 +7,10 @@ namespace Infrastructure.Persistence
     {
         public DbSet<Tenant> Tenants { get; set; } = null!;
         public DbSet<TenantStatus> TenantStatuses { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<UserStatus> UserStatuses { get; set; } = null!;
+        public DbSet<UserSession> UserSessions { get; set; } = null!;
+        public DbSet<IdentificationType> IdentificationTypes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
