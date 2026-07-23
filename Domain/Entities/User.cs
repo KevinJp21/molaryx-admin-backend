@@ -1,0 +1,41 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Common;
+
+namespace Domain.Entities
+{
+    public class User : BaseEntity
+    {
+        [Column("id_user")]
+        public long IdUser { get; set; }
+        [Column("id_user_status")]
+        public short IdUserStatus { get; set; }
+        [Column("username")]
+        public string Username { get; set; } = string.Empty;
+        [Column("first_name")]
+        public string FirstName { get; set; } = string.Empty;
+        [Column("second_name")]
+        public string? SecondName { get; set; }
+        [Column("first_surname")]
+        public string FirstSurname { get; set; } = string.Empty;
+        [Column("second_surname")]
+        public string? SecondSurname { get; set; }
+        [Column("id_identification_type")]
+        public short IdIdentificationType { get; set; }
+        [Column("identification_number")]
+        public string IdentificationNumber { get; set; } = string.Empty;
+        [Column("phone")]
+        public string Phone { get; set; } = string.Empty;
+        [Column("email")]
+        public string Email { get; set; } = string.Empty;
+        [Column("password")]
+        public byte[] Password { get; set; } = null!;
+        [Column("salt")]
+        public byte[] Salt { get; set; } = null!;
+        [Column("last_login")]
+        public DateTime? LastLogin { get; set; }
+
+        // Navigation properties
+        public UserStatus UserStatus { get; set; } = null!;
+        public IdentificationType IdentificationType { get; set; } = null!;
+    }
+}

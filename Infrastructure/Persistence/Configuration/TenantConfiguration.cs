@@ -29,7 +29,7 @@ namespace Infrastructure.Persistence.Configuration
             // Relaciones
 
             builder.HasOne(t => t.TenantStatus)
-                .WithMany(s => s.Tenants)
+                .WithMany(s => s.Tenant)
                 .HasForeignKey(t => t.IdTenantStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 

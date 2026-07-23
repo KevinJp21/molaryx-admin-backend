@@ -3,14 +3,14 @@ using Domain.Common;
 
 namespace Domain.Entities
 {
-    public class TenantStatus : BaseEntity
+    public class UserStatus : BaseEntity
     {
-        [Column("id_tenant_status")]
-        public short IdTenantStatus { get; set; }
+        [Column("id_user_status")]
+        public short IdUserStatus { get; set; }
         [Column("name")]
         public string Name { get; set; } = string.Empty;
 
         // Navigation
-        public ICollection<Tenant> Tenant { get; set; } = [];
+        public ICollection<User> Users{ get; set; } = [];
     }
 }
