@@ -4,6 +4,7 @@ namespace Domain.Enums
     {
         ACTIVO = 1,
         INACTIVO = 2,
-        BLOQUEADO = 3,
+        HABILITACION_PENDIENTE = 3,
+        BLOQUEADO = 4
     }
 }

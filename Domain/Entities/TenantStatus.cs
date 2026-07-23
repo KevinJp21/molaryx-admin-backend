@@ -7,8 +7,6 @@ namespace Domain.Entities
     {
         [Column("id_tenant_status")]
         public short IdTenantStatus { get; set; }
-        [Column("code")]
-        public short Code { get; set; }
         [Column("name")]
         public string Name { get; set; } = string.Empty;
 

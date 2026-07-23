@@ -12,8 +12,6 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasKey(t => t.IdTenant);
 
-            builder.Property(t => t.IdTenant).ValueGeneratedOnAdd();
-
             builder.Property(t => t.ConsultoryName).IsRequired().HasMaxLength(255);
 
             builder.Property(t => t.Email).IsRequired();
