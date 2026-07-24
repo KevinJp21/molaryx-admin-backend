@@ -5,20 +5,12 @@ using System.Security.Claims;
 
 namespace Infrastructure.Context
 {
-    public class CurrentUser : ICurrentUser
+    public class CurrentUser(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository) : ICurrentUser
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IUserRepository _userRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IUserRepository _userRepository = userRepository;
 
         private User? _cachedUser;
-
-        public CurrentUser(
-            IHttpContextAccessor httpContextAccessor,
-            IUserRepository userRepository)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _userRepository = userRepository;
-        }
 
         private ClaimsPrincipal? User =>
             _httpContextAccessor.HttpContext?.User;
@@ -26,13 +18,13 @@ namespace Infrastructure.Context
         public bool IsAuthenticated =>
             User?.Identity?.IsAuthenticated ?? false;
 
-        private long? _cachedUserId;
-        public long? UserId
+        private long? _cachedIdUser;
+        public long? IdUser
         {
             get
             {
-                if (_cachedUserId.HasValue)
-                    return _cachedUserId;
+                if (_cachedIdUser.HasValue)
+                    return _cachedIdUser;
 
                 if (!IsAuthenticated)
                     return null;
@@ -44,11 +36,11 @@ namespace Infrastructure.Context
                 if (string.IsNullOrWhiteSpace(idClaim))
                     return null;
 
-                if (!long.TryParse(idClaim, out var userId))
+                if (!long.TryParse(idClaim, out var idUser))
                     return null;
 
-                _cachedUserId = userId;
-                return userId;
+                _cachedIdUser = idUser;
+                return idUser;
             }
         }
 
@@ -57,13 +49,13 @@ namespace Infrastructure.Context
 
         public async Task<User?> GetUserAsync()
         {
-            if (!IsAuthenticated || UserId == null)
+            if (!IsAuthenticated || IdUser == null)
                 return null;
 
             if (_cachedUser != null)
                 return _cachedUser;
 
-            _cachedUser = await _userRepository.GetByIdAsync(UserId.Value);
+            _cachedUser = await _userRepository.GetByIdAsync(IdUser.Value);
             return _cachedUser;
         }
     }

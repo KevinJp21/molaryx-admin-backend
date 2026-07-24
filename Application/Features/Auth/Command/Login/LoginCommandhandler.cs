@@ -24,7 +24,7 @@ namespace Application.Features.Auth.Command.Login
                 throw new InvalidCredentialsException("Usuario o contraseña invalida.");
             }
 
-            var token = _tokenService.GenerateToken(user.IdUser, user.Email, DateTime.UtcNow.AddHours(1));
+            var token = _tokenService.GenerateToken(user.IdUser, user.IdUserRole, user.Email, DateTime.UtcNow.AddHours(1));
 
             var response = new LoginDTO { AuthToken = token };
 

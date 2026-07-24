@@ -11,11 +11,13 @@ namespace Application.Features.Auth.Query.GetUser
 
         public async Task<GetUserResponse> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByIdAsync((long)_currentUser.UserId!, cancellationToken)
+            var user = await _userRepository.GetByIdAsync((long)_currentUser.IdUser!, cancellationToken)
                 ?? throw new Exception("Usuario no encontrado.");
 
             var mapperResult = new GetUserResponse
             {
+                IdUserRole = user.IdUserRole,
+                RoleName = user.UserRole.Name,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 FirstSurname = user.FirstSurname

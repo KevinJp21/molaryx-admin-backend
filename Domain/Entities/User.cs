@@ -11,7 +11,7 @@ namespace Domain.Entities
         [Column("id_user_status")]
         public short IdUserStatus { get; set; }
         [Column("id_user_rol")]
-        public short IdUserRol { get; set; }
+        public short IdUserRole { get; set; }
         [Column("username")]
         public string Username { get; set; } = string.Empty;
         [Column("first_name")]
