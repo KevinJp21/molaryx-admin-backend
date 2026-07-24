@@ -14,6 +14,8 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.IdUserStatus).IsRequired();
 
+            builder.Property(u => u.IdUserRol).IsRequired();
+
             builder.Property(u => u.Username).IsRequired();
 
             builder.Property(u => u.FirstName).IsRequired();
@@ -34,8 +36,6 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.Salt).HasColumnType("bytea").IsRequired();
 
-            builder.Property(u => u.LastLogin);
-
             builder.Property(t => t.CreatedAt).IsRequired();
 
             builder.Property(t => t.UpdatedAt);
@@ -45,6 +45,11 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasOne(u => u.UserStatus)
                 .WithMany(s => s.User)
                 .HasForeignKey(u => u.IdUserStatus)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(u => u.UserRole)
+                .WithMany(ur => ur.User)
+                .HasForeignKey(u => u.IdUserRol)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(u => u.IdentificationType)

@@ -14,11 +14,17 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(s => s.IdUser).IsRequired();
 
-            builder.Property(s => s.AuthToken).IsRequired();
+            builder.Property(s => s.RefreshToken);
+
+            builder.Property(s => s.ExpiresAt).IsRequired();
+
+            builder.Property(s => s.RevokedAt);
 
             builder.Property(s => s.Device);
 
             builder.Property(s => s.IpConnection);
+
+            builder.Property(u => u.LastLogin);
 
             builder.Property(s => s.CreatedAt).IsRequired();
 

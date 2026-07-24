@@ -1,4 +1,6 @@
 using Domain.Entities;
+using Domain.Enums;
+using Infrastructure.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,40 +19,34 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(s => s.CreatedAt).IsRequired();
 
             builder.Property(s => s.UpdatedAt);
-
-            var currentDate = new DateTime(
-                2026, 7, 22,
-                0, 0, 0,
-                DateTimeKind.Utc
-            );
             
             builder.HasData(
                 new TenantStatus
                 {
-                    IdTenantStatus = 1,
+                    IdTenantStatus = (short)TenantStatusEnum.ACTIVO,
                     Name = "Activo",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new TenantStatus
                 {
-                    IdTenantStatus = 2,
+                    IdTenantStatus = (short)TenantStatusEnum.INACTIVO,
                     Name = "Inactivo",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new TenantStatus
                 {
-                    IdTenantStatus = 3,
+                    IdTenantStatus = (short)TenantStatusEnum.HABILITACION_PENDIENTE,
                     Name = "Habilitación pendiente",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new TenantStatus
                 {
-                    IdTenantStatus = 4,
+                    IdTenantStatus = (short)TenantStatusEnum.BLOQUEADO,
                     Name = "Bloqueado",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 }
             );

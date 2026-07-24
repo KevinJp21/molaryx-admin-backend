@@ -1,4 +1,6 @@
 using Domain.Entities;
+using Domain.Enums;
+using Infrastructure.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,40 +19,34 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(s => s.CreatedAt).IsRequired();
 
             builder.Property(s => s.UpdatedAt);
-
-            var currentDate = new DateTime(
-                2026, 7, 22,
-                0, 0, 0,
-                DateTimeKind.Utc
-            );
             
             builder.HasData(
                 new UserStatus
                 {
-                    IdUserStatus = 1,
+                    IdUserStatus = (short)UserStatusEnum.ACTIVO,
                     Name = "Activo",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new UserStatus
                 {
-                    IdUserStatus = 2,
+                    IdUserStatus = (short)UserStatusEnum.INACTIVO,
                     Name = "Inactivo",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new UserStatus
                 {
-                    IdUserStatus = 3,
+                    IdUserStatus = (short)UserStatusEnum.HABILITACION_PENDIENTE,
                     Name = "Habilitación pendiente",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new UserStatus
                 {
-                    IdUserStatus = 4,
+                    IdUserStatus = (short)UserStatusEnum.BLOQUEADO,
                     Name = "Bloqueado",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 }
             );

@@ -1,4 +1,6 @@
 using Domain.Entities;
+using Domain.Enums;
+using Infrastructure.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,36 +21,30 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(i => i.CreatedAt).IsRequired();
 
             builder.Property(i => i.UpdatedAt);
-
-            var currentDate = new DateTime(
-                2026, 7, 22,
-                0, 0, 0,
-                DateTimeKind.Utc
-            );
             
             builder.HasData(
                 new IdentificationType
                 {
-                    IdIdentificationType = 1,
+                    IdIdentificationType = (short)IdentificationTypeEnum.CC,
                     Code = "CC",
                     Name = "Cédula de ciudadanía",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new IdentificationType
                 {
-                    IdIdentificationType = 2,
-                    Code = "CI",
+                    IdIdentificationType = (short)IdentificationTypeEnum.CE,
+                    Code = "CE",
                     Name = "Cédula de extranjería",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 },
                 new IdentificationType
                 {
-                    IdIdentificationType = 3,
+                    IdIdentificationType = (short)IdentificationTypeEnum.TI,
                     Code = "TI",
                     Name = "Tarjeta de identidad",
-                    CreatedAt = currentDate,
+                    CreatedAt = SeedConstants.SeedDate,
                     UpdatedAt = null
                 }
             );

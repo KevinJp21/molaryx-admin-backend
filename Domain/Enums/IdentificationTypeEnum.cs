@@ -1,6 +1,6 @@
 namespace Domain.Enums
 {
-    public enum IdentificationTypeEnum
+    public enum IdentificationTypeEnum : short
     {
         CC = 1,
         CE = 2,

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Entities
 {
@@ -9,6 +10,8 @@ namespace Domain.Entities
         public long IdUser { get; set; }
         [Column("id_user_status")]
         public short IdUserStatus { get; set; }
+        [Column("id_user_rol")]
+        public short IdUserRol { get; set; }
         [Column("username")]
         public string Username { get; set; } = string.Empty;
         [Column("first_name")]
@@ -31,11 +34,10 @@ namespace Domain.Entities
         public byte[] Password { get; set; } = null!;
         [Column("salt")]
         public byte[] Salt { get; set; } = null!;
-        [Column("last_login")]
-        public DateTime? LastLogin { get; set; }
 
         // Navigation properties
         public UserStatus UserStatus { get; set; } = null!;
+        public UserRole UserRole { get; set; } = null!;
         public IdentificationType IdentificationType { get; set; } = null!;
         public ICollection<UserSession> UserSession{ get; set; } = [];
     }

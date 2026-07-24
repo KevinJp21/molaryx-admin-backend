@@ -1,6 +1,6 @@
 namespace Domain.Enums
 {
-    public enum TenantStatusEnum
+    public enum TenantStatusEnum : short
     {
         ACTIVO = 1,
         INACTIVO = 2,

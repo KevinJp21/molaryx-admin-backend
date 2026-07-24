@@ -11,14 +11,23 @@ namespace Domain.Entities
         [Column("id_user")]
         public long IdUser { get; set; }
 
-        [Column("auth_token")]
-        public string AuthToken { get; set; } = string.Empty;
+        [Column("refresh_token")]
+        public string? RefreshToken { get; set; }
+
+        [Column("expires_at")]
+        public DateTime ExpiresAt { get; set; }
+
+        [Column("revoked_at")]
+        public DateTime? RevokedAt { get; set; }
 
         [Column("device")]
         public string? Device { get; set; }
 
         [Column("ip_connection")]
         public string? IpConnection { get; set; }
+
+        [Column("last_login")]
+        public DateTime? LastLogin { get; set; }
 
         // Navigation
         public User User { get; set; } = null!;
