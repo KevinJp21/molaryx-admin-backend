@@ -1,4 +1,5 @@
 using Application.Common.Mediator.Interfaces;
+using Application.DTOs;
 using Application.Features.Auth.Command.Login;
 using Application.Features.Auth.Query.GetUser;
 using Microsoft.AspNetCore.Mvc;
@@ -31,10 +32,10 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<ActionResult<ApiResponse<LoginResponse>>> Get([FromBody] loginCommand body, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<LoginDTO>>> Get([FromBody] LoginCommand body, CancellationToken cancellationToken)
         {
             return (
-                new ApiResponse<LoginResponse>(
+                new ApiResponse<LoginDTO>(
                     "Inicio de sesion de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
                 )

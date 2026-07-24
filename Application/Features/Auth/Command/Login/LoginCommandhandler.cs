@@ -1,27 +1,21 @@
 using Application.Common.Mediator.Interfaces;
+using Application.DTOs;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Exceptions;
 
 namespace Application.Features.Auth.Command.Login
 {
-    public class LoginCommandHandler : IRequestHandler<loginCommand, LoginResponse>
+    public class LoginCommandHandler(IUserRepository userRepository, IHasherService hasherService, ITokenService tokenService) : IRequestHandler<LoginCommand, LoginDTO>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IHasherService _hasherService;
-        private readonly ITokenService _tokenService;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IHasherService _hasherService = hasherService;
+        private readonly ITokenService _tokenService = tokenService;
 
-        public LoginCommandHandler(IUserRepository userRepository, IHasherService hasherService, ITokenService tokenService)
-        {
-            _userRepository = userRepository;
-            _hasherService = hasherService;
-            _tokenService = tokenService;
-        }
-
-        public async Task<LoginResponse> Handle(loginCommand request, CancellationToken cancellationToken)
+        public async Task<LoginDTO> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken)
-                ?? throw new NotFoundException("Usuario no encontrado");
+                ?? throw new NotFoundException("Usuario o contraseña invalida.");
 
             var hashedPassword = _hasherService.ComputeHashBytes(request.Password, user.Salt);
 
@@ -32,7 +26,7 @@ namespace Application.Features.Auth.Command.Login
 
             var token = _tokenService.GenerateToken(user.IdUser, user.Email, DateTime.UtcNow.AddHours(1));
 
-            var response = new LoginResponse { Token = token };
+            var response = new LoginDTO { AuthToken = token };
 
             return response;
         }

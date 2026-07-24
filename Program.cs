@@ -3,6 +3,7 @@ using Application.DependencyInjection;
 using Presentation.Config.Jwt;
 using Presentation.Config.Options;
 using Presentation.Handlers;
+using Presentation.Behaviors;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using Domain.Contracts.IServices;
@@ -44,6 +45,7 @@ builder.Services.AddConfiguredOptions(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddJwtAuthentication();
+builder.Services.AddApiBehaviorConfiguration();
 
 var app = builder.Build();
 

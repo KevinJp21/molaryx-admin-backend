@@ -4,16 +4,10 @@ using Domain.Contracts.IRepositories;
 
 namespace Application.Features.Auth.Query.GetUser
 {
-    public class getUserQueryHandler : IRequestHandler<GetUserQuery, GetUserResponse>
+    public class GetUserQueryHandler(IUserRepository userRepository, ICurrentUser currentUser) : IRequestHandler<GetUserQuery, GetUserResponse>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ICurrentUser _currentUser;
-
-        public getUserQueryHandler(IUserRepository userRepository, ICurrentUser currentUser)
-        {
-            _userRepository = userRepository;
-            _currentUser = currentUser;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly ICurrentUser _currentUser = currentUser;
 
         public async Task<GetUserResponse> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
