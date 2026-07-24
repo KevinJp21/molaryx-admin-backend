@@ -29,6 +29,20 @@ namespace Infrastructure.Persistence.Repositories
             return await DbSet.FindAsync([id], cancellationToken);
         }
 
+        public virtual Task UpdateAsync( TEntity entity, CancellationToken cancellationToken = default)
+        {
+            DbSet.Update(entity);
+
+            return Task.CompletedTask;
+        }
+
+        public virtual async Task SaveChangesAsync( CancellationToken cancellationToken = default)
+        {
+            await Context.SaveChangesAsync(
+                cancellationToken
+            );
+        }
+
         public virtual void Remove(TEntity entity)
         {
             DbSet.Remove(entity);

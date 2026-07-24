@@ -6,6 +6,7 @@ using FtfApiClient.Infrastructure.Persistence.Repositories;
 using Infrastructure.Persistence.Repositories;
 using Domain.Contracts.IServices;
 using Infrastructure.Security;
+using Infrastructure.Services;
 
 namespace Infrastructure.DependencyInjection;
 
@@ -78,5 +79,6 @@ public static class ServiceRegistration
     {
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IHasherService, HasherService>();
+        services.AddScoped<ISessionService, SessionService>();
     }
 }

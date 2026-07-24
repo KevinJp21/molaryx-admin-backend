@@ -7,6 +7,7 @@ using Presentation.Behaviors;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using Domain.Contracts.IServices;
+using Microsoft.AspNetCore.HttpOverrides;
 var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -41,6 +42,14 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddExceptionHandler<ExceptionHandler>();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 builder.Services.AddConfiguredOptions(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -81,6 +90,8 @@ app.Use(async (context, next) =>
     await next();
 });
 #endregion
+
+app.UseForwardedHeaders();
 
 app.UseHttpsRedirection();
 

@@ -11,8 +11,8 @@ namespace Domain.Entities
         [Column("id_user")]
         public long IdUser { get; set; }
 
-        [Column("refresh_token")]
-        public string? RefreshToken { get; set; }
+        [Column("refresh_token_hash")]
+        public string? RefreshTokenHash { get; set; }
 
         [Column("expires_at")]
         public DateTime ExpiresAt { get; set; }

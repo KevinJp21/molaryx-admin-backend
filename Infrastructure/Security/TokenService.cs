@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Domain.Contracts.IServices;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -43,6 +44,22 @@ namespace Infrastructure.Security
             };
 
             return _tokenHandler.CreateToken(tokenDescriptor);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomBytes = RandomNumberGenerator.GetBytes(64);
+
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        public string HashRefreshToken(string refreshToken)
+        {
+            var hash = SHA256.HashData(
+                Encoding.UTF8.GetBytes(refreshToken)
+            );
+
+            return Convert.ToBase64String(hash);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(s => s.IdUser).IsRequired();
 
-            builder.Property(s => s.RefreshToken);
+            builder.Property(s => s.RefreshTokenHash);
 
             builder.Property(s => s.ExpiresAt).IsRequired();
 

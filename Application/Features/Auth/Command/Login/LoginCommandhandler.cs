@@ -1,18 +1,17 @@
 using Application.Common.Mediator.Interfaces;
-using Application.DTOs;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Exceptions;
 
 namespace Application.Features.Auth.Command.Login
 {
-    public class LoginCommandHandler(IUserRepository userRepository, IHasherService hasherService, ITokenService tokenService) : IRequestHandler<LoginCommand, LoginDTO>
+    public class LoginCommandHandler(IUserRepository userRepository, IHasherService hasherService, ISessionService sessionService) : IRequestHandler<LoginCommand, LoginCommandResponse>
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IHasherService _hasherService = hasherService;
-        private readonly ITokenService _tokenService = tokenService;
+        private readonly ISessionService _sessionService = sessionService;
 
-        public async Task<LoginDTO> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<LoginCommandResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken)
                 ?? throw new NotFoundException("Usuario o contraseña invalida.");
@@ -24,9 +23,18 @@ namespace Application.Features.Auth.Command.Login
                 throw new InvalidCredentialsException("Usuario o contraseña invalida.");
             }
 
-            var token = _tokenService.GenerateToken(user.IdUser, user.IdUserRole, user.Email, DateTime.UtcNow.AddHours(1));
+            var ( AuthToken, refreshToken ) = await _sessionService.CreateSessionAsync(
+                user.IdUser,
+                user.IdUserRole,
+                user.Email,
+                cancellationToken
+            );
 
-            var response = new LoginDTO { AuthToken = token };
+            var response = new LoginCommandResponse
+            {
+                AuthToken = AuthToken,
+                RefreshToken = refreshToken
+            };
 
             return response;
         }
