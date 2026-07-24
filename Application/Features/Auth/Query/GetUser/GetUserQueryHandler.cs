@@ -11,9 +11,6 @@ namespace Application.Features.Auth.Query.GetUser
 
         public async Task<GetUserResponse> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            if (!_currentUser.IsAuthenticated)
-                throw new UnauthorizedAccessException("Usuario no autenticado.");
-
             var user = await _userRepository.GetByIdAsync((long)_currentUser.UserId!, cancellationToken)
                 ?? throw new Exception("Usuario no encontrado.");
 

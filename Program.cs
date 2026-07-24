@@ -44,7 +44,7 @@ builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddConfiguredOptions(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddJwtAuthentication();
+builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApiBehaviorConfiguration();
 
 var app = builder.Build();
@@ -76,17 +76,22 @@ app.Use(async (context, next) =>
     {
         context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
         context.Response.Headers.Append("X-Frame-Options", "DENY");
-        context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
         context.Response.Headers.Append("Referrer-Policy", "no-referrer");
     }
     await next();
 });
 #endregion
 
-app.UseCors("PoliticaCors");
-app.UseExceptionHandler(app => { });
 app.UseHttpsRedirection();
+
+app.UseCors("PoliticaCors");
+
+app.UseExceptionHandler(app => { });
+
 app.UseAuthentication();
+
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.MapGet("/", () => "MolaryxApiAdmin Activo");
