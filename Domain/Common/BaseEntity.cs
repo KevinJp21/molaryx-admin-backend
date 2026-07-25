@@ -12,7 +12,7 @@ namespace Domain.Common
         protected BaseEntity()
         {
             CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+            UpdatedAt = null;
         }
     }
 }

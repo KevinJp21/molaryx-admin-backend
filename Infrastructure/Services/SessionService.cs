@@ -31,11 +31,13 @@ namespace Infrastructure.Services
             string email,
             CancellationToken cancellationToken)
         {
+
+            var currentDate = DateTime.UtcNow;
             var authToken = _tokenService.GenerateToken(
                 idUser,
                 idUserRole,
                 email,
-                DateTime.UtcNow.AddMinutes(15)
+                currentDate.AddMinutes(15)
             );
 
             var refreshToken = _tokenService.GenerateRefreshToken();
@@ -49,13 +51,14 @@ namespace Infrastructure.Services
             {
                 IdUser = idUser,
                 RefreshTokenHash = refreshTokenHash,
-                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                ExpiresAt = currentDate.AddDays(7),
                 Device = httpContext?
                     .Request
                     .Headers
                     .UserAgent
                     .ToString(),
-                IpConnection = httpContext?.GetClientIpAddress()
+                IpConnection = httpContext?.GetClientIpAddress(),
+                LastLogin = currentDate
             };
 
             await _userSessionRepository.AddAsync(
@@ -79,6 +82,8 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken)
         {
             var httpContext = _httpContextAccessor.HttpContext;
+
+            var currentDate = DateTime.UtcNow;
 
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
@@ -125,14 +130,15 @@ namespace Infrastructure.Services
             );
 
             // Revoke current session
-            session.RevokedAt = DateTime.UtcNow;
+            session.RevokedAt = currentDate;
+            session.UpdatedAt = currentDate;
 
             // Generate new access token
             var authToken = _tokenService.GenerateToken(
                 user.IdUser,
                 user.IdUserRole,
                 user.Email,
-                DateTime.UtcNow.AddMinutes(15)
+                currentDate.AddMinutes(15)
             );
 
             // Generate new refresh token
@@ -148,7 +154,7 @@ namespace Infrastructure.Services
             {
                 IdUser = user.IdUser,
                 RefreshTokenHash = newRefreshTokenHash,
-                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                ExpiresAt = currentDate.AddDays(7),
                 Device = httpContext?
                     .Request
                     .Headers
@@ -182,6 +188,8 @@ namespace Infrastructure.Services
                 throw new InvalidCredentialsException("El refresh token es requerido.");
             }
 
+            var currentDate = DateTime.UtcNow;
+
             var refreshTokenHash =
                 _tokenService.HashRefreshToken(refreshToken);
 
@@ -205,7 +213,8 @@ namespace Infrastructure.Services
                 );
             }
 
-            session.RevokedAt = DateTime.UtcNow;
+            session.RevokedAt = currentDate;
+            session.UpdatedAt = currentDate;
 
             await _userSessionRepository.SaveChangesAsync(
                 cancellationToken
@@ -224,6 +233,7 @@ namespace Infrastructure.Services
             foreach (var session in sessions)
             {
                 session.RevokedAt = currentDate;
+                session.UpdatedAt = currentDate;
             }
 
             await _userSessionRepository.SaveChangesAsync(cancellationToken);

@@ -44,7 +44,7 @@ namespace Presentation.Controllers
         {
             return Ok(
                 new ApiResponse<RefreshTokenCommandResponse>(
-                    "Token de refresco obtenido de manera exitosa.",
+                    "Refresh token actualizado de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
                 ));
         }
