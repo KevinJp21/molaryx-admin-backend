@@ -7,7 +7,7 @@ namespace Domain.Contracts.IRepositories
     {
         Task<UserSession?> GetByRefreshTokenHashAsync(string refreshTokenHash, CancellationToken cancellationToken);
 
-        Task<IEnumerable<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken);
+        Task<List<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken);
 
         Task<bool> RevokeSessionAsync(string refreshTokenHash, DateTime currentDate, CancellationToken cancellationToken);
     }

@@ -3,6 +3,7 @@ using Application.Features.Auth.Command.Login;
 using Application.Features.Auth.Command.Logout;
 using Application.Features.Auth.Command.LogoutAll;
 using Application.Features.Auth.Command.RefreshToken;
+using Application.Features.Auth.Query.GetSessions;
 using Application.Features.Auth.Query.GetUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,7 @@ namespace Presentation.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<GetUserResponse>>> GetUSer([FromQuery] GetUserQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<GetUserResponse>>> GetUser([FromQuery] GetUserQuery query, CancellationToken cancellationToken)
         {
             return Ok(
                 new ApiResponse<GetUserResponse>(
@@ -71,6 +72,18 @@ namespace Presentation.Controllers
                         new LogoutAllCommand(),
                         cancellationToken
                     )
+                )
+            );
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<GetSessionsResponse>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<List<GetSessionsResponse>>(
+                    "Sesiones obtenidas de manera exitosa.",
+                    await _mediator.Send(query, cancellationToken)
                 )
             );
         }

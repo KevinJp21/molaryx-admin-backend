@@ -6,6 +6,7 @@ namespace Application.Context
     {
         bool IsAuthenticated { get; }
         long? IdUser { get; }
+        long? IdUserSession { get; }
         string? Email { get; }
 
         Task<User?> GetUserAsync();

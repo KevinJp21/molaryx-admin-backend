@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(us => us.RefreshTokenHash == refreshTokenHash, cancellationToken);
         }
 
-        public async Task<IEnumerable<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken = default)
+        public async Task<List<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken = default)
         {
             return await DbSet
                 .Where(us =>

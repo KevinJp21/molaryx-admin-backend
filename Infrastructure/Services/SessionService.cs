@@ -38,12 +38,6 @@ namespace Infrastructure.Services
         {
 
             var currentDate = DateTime.UtcNow;
-            var authToken = _tokenService.GenerateToken(
-                idUser,
-                idUserRole,
-                email,
-                currentDate.AddMinutes(15)
-            );
 
             var refreshToken = _tokenService.GenerateRefreshToken();
 
@@ -75,6 +69,14 @@ namespace Infrastructure.Services
                 cancellationToken
             );
 
+            var authToken = _tokenService.GenerateToken(
+                idUser,
+                idUserRole,
+                email,
+                session.IdUserSession,
+                currentDate.AddMinutes(15)
+            );
+
             return (
                 authToken,
                 refreshToken
@@ -83,8 +85,8 @@ namespace Infrastructure.Services
 
 
         public async Task<(string AuthToken, string RefreshToken)> RefreshSessionAsync(
-            string refreshToken,
-            CancellationToken cancellationToken = default)
+                string refreshToken,
+                CancellationToken cancellationToken = default)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -132,14 +134,6 @@ namespace Infrastructure.Services
                 cancellationToken
             ) ?? throw new NotFoundException(
                 "Usuario no encontrado."
-            );
-
-            // Generate new access token
-            var authToken = _tokenService.GenerateToken(
-                user.IdUser,
-                user.IdUserRole,
-                user.Email,
-                currentDate.AddMinutes(15)
             );
 
             // Generate new refresh token
@@ -201,6 +195,14 @@ namespace Infrastructure.Services
                 // Commit both operations
                 await transaction.CommitAsync(
                     cancellationToken
+                );
+
+                var authToken = _tokenService.GenerateToken(
+                    user.IdUser,
+                    user.IdUserRole,
+                    user.Email,
+                    newSession.IdUserSession,
+                    currentDate.AddMinutes(15)
                 );
 
                 return (

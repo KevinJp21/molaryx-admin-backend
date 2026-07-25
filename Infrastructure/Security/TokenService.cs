@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Application.Common;
 using Domain.Contracts.IServices;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +16,7 @@ namespace Infrastructure.Security
             long idUser,
             short idUserRole,
             string email,
+            long idUserSession,
             DateTime expiration)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
@@ -27,6 +29,7 @@ namespace Infrastructure.Security
                 new(ClaimTypes.NameIdentifier, idUser.ToString()),
 
                 new (ClaimTypes.Email, email),
+                new(AuthClaimTypes.IdUserSession, idUserSession.ToString()),
 
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Iat,

@@ -1,4 +1,5 @@
-﻿using Application.Context;
+﻿using Application.Common;
+using Application.Context;
 using Domain.Contracts.IRepositories;
 using Domain.Entities;
 using System.Security.Claims;
@@ -41,6 +42,31 @@ namespace Infrastructure.Context
 
                 _cachedIdUser = idUser;
                 return idUser;
+            }
+        }
+
+        private long? _cachedIdUserSession;
+        public long? IdUserSession
+        {
+            get
+            {
+                if (_cachedIdUserSession.HasValue)
+                    return _cachedIdUserSession;
+
+                if (!IsAuthenticated)
+                    return null;
+
+                var sessionClaim =
+                    User?.FindFirst(AuthClaimTypes.IdUserSession)?.Value;
+
+                if (string.IsNullOrWhiteSpace(sessionClaim))
+                    return null;
+
+                if (!long.TryParse(sessionClaim, out var idUserSession))
+                    return null;
+
+                _cachedIdUserSession = idUserSession;
+                return idUserSession;
             }
         }
 
