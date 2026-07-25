@@ -1,5 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Features.Auth.Command.Login;
+using Application.Features.Auth.Command.RefreshToken;
 using Application.Features.Auth.Query.GetUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,17 +8,14 @@ using Shared.Common;
 
 namespace Presentation.Controllers
 {
-    [Authorize]
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/[controller]/[action]")]
     [ApiController]
     public class AuthController(IMediator mediator) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
 
         [HttpPost]
-        [AllowAnonymous]
-        [Route("Login")]
-        public async Task<ActionResult<ApiResponse<LoginCommandResponse>>> Get([FromBody] LoginCommand body, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<LoginCommandResponse>>> Login([FromBody] LoginCommand body, CancellationToken cancellationToken)
         {
             return (
                 new ApiResponse<LoginCommandResponse>(
@@ -28,8 +26,8 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        [Route("GetUser")]
-        public async Task<ActionResult<ApiResponse<GetUserResponse>>> Get([FromQuery] GetUserQuery query, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<GetUserResponse>>> GetUSer([FromQuery] GetUserQuery query, CancellationToken cancellationToken)
         {
             return (
                 new ApiResponse<GetUserResponse>(
@@ -37,6 +35,16 @@ namespace Presentation.Controllers
                     await _mediator.Send(query, cancellationToken)
                 )
             );
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<RefreshTokenCommandResponse>>> RefreshToken([FromBody] RefreshTokenCommand body, CancellationToken cancellationToken)
+        {
+            return (
+                new ApiResponse<RefreshTokenCommandResponse>(
+                    "Token de refresco obtenido de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
+                ));
         }
     }
 }

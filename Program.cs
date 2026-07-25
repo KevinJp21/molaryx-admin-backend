@@ -107,21 +107,4 @@ app.MapControllers();
 
 app.MapGet("/", () => "MolaryxApiAdmin Activo");
 
-// Generar hash de prueba
-using (var scope = app.Services.CreateScope())
-{
-    var hasherService = scope.ServiceProvider
-        .GetRequiredService<IHasherService>();
-
-    var salt = hasherService.GenerateSalt();
-
-    var passwordHash = hasherService.ComputeHash(
-        "Test123456",
-        salt
-    );
-
-    Console.WriteLine($"Hash: {passwordHash}");
-    Console.WriteLine($"Salt: {Convert.ToBase64String(salt)}");
-}
-
 app.Run();
