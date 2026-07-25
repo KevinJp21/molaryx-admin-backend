@@ -5,9 +5,11 @@ namespace Domain.Contracts.IServices
         Task<(string AuthToken, string RefreshToken)> CreateSessionAsync(long idUser, short idUserRole, string email, CancellationToken cancellationToken);
 
         Task<(string AuthToken, string RefreshToken)> RefreshSessionAsync(
-        CancellationToken cancellationToken
+            string refreshToken,
+            CancellationToken cancellationToken = default
+
     );
 
-        Task RevokeSessionAsync(CancellationToken cancellationToken);
+        Task RevokeSessionAsync( string refreshToken, CancellationToken cancellationToken = default );
     }
 }

@@ -67,13 +67,6 @@ namespace Infrastructure.Services
                 cancellationToken
             );
 
-            // Store refresh token in an HttpOnly cookie
-            httpContext?.Response.Cookies.Append(
-                "refresh_token",
-                refreshToken,
-                GetRefreshTokenCookieOptions()
-            );
-
             return (
                 authToken,
                 refreshToken
@@ -81,13 +74,9 @@ namespace Infrastructure.Services
         }
 
         public async Task RevokeSessionAsync(
+            string refreshToken,
             CancellationToken cancellationToken)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            var refreshToken = httpContext?
-                .Request
-                .Cookies["refresh_token"];
 
             if (string.IsNullOrWhiteSpace(refreshToken))
                 return;
@@ -112,21 +101,13 @@ namespace Infrastructure.Services
             await _userSessionRepository.SaveChangesAsync(
                 cancellationToken
             );
-
-            // Remove refresh token from the cookie
-            httpContext?.Response.Cookies.Delete(
-                "refresh_token"
-            );
         }
 
         public async Task<(string AuthToken, string RefreshToken)> RefreshSessionAsync(
+            string refreshToken,
             CancellationToken cancellationToken)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-
-            var refreshToken = httpContext?
-                .Request
-                .Cookies["refresh_token"];
 
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
@@ -214,28 +195,10 @@ namespace Infrastructure.Services
                 cancellationToken
             );
 
-            // Replace the previous refresh token with the new one
-            httpContext?.Response.Cookies.Append(
-                "refresh_token",
-                newRefreshToken,
-                GetRefreshTokenCookieOptions()
-            );
-
             return (
                 authToken,
                 newRefreshToken
             );
-        }
-
-        private static CookieOptions GetRefreshTokenCookieOptions()
-        {
-            return new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
-            };
         }
     }
 }
