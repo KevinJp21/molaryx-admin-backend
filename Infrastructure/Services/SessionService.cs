@@ -77,9 +77,10 @@ namespace Infrastructure.Services
             string refreshToken,
             CancellationToken cancellationToken)
         {
-
             if (string.IsNullOrWhiteSpace(refreshToken))
-                return;
+            {
+                throw new InvalidCredentialsException("El refresh token es requerido.");
+            }
 
             var refreshTokenHash =
                 _tokenService.HashRefreshToken(refreshToken);
@@ -91,10 +92,18 @@ namespace Infrastructure.Services
                 );
 
             if (session is null)
-                return;
+            {
+                throw new InvalidCredentialsException(
+                    "La sesión no es válida."
+                );
+            }
 
             if (session.RevokedAt.HasValue)
-                return;
+            {
+                throw new InvalidCredentialsException(
+                    "La sesión ya fue cerrada."
+                );
+            }
 
             session.RevokedAt = DateTime.UtcNow;
 
