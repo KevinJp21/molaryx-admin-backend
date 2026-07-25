@@ -68,10 +68,12 @@ namespace Infrastructure.Persistence.Repositories
             );
         }
 
-        public async Task<bool> RevokeSessionAsync(string refreshTokenHash, DateTime currentDate, CancellationToken cancellationToken)
+        public async Task<bool> RevokeSessionAsync(long idUser, string refreshTokenHash, DateTime currentDate, CancellationToken cancellationToken)
         {
             var affectedRows = await DbSet
-                .Where(us => us.RefreshTokenHash == refreshTokenHash &&
+                .Where(us =>
+                    us.IdUser == idUser &&
+                    us.RefreshTokenHash == refreshTokenHash &&
                     us.RevokedAt == null &&
                     us.ExpiresAt > currentDate
                 )

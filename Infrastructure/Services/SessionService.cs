@@ -169,6 +169,7 @@ namespace Infrastructure.Services
                 // Atomically revoke the current session
                 var revoked = await _userSessionRepository
                     .RevokeSessionAsync(
+                        session.IdUser,
                         refreshTokenHash,
                         currentDate,
                         cancellationToken
@@ -221,13 +222,15 @@ namespace Infrastructure.Services
             }
         }
         public async Task RevokeSessionAsync(
+            long idUser,
             string refreshToken,
             CancellationToken cancellationToken)
         {
-
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
-                throw new InvalidCredentialsException("El refresh token es requerido.");
+                throw new InvalidCredentialsException(
+                    "El refresh token es requerido."
+                );
             }
 
             var currentDate = DateTime.UtcNow;
@@ -235,32 +238,19 @@ namespace Infrastructure.Services
             var refreshTokenHash =
                 _tokenService.HashRefreshToken(refreshToken);
 
-            var session = await _userSessionRepository
-                .GetByRefreshTokenHashAsync(
-                    refreshTokenHash,
-                    cancellationToken
-                );
-
-            if (session is null)
-            {
-                throw new InvalidCredentialsException(
-                    "La sesión no es válida."
-                );
-            }
-
-            if (session.RevokedAt.HasValue)
-            {
-                throw new InvalidCredentialsException(
-                    "La sesión ya fue cerrada."
-                );
-            }
-
-            session.RevokedAt = currentDate;
-            session.UpdatedAt = currentDate;
-
-            await _userSessionRepository.SaveChangesAsync(
+            var revoked = await _userSessionRepository.RevokeSessionAsync(
+                idUser,
+                refreshTokenHash,
+                currentDate,
                 cancellationToken
             );
+
+            if (!revoked)
+            {
+                throw new InvalidCredentialsException(
+                    "La sesión no es válida o ya fue cerrada."
+                );
+            }
         }
 
         public async Task RevokeAllSessionAsync(long idUser, CancellationToken cancellationToken)

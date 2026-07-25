@@ -8,7 +8,7 @@ namespace Domain.Contracts.IServices
             string refreshToken,
             CancellationToken cancellationToken = default);
 
-        Task RevokeSessionAsync(string refreshToken, CancellationToken cancellationToken = default);
+        Task RevokeSessionAsync(long idUser, string refreshToken, CancellationToken cancellationToken = default);
 
         Task RevokeAllSessionAsync(long idUser, CancellationToken cancellationToken = default);
     }
