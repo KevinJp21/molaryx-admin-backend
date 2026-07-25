@@ -12,7 +12,9 @@ namespace Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(us => us.RefreshTokenHash == refreshTokenHash, cancellationToken);
         }
 
-        public async Task<List<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken = default)
+        public async Task<List<UserSession>> GetActiveSessionsByUserIdAsync(
+            long idUser,
+            CancellationToken cancellationToken = default)
         {
             return await DbSet
                 .Where(us =>
@@ -21,6 +23,49 @@ namespace Infrastructure.Persistence.Repositories
                     us.ExpiresAt > DateTime.UtcNow
                 )
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task<(int count, List<UserSession> data)> GetAllSessionsByUserIdAsync(
+            long idUser,
+            bool? active,
+            int page,
+            int size,
+            CancellationToken cancellationToken = default)
+        {
+            var query = DbSet
+                .AsNoTracking()
+                .Where(us =>
+                    us.IdUser == idUser
+                );
+
+            if (active == true)
+            {
+                query = query.Where(us =>
+                    us.RevokedAt == null &&
+                    us.ExpiresAt > DateTime.UtcNow);
+            }
+
+            if (active == false)
+            {
+                query = query.Where(us =>
+                    us.RevokedAt != null ||
+                    us.ExpiresAt <= DateTime.UtcNow);
+            }
+
+            var totalItems = await query.CountAsync(
+                cancellationToken
+            );
+
+            var sessions = await query
+                .OrderByDescending(us => us.CreatedAt)
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
+
+            return (
+                totalItems,
+                sessions
+            );
         }
 
         public async Task<bool> RevokeSessionAsync(string refreshTokenHash, DateTime currentDate, CancellationToken cancellationToken)

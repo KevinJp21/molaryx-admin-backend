@@ -1,13 +1,6 @@
+using Application.Common.Pagination;
+
 namespace Application.Features.Auth.Query.GetSessions
 {
-    public class GetSessionsResponse
-    {
-        public long IdUserSession { get; set; }
-        public string? Device { get; set; }
-        public string IpConnection { get; set; } = string.Empty;
-        public DateTime CreateAt { get; set; }
-        public DateTime ExpireAt { get; set; }
-        public bool IsCurrent { get; set; }
-
-    }
+    public class GetSessionsResponse : PagedResult<GetSessionsItemResponse> {}
 }

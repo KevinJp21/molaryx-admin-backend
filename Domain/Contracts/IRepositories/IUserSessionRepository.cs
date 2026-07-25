@@ -9,6 +9,8 @@ namespace Domain.Contracts.IRepositories
 
         Task<List<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken);
 
+        Task<(int count, List<UserSession> data)> GetAllSessionsByUserIdAsync(long idUser, bool? active, int page, int size, CancellationToken cancellationToken);
+
         Task<bool> RevokeSessionAsync(string refreshTokenHash, DateTime currentDate, CancellationToken cancellationToken);
     }
 }

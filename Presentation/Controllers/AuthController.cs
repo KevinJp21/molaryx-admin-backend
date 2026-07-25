@@ -11,12 +11,14 @@ using Shared.Common;
 
 namespace Presentation.Controllers
 {
+    [Authorize]
     [Route("api/v1/[controller]/[action]")]
     [ApiController]
     public class AuthController(IMediator mediator) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<LoginCommandResponse>>> Login([FromBody] LoginCommand body, CancellationToken cancellationToken)
         {
@@ -29,12 +31,22 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<ApiResponse<GetUserResponse>>> GetUser([FromQuery] GetUserQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<GetUserResponse>>> GetUser(CancellationToken cancellationToken)
         {
             return Ok(
                 new ApiResponse<GetUserResponse>(
                     "Información de usuario obtenida de manera exitosa.",
+                    await _mediator.Send(new GetUserQuery(), cancellationToken)
+                )
+            );
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<GetSessionsResponse>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<GetSessionsResponse>(
+                    "Sesiones obtenidas de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
                 )
             );
@@ -62,7 +74,6 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<ActionResult<ApiResponse<bool>>> LogoutAll(CancellationToken cancellationToken)
         {
             return Ok(
@@ -72,18 +83,6 @@ namespace Presentation.Controllers
                         new LogoutAllCommand(),
                         cancellationToken
                     )
-                )
-            );
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<ApiResponse<GetSessionsResponse>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
-        {
-            return Ok(
-                new ApiResponse<List<GetSessionsResponse>>(
-                    "Sesiones obtenidas de manera exitosa.",
-                    await _mediator.Send(query, cancellationToken)
                 )
             );
         }
