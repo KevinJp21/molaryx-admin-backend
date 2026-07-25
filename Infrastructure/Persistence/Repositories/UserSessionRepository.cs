@@ -22,5 +22,28 @@ namespace Infrastructure.Persistence.Repositories
                 )
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<bool> RevokeSessionAsync(string refreshTokenHash, DateTime currentDate, CancellationToken cancellationToken)
+        {
+            var affectedRows = await DbSet
+                .Where(us => us.RefreshTokenHash == refreshTokenHash &&
+                    us.RevokedAt == null &&
+                    us.ExpiresAt > currentDate
+                )
+                .ExecuteUpdateAsync(
+                    setters => setters
+                        .SetProperty(
+                            us => us.RevokedAt,
+                            currentDate
+                        )
+                        .SetProperty(
+                            us => us.UpdatedAt,
+                            currentDate
+                        ),
+                        cancellationToken
+                );
+
+            return affectedRows == 1;
+        }
     }
 }

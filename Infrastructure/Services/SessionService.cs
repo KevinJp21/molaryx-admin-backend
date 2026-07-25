@@ -3,6 +3,7 @@ using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Exceptions;
 using Infrastructure.Extensions;
+using Infrastructure.Persistence;
 
 namespace Infrastructure.Services
 {
@@ -10,7 +11,8 @@ namespace Infrastructure.Services
         IUserSessionRepository userSessionRepository,
         IUserRepository userRepository,
         ITokenService tokenService,
-        IHttpContextAccessor httpContextAccessor
+        IHttpContextAccessor httpContextAccessor,
+        AppDbContext dbContext
     ) : ISessionService
     {
         private readonly IUserSessionRepository _userSessionRepository =
@@ -24,6 +26,9 @@ namespace Infrastructure.Services
 
         private readonly IHttpContextAccessor _httpContextAccessor =
             httpContextAccessor;
+
+        private readonly AppDbContext _dbContext =
+        dbContext;
 
         public async Task<(string AuthToken, string RefreshToken)> CreateSessionAsync(
             long idUser,
@@ -79,7 +84,7 @@ namespace Infrastructure.Services
 
         public async Task<(string AuthToken, string RefreshToken)> RefreshSessionAsync(
             string refreshToken,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -115,7 +120,7 @@ namespace Infrastructure.Services
                 );
             }
 
-            if (session.ExpiresAt <= DateTime.UtcNow)
+            if (session.ExpiresAt <= currentDate)
             {
                 throw new InvalidCredentialsException(
                     "La sesión ha expirado."
@@ -128,10 +133,6 @@ namespace Infrastructure.Services
             ) ?? throw new NotFoundException(
                 "Usuario no encontrado."
             );
-
-            // Revoke current session
-            session.RevokedAt = currentDate;
-            session.UpdatedAt = currentDate;
 
             // Generate new access token
             var authToken = _tokenService.GenerateToken(
@@ -160,24 +161,63 @@ namespace Infrastructure.Services
                     .Headers
                     .UserAgent
                     .ToString(),
-                IpConnection = httpContext?.GetClientIpAddress()
+                IpConnection = httpContext?
+                    .GetClientIpAddress()
             };
 
-            await _userSessionRepository.AddAsync(
-                newSession,
-                cancellationToken
-            );
+            await using var transaction =
+                await _dbContext.Database.BeginTransactionAsync(
+                    cancellationToken
+                );
 
-            await _userSessionRepository.SaveChangesAsync(
-                cancellationToken
-            );
+            try
+            {
+                // Atomically revoke the current session
+                var revoked = await _userSessionRepository
+                    .RevokeSessionAsync(
+                        refreshTokenHash,
+                        currentDate,
+                        cancellationToken
+                    );
 
-            return (
-                authToken,
-                newRefreshToken
-            );
+                if (!revoked)
+                {
+                    throw new InvalidCredentialsException(
+                        "La sesión ya no es válida."
+                    );
+                }
+
+                // Create the new session
+                await _userSessionRepository.AddAsync(
+                    newSession,
+                    cancellationToken
+                );
+
+                // Save the revoked session and the new session
+                await _userSessionRepository.SaveChangesAsync(
+                    cancellationToken
+                );
+
+                // Commit both operations
+                await transaction.CommitAsync(
+                    cancellationToken
+                );
+
+                return (
+                    authToken,
+                    newRefreshToken
+                );
+            }
+            catch
+            {
+                // Roll back the transaction if any operation fails
+                await transaction.RollbackAsync(
+                    cancellationToken
+                );
+
+                throw;
+            }
         }
-
         public async Task RevokeSessionAsync(
             string refreshToken,
             CancellationToken cancellationToken)

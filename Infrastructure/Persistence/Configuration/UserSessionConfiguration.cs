@@ -36,6 +36,8 @@ namespace Infrastructure.Persistence.Configuration
                 .WithMany(u => u.UserSession)
                 .HasForeignKey(s => s.IdUser)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.RefreshTokenHash) .IsUnique();
         }
     }
 }
