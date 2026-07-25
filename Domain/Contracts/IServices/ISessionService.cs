@@ -6,10 +6,10 @@ namespace Domain.Contracts.IServices
 
         Task<(string AuthToken, string RefreshToken)> RefreshSessionAsync(
             string refreshToken,
-            CancellationToken cancellationToken = default
+            CancellationToken cancellationToken = default);
 
-    );
-
-        Task RevokeSessionAsync( string refreshToken, CancellationToken cancellationToken = default );
+        Task RevokeSessionAsync(string refreshToken, CancellationToken cancellationToken = default);
+        
+        Task RevokeAllSessionAsync( long idUser, CancellationToken cancellationToken = default );
     }
 }

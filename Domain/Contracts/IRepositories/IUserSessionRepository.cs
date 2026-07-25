@@ -6,5 +6,7 @@ namespace Domain.Contracts.IRepositories
     public interface IUserSessionRepository : IBaseRepository<UserSession, long>
     {
         Task<UserSession?> GetByRefreshTokenHashAsync(string refreshTokenHash, CancellationToken cancellationToken);
+
+        Task<IEnumerable<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken);
     }
 }

@@ -73,44 +73,6 @@ namespace Infrastructure.Services
             );
         }
 
-        public async Task RevokeSessionAsync(
-            string refreshToken,
-            CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(refreshToken))
-            {
-                throw new InvalidCredentialsException("El refresh token es requerido.");
-            }
-
-            var refreshTokenHash =
-                _tokenService.HashRefreshToken(refreshToken);
-
-            var session = await _userSessionRepository
-                .GetByRefreshTokenHashAsync(
-                    refreshTokenHash,
-                    cancellationToken
-                );
-
-            if (session is null)
-            {
-                throw new InvalidCredentialsException(
-                    "La sesión no es válida."
-                );
-            }
-
-            if (session.RevokedAt.HasValue)
-            {
-                throw new InvalidCredentialsException(
-                    "La sesión ya fue cerrada."
-                );
-            }
-
-            session.RevokedAt = DateTime.UtcNow;
-
-            await _userSessionRepository.SaveChangesAsync(
-                cancellationToken
-            );
-        }
 
         public async Task<(string AuthToken, string RefreshToken)> RefreshSessionAsync(
             string refreshToken,
@@ -209,5 +171,63 @@ namespace Infrastructure.Services
                 newRefreshToken
             );
         }
+
+        public async Task RevokeSessionAsync(
+            string refreshToken,
+            CancellationToken cancellationToken)
+        {
+
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new InvalidCredentialsException("El refresh token es requerido.");
+            }
+
+            var refreshTokenHash =
+                _tokenService.HashRefreshToken(refreshToken);
+
+            var session = await _userSessionRepository
+                .GetByRefreshTokenHashAsync(
+                    refreshTokenHash,
+                    cancellationToken
+                );
+
+            if (session is null)
+            {
+                throw new InvalidCredentialsException(
+                    "La sesión no es válida."
+                );
+            }
+
+            if (session.RevokedAt.HasValue)
+            {
+                throw new InvalidCredentialsException(
+                    "La sesión ya fue cerrada."
+                );
+            }
+
+            session.RevokedAt = DateTime.UtcNow;
+
+            await _userSessionRepository.SaveChangesAsync(
+                cancellationToken
+            );
+        }
+
+        public async Task RevokeAllSessionAsync(long idUser, CancellationToken cancellationToken)
+        {
+            var sessions = await _userSessionRepository.GetActiveSessionsByUserIdAsync(idUser, cancellationToken);
+
+            if (!sessions.Any())
+                return;
+
+            var currentDate = DateTime.UtcNow;
+
+            foreach (var session in sessions)
+            {
+                session.RevokedAt = currentDate;
+            }
+
+            await _userSessionRepository.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }

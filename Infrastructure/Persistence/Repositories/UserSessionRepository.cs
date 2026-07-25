@@ -11,5 +11,16 @@ namespace Infrastructure.Persistence.Repositories
             return await DbSet
                 .FirstOrDefaultAsync(us => us.RefreshTokenHash == refreshTokenHash, cancellationToken);
         }
+
+        public async Task<IEnumerable<UserSession>> GetActiveSessionsByUserIdAsync(long idUser, CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .Where(us =>
+                    us.IdUser == idUser &&
+                    us.RevokedAt == null &&
+                    us.ExpiresAt > DateTime.UtcNow
+                )
+                .ToListAsync(cancellationToken);
+        }
     }
 }

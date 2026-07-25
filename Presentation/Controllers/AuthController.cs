@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Features.Auth.Command.Login;
-using Application.Features.Auth.Command.LogOut;
+using Application.Features.Auth.Command.Logout;
+using Application.Features.Auth.Command.LogoutAll;
 using Application.Features.Auth.Command.RefreshToken;
 using Application.Features.Auth.Query.GetUser;
 using Microsoft.AspNetCore.Authorization;
@@ -49,12 +50,27 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<bool>>> LogOut([FromBody] LogOutCommand body, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<bool>>> Logout([FromBody] LogoutCommand body, CancellationToken cancellationToken)
         {
             return Ok(
                  new ApiResponse<bool>(
                      "Sesión cerrada de manera exitosa.",
                      await _mediator.Send(body, cancellationToken)
+                )
+            );
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<bool>>> LogoutAll(CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Todas las sesiones fueron cerradas correctamente.",
+                    await _mediator.Send(
+                        new LogoutAllCommand(),
+                        cancellationToken
+                    )
                 )
             );
         }
