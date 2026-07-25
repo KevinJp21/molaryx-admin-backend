@@ -20,6 +20,7 @@ namespace Presentation.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [EndpointDescription( "Autentica al usuario y crea una nueva sesión, generando un access token y un refresh token." )]
         public async Task<ActionResult<ApiResponse<LoginCommandResponse>>> Login([FromBody] LoginCommand body, CancellationToken cancellationToken)
         {
             return Ok(
@@ -31,6 +32,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [EndpointDescription( "Obtiene la información del usuario actualmente autenticado a partir de su sesión activa." )]
         public async Task<ActionResult<ApiResponse<GetUserResponse>>> GetUser(CancellationToken cancellationToken)
         {
             return Ok(
@@ -42,6 +44,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [EndpointDescription( "Obtiene las sesiones del usuario autenticado, incluyendo información del dispositivo, dirección IP, fecha de creación, fecha de expiración e identificación de la sesión actual." )]
         public async Task<ActionResult<ApiResponse<GetSessionsResponse>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
         {
             return Ok(
@@ -52,7 +55,9 @@ namespace Presentation.Controllers
             );
         }
 
+        [AllowAnonymous]
         [HttpPost]
+        [EndpointDescription( "Renueva el auth token y el refresh token utilizando un refresh token válido." )]
         public async Task<ActionResult<ApiResponse<RefreshTokenCommandResponse>>> RefreshToken([FromBody] RefreshTokenCommand body, CancellationToken cancellationToken)
         {
             return Ok(
@@ -63,6 +68,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [EndpointDescription( "Cierra la sesión asociada al usuario autenticado y al refresh token proporcionado, invalidando dicho refresh token para evitar su reutilización." )]
         public async Task<ActionResult<ApiResponse<bool>>> Logout([FromBody] LogoutCommand body, CancellationToken cancellationToken)
         {
             return Ok(
@@ -74,6 +80,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        [EndpointDescription( "Cierra todas las sesiones activas del usuario autenticado, invalidando los refresh tokens asociados a sus sesiones." )]
         public async Task<ActionResult<ApiResponse<bool>>> LogoutAll(CancellationToken cancellationToken)
         {
             return Ok(
