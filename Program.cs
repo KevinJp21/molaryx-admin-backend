@@ -8,6 +8,8 @@ using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using Domain.Contracts.IServices;
 using Microsoft.AspNetCore.HttpOverrides;
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -57,6 +59,14 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApiBehaviorConfiguration();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<AppDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

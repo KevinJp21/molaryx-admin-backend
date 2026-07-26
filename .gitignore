@@ -366,3 +366,5 @@ FodyWeavers.xsd
 #Migrations
 Migrations/
 
+#Env
+.env
