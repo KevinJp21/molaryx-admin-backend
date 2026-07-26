@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Application.Features.Auth.Command.Login
+namespace Application.DTOs.Auth
 {
-    public class LoginCommandResponse
+    public class RefreshTokenResponseDto
     {
         [JsonPropertyName("auth_token")]
         public string AuthToken { get; set; } = string.Empty;

@@ -1,17 +1,18 @@
 using Application.Common.Mediator.Interfaces;
+using Application.DTOs.Auth;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Exceptions;
 
 namespace Application.Features.Auth.Command.Login
 {
-    public class LoginCommandHandler(IUserRepository userRepository, IHasherService hasherService, ISessionService sessionService) : IRequestHandler<LoginCommand, LoginCommandResponse>
+    public class LoginCommandHandler(IUserRepository userRepository, IHasherService hasherService, ISessionService sessionService) : IRequestHandler<LoginCommand, LoginResponseDto>
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IHasherService _hasherService = hasherService;
         private readonly ISessionService _sessionService = sessionService;
 
-        public async Task<LoginCommandResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByEmailAsync(request.Email, cancellationToken)
                 ?? throw new NotFoundException("Usuario o contraseña invalida.");
@@ -30,7 +31,7 @@ namespace Application.Features.Auth.Command.Login
                 cancellationToken
             );
 
-            var response = new LoginCommandResponse
+            var response = new LoginResponseDto
             {
                 AuthToken = AuthToken,
                 RefreshToken = refreshToken

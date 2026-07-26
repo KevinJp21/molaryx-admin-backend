@@ -1,13 +1,12 @@
-namespace Application.Features.Auth.Query.GetSessions
+namespace Application.DTOs.Sessions
 {
-    public class GetSessionsItemResponse
+    public class UserSessionDto
     {
         public long IdUserSession { get; set; }
         public string? Device { get; set; }
         public string IpConnection { get; set; } = string.Empty;
-        public DateTime CreateAt { get; set; }
-        public DateTime ExpireAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime ExpiresAt { get; set; }
         public bool IsCurrent { get; set; }
-
     }
 }

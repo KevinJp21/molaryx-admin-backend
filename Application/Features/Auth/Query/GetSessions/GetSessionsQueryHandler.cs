@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Context;
+using Application.DTOs.Sessions;
 using Domain.Contracts.IRepositories;
 
 namespace Application.Features.Auth.Query.GetSessions
@@ -8,7 +9,7 @@ namespace Application.Features.Auth.Query.GetSessions
     public class GetSessionsQueryHandler(
         IUserSessionRepository userSessionRepository,
         ICurrentUser currentUser
-    ) : IRequestHandler<GetSessionsQuery, GetSessionsResponse>
+    ) : IRequestHandler<GetSessionsQuery, GetSessionsResponseDto>
     {
         private readonly IUserSessionRepository _userSessionRepository =
             userSessionRepository;
@@ -16,7 +17,7 @@ namespace Application.Features.Auth.Query.GetSessions
         private readonly ICurrentUser _currentUser =
             currentUser;
 
-        public async Task<GetSessionsResponse> Handle(
+        public async Task<GetSessionsResponseDto> Handle(
             GetSessionsQuery request,
             CancellationToken cancellationToken = default)
         {
@@ -40,18 +41,18 @@ namespace Application.Features.Auth.Query.GetSessions
                     cancellationToken
                 );
 
-            return new GetSessionsResponse
+            return new GetSessionsResponseDto
             {
                 Items =
                 [
                     .. sessions.Select(
-                session => new GetSessionsItemResponse
+                session => new UserSessionDto
                 {
                     IdUserSession = session.IdUserSession,
-                    Device = session.Device,
+                    Device = session.Device!,
                     IpConnection = session.IpConnection ?? string.Empty,
-                    CreateAt = session.CreatedAt,
-                    ExpireAt = session.ExpiresAt,
+                    CreatedAt = session.CreatedAt,
+                    ExpiresAt = session.ExpiresAt,
                     IsCurrent =
                         session.IdUserSession ==
                         _currentUser.IdUserSession
