@@ -368,3 +368,5 @@ Migrations/
 
 #Env
 .env
+
+appsettings.Development.json
