@@ -25,29 +25,25 @@ namespace Infrastructure.Persistence.Configuration
                 {
                     IdTenantStatus = (short)TenantStatusEnum.ACTIVO,
                     Name = "Activo",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new TenantStatus
                 {
                     IdTenantStatus = (short)TenantStatusEnum.INACTIVO,
                     Name = "Inactivo",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new TenantStatus
                 {
                     IdTenantStatus = (short)TenantStatusEnum.HABILITACION_PENDIENTE,
                     Name = "Habilitación pendiente",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new TenantStatus
                 {
                     IdTenantStatus = (short)TenantStatusEnum.BLOQUEADO,
                     Name = "Bloqueado",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 }
             );
         }

@@ -14,6 +14,10 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasKey(ur => ur.IdUserRole);
 
+            builder.Property(ur => ur.Code)
+                .HasMaxLength(50)
+                .IsRequired();
+
             builder.Property(ur => ur.Name)
                 .HasMaxLength(50)
                 .IsRequired();
@@ -30,35 +34,35 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasData(
                 new UserRole
                 {
-                    IdUserRole = (short)UserRoleEnum.SUPERADMIN,
+                    IdUserRole = (short)UserRoleEnum.SUPER_ADMIN,
+                    Code = "SUPER_ADMIN",
                     Name = "Super Administrador",
                     Description = "Acceso completo a la plataforma y administración global de todos los consultorios.",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new UserRole
                 {
                     IdUserRole = (short)UserRoleEnum.OWNER,
+                    Code = "OWNER",
                     Name = "Propietario",
                     Description = "Acceso completo a la gestión de su consultorio y sus operaciones.",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new UserRole
                 {
-                    IdUserRole = (short)UserRoleEnum.DOCTOR,
-                    Name = "Doctor",
+                    IdUserRole = (short)UserRoleEnum.PROFESSIONAL,
+                    Code = "PROFESSIONAL",
+                    Name = "Profesional",
                     Description = "Acceso a las funcionalidades clínicas y gestión de la atención de pacientes.",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new UserRole
                 {
                     IdUserRole = (short)UserRoleEnum.ASSISTANT,
+                    Code = "ASSISTANT",
                     Name = "Asistente",
                     Description = "Acceso a las funcionalidades administrativas y operativas asignadas.",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 }
 );
         }

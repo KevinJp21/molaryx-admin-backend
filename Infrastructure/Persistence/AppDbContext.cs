@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Infrastructure.Persistence.Seeds.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
@@ -12,11 +13,15 @@ namespace Infrastructure.Persistence
         public DbSet<UserStatus> UserStatuses { get; set; } = null!;
         public DbSet<UserSession> UserSessions { get; set; } = null!;
         public DbSet<IdentificationType> IdentificationTypes { get; set; } = null!;
+        public DbSet<Module> Modules { get; set; } = null!;
+        public DbSet<Permission> Permissions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+            modelBuilder.SeedAuthorization();
         }
     }
 }

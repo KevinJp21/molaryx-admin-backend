@@ -8,6 +8,9 @@ namespace Domain.Entities
         [Column("id_user_role")]
         public short IdUserRole { get; set; }
 
+        [Column("code")]
+        public string Code { get; set; } = string.Empty;
+
         [Column("name")]
         public string Name { get; set; } = string.Empty;
 
@@ -15,5 +18,6 @@ namespace Domain.Entities
         public string? Description { get; set; }
 
         public ICollection<User> User { get; set; } = [];
+        public ICollection<RolePermission> RolePermission { get; set; } = [];
     }
 }

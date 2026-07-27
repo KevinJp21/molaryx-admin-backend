@@ -28,24 +28,21 @@ namespace Infrastructure.Persistence.Configuration
                     IdIdentificationType = (short)IdentificationTypeEnum.CC,
                     Code = "CC",
                     Name = "Cédula de ciudadanía",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new IdentificationType
                 {
                     IdIdentificationType = (short)IdentificationTypeEnum.CE,
                     Code = "CE",
                     Name = "Cédula de extranjería",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 },
                 new IdentificationType
                 {
                     IdIdentificationType = (short)IdentificationTypeEnum.TI,
                     Code = "TI",
                     Name = "Tarjeta de identidad",
-                    CreatedAt = SeedConstants.SeedDate,
-                    UpdatedAt = null
+                    CreatedAt = SeedConstants.SeedDate
                 }
             );
         }
