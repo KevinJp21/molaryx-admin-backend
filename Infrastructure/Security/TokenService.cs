@@ -16,6 +16,7 @@ namespace Infrastructure.Security
         public string GenerateToken(
             long idUser,
             short idUserRole,
+            long? idTenant,
             string email,
             long idUserSession,
             DateTime expiration)
@@ -38,6 +39,16 @@ namespace Infrastructure.Security
                     DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                     ClaimValueTypes.Integer64)
             };
+
+            if (idTenant.HasValue)
+            {
+                claims.Add(
+                    new Claim(
+                        AuthClaimTypes.IdTenant,
+                        idTenant.Value.ToString()
+                    )
+                );
+            }
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

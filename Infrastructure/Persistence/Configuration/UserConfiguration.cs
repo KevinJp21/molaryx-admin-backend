@@ -16,6 +16,8 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.IdUserRole).IsRequired();
 
+            builder.Property(u => u.IdTenant);
+
             builder.Property(u => u.Username).IsRequired();
 
             builder.Property(u => u.FirstName).IsRequired();
@@ -50,6 +52,11 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasOne(u => u.UserRole)
                 .WithMany(ur => ur.User)
                 .HasForeignKey(u => u.IdUserRole)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(u => u.Tenant)
+                .WithMany(t => t.User)
+                .HasForeignKey(u => u.IdTenant)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(u => u.IdentificationType)

@@ -16,6 +16,7 @@ namespace Infrastructure.Persistence.Repositories
             return await DbSet
                 .Include(u => u.UserRole)
                 .Include(u => u.UserStatus)
+                .Include(u => u.Tenant)
                 .FirstOrDefaultAsync(
                     u => u.IdUser == id,
                     cancellationToken

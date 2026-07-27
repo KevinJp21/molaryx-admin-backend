@@ -70,6 +70,31 @@ namespace Infrastructure.Context
             }
         }
 
+        private long? _cachedIdTenant;
+        public long? IdTenant
+        {
+            get
+            {
+                if (_cachedIdTenant.HasValue)
+                    return _cachedIdTenant;
+
+                if (!IsAuthenticated)
+                    return null;
+
+                var tenantClaim =
+                    User?.FindFirst(AuthClaimTypes.IdTenant)?.Value;
+
+                if (string.IsNullOrWhiteSpace(tenantClaim))
+                    return null;
+
+                if (!long.TryParse(tenantClaim, out var idTenant))
+                    return null;
+
+                _cachedIdTenant = idTenant;
+                return idTenant;
+            }
+        }
+
         private short? _cachedIdUserRole;
         public short? IdUserRole
         {

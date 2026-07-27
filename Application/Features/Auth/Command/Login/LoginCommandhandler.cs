@@ -27,6 +27,7 @@ namespace Application.Features.Auth.Command.Login
             var ( AuthToken, refreshToken ) = await _sessionService.CreateSessionAsync(
                 user.IdUser,
                 user.IdUserRole,
+                user.IdTenant,
                 user.Email,
                 cancellationToken
             );

@@ -24,7 +24,7 @@ namespace Infrastructure.Authorization
             if (authorizeResult.Forbidden)
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                context.Response.ContentType = "application/json ; charset=utf-8";
+                context.Response.ContentType = "application/json; charset=utf-8";
 
                 var response = new ApiResponse<object>
                 {

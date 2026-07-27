@@ -4,6 +4,7 @@ namespace Application.DTOs.Users
     {
         public long IdUser { get; set; }
         public UserRole Role { get; set; } = null!;
+        public long? IdTenant { get; set; }
         public UserStatus Status { get; set; } = null!;
         public string Username { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;

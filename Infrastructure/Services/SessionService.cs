@@ -33,6 +33,7 @@ namespace Infrastructure.Services
         public async Task<(string AuthToken, string RefreshToken)> CreateSessionAsync(
             long idUser,
             short idUserRole,
+            long? idTenant,
             string email,
             CancellationToken cancellationToken)
         {
@@ -72,6 +73,7 @@ namespace Infrastructure.Services
             var authToken = _tokenService.GenerateToken(
                 idUser,
                 idUserRole,
+                idTenant,
                 email,
                 session.IdUserSession,
                 currentDate.AddMinutes(15)
@@ -201,6 +203,7 @@ namespace Infrastructure.Services
                 var authToken = _tokenService.GenerateToken(
                     user.IdUser,
                     user.IdUserRole,
+                    user.IdTenant,
                     user.Email,
                     newSession.IdUserSession,
                     currentDate.AddMinutes(15)

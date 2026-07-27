@@ -12,6 +12,8 @@ namespace Domain.Entities
         public short IdUserStatus { get; set; }
         [Column("id_user_rol")]
         public short IdUserRole { get; set; }
+        [Column("id_tenant")]
+        public long? IdTenant { get; set; }
         [Column("username")]
         public string Username { get; set; } = string.Empty;
         [Column("first_name")]
@@ -38,6 +40,7 @@ namespace Domain.Entities
         // Navigation properties
         public UserStatus UserStatus { get; set; } = null!;
         public UserRole UserRole { get; set; } = null!;
+        public Tenant Tenant { get; set; } = null!;
         public IdentificationType IdentificationType { get; set; } = null!;
         public ICollection<UserSession> UserSession{ get; set; } = [];
     }

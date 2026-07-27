@@ -22,5 +22,6 @@ namespace Domain.Entities
 
         // Navigation properties
         public TenantStatus TenantStatus { get; set; } = null!;
+        public ICollection<User> User { get; set; } = null!;
     }
 }

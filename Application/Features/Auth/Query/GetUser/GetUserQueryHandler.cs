@@ -23,6 +23,7 @@ namespace Application.Features.Auth.Query.GetUser
                     IdUserRole = user.UserRole.IdUserRole,
                     Name = user.UserRole.Name
                 },
+                IdTenant = user.IdTenant,
                 Status = new UserStatus
                 {
                     IdUserStatus = user.UserStatus.IdUserStatus,

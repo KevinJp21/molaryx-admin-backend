@@ -2,7 +2,7 @@ namespace Domain.Contracts.IServices
 {
     public interface ISessionService
     {
-        Task<(string AuthToken, string RefreshToken)> CreateSessionAsync(long idUser, short idUserRole, string email, CancellationToken cancellationToken);
+        Task<(string AuthToken, string RefreshToken)> CreateSessionAsync(long idUser, short idUserRole, long? idTenant, string email, CancellationToken cancellationToken);
 
         Task<(string AuthToken, string RefreshToken)> RefreshSessionAsync(
             string refreshToken,
