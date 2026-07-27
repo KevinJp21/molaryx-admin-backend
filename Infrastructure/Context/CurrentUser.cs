@@ -70,6 +70,31 @@ namespace Infrastructure.Context
             }
         }
 
+        private short? _cachedIdUserRole;
+        public short? IdUserRole
+        {
+            get
+            {
+                if (_cachedIdUserRole.HasValue)
+                    return _cachedIdUserRole;
+
+                if (!IsAuthenticated)
+                    return null;
+
+                var roleClaim =
+                    User?.FindFirst(ClaimTypes.Role)?.Value;
+
+                if (string.IsNullOrWhiteSpace(roleClaim))
+                    return null;
+
+                if (!short.TryParse(roleClaim, out var idUserRole))
+                    return null;
+
+                _cachedIdUserRole = idUserRole;
+                return idUserRole;
+            }
+        }
+
         public string? Email =>
             User?.FindFirst(ClaimTypes.Email)?.Value;
 

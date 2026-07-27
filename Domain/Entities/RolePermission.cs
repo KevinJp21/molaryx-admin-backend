@@ -1,6 +1,8 @@
+using Domain.Common;
+
 namespace Domain.Entities
 {
-    public class RolePermission
+    public class RolePermission : BaseEntity
     {
         public short IdUserRole { get; set; }
 

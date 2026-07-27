@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
 using Npgsql;
 using Domain.Contracts.IRepositories;
-using FtfApiClient.Infrastructure.Persistence.Repositories;
 using Infrastructure.Persistence.Repositories;
 using Domain.Contracts.IServices;
 using Infrastructure.Security;
@@ -80,5 +79,6 @@ public static class ServiceRegistration
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IHasherService, HasherService>();
         services.AddScoped<ISessionService, SessionService>();
+        services.AddScoped<IPermissionService, PermissionService>();
     }
 }

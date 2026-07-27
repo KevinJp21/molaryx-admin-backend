@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Enums;
+using Infrastructure.Constants;
 
 namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
 {
@@ -8,19 +9,23 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
         public static RolePermission[] Data => [
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_CREATE
+                IdPermission = (short)PermissionEnum.USERS_CREATE,
+                CreatedAt = SeedConstants.SeedDate
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_READ
+                IdPermission = (short)PermissionEnum.USERS_READ,
+                CreatedAt = SeedConstants.SeedDate
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_UPDATE
+                IdPermission = (short)PermissionEnum.USERS_UPDATE,
+                CreatedAt = SeedConstants.SeedDate
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_DELETE
+                IdPermission = (short)PermissionEnum.USERS_DELETE,
+                CreatedAt = SeedConstants.SeedDate
             },
         ];
     }

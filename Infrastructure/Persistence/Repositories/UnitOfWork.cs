@@ -1,8 +1,7 @@
 ﻿using Domain.Contracts.IRepositories;
-using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace FtfApiClient.Infrastructure.Persistence.Repositories
+namespace Infrastructure.Persistence.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {

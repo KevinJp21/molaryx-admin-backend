@@ -6,10 +6,11 @@ using Presentation.Handlers;
 using Presentation.Behaviors;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
-using Domain.Contracts.IServices;
 using Microsoft.AspNetCore.HttpOverrides;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -57,6 +58,9 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApiBehaviorConfiguration();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, PermissionAuthorizationMiddlewareResultHandler>();
 
 var app = builder.Build();
 
