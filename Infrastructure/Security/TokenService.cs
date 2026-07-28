@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Application.Common;
 using Domain.Contracts.IServices;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 

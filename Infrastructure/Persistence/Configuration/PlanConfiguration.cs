@@ -42,7 +42,7 @@ namespace Infrastructure.Persistence.Configuration
                     Code = PlanCodes.BASIC,
                     Name = "Basic",
                     Description = "Plan básico para consultorios pequeños.",
-                    Price = 0,
+                    Price = 79900,
                     MaxProfessionals = 1,
                     MaxAssistants = 1,
                     MaxPatients = 500,

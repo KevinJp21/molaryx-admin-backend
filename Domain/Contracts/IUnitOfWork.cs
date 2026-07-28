@@ -1,4 +1,4 @@
-namespace Domain.Contracts.IRepositories
+namespace Domain.Contracts
 {
     public interface IUnitOfWork : IAsyncDisposable
     {

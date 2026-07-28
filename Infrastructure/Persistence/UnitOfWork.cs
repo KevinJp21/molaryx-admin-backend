@@ -1,7 +1,7 @@
-﻿using Domain.Contracts.IRepositories;
+﻿using Domain.Contracts;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Infrastructure.Persistence.Repositories
+namespace Infrastructure.Persistence
 {
     public class UnitOfWork : IUnitOfWork
     {

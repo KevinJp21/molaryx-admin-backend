@@ -8,7 +8,7 @@ using Application.Features.Auth.Command.LogoutAll;
 using Application.Features.Auth.Command.RefreshToken;
 using Application.Features.Auth.Query.GetSessions;
 using Application.Features.Auth.Query.GetUser;
-using Domain.Constants;
+using Application.Features.RegisterTenant.Command;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
@@ -24,7 +24,7 @@ namespace Presentation.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [EndpointDescription( "Autentica al usuario y crea una nueva sesión, generando un access token y un refresh token." )]
+        [EndpointDescription("Autentica al usuario y crea una nueva sesión, generando un access token y un refresh token.")]
         public async Task<ActionResult<ApiResponse<LoginResponseDto>>> Login([FromBody] LoginCommand body, CancellationToken cancellationToken)
         {
             return Ok(
@@ -35,8 +35,21 @@ namespace Presentation.Controllers
             );
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [EndpointDescription("Registra un nuevo usuario propietario y crea el consultorio asociado junto con su suscripción seleccionada. El registro queda pendiente de aprobación administrativa antes de que el usuario pueda acceder al sistema.")]
+        public async Task<ActionResult<ApiResponse<bool>>> Register([FromBody] RegisterTenantCommand body, CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Usuario registrado correctamente. Su cuenta está pendiente de aprobación.",
+                    await _mediator.Send(body, cancellationToken)
+                )
+            );
+        }
+
         [HttpGet]
-        [EndpointDescription( "Obtiene la información del usuario actualmente autenticado a partir de su sesión activa." )]
+        [EndpointDescription("Obtiene la información del usuario actualmente autenticado a partir de su sesión activa." )]
         public async Task<ActionResult<ApiResponse<UserDto>>> GetUser(CancellationToken cancellationToken)
         {
             return Ok(
@@ -46,7 +59,6 @@ namespace Presentation.Controllers
                 )
             );
         }
-
 
         /*
             Ejemplo de uso politicas de permisos

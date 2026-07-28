@@ -35,7 +35,7 @@ namespace Domain.Entities
         // Navigation properties
         public TenantType TenantType { get; set; } = null!;
         public TenantStatus TenantStatus { get; set; } = null!;
-
+        public IdentificationType IdentificationType { get; set; } = null!;
         public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
         public ICollection<User> Users { get; set; } = [];
     }

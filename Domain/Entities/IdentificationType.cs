@@ -13,6 +13,7 @@ namespace Domain.Entities
         public string Name { get; set; } = string.Empty;
 
         // Navigation
-        public ICollection<User> Users{ get; set; } = [];
+        public ICollection<Tenant> Tenants { get; set; } = [];
+        public ICollection<User> Users { get; set; } = [];
     }
 }

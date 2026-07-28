@@ -29,8 +29,8 @@ namespace Domain.Entities
         [Column("max_patients")]
         public int? MaxPatients { get; set; }
 
-        [Column("started_at")]
-        public DateTime? StartedAt { get; set; }
+        [Column("starts_at")]
+        public DateTime? StartsAt { get; set; }
 
         [Column("ends_at")]
         public DateTime? EndsAt  { get; set; }

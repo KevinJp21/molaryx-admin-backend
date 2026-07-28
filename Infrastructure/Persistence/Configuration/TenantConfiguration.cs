@@ -44,6 +44,11 @@ namespace Infrastructure.Persistence.Configuration
                 .HasForeignKey(t => t.IdTenantStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(t => t.IdentificationType)
+                .WithMany(it => it.Tenants)
+                .HasForeignKey(t => t.IdIdentificationType)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasIndex(t => t.Email).IsUnique();
         }
     }

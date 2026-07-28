@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
 using Npgsql;
-using Domain.Contracts.IRepositories;
 using Infrastructure.Persistence.Repositories;
 using Domain.Contracts.IServices;
 using Infrastructure.Security;
 using Infrastructure.Services;
+using Domain.Contracts;
 
 namespace Infrastructure.DependencyInjection;
 
@@ -80,5 +80,8 @@ public static class ServiceRegistration
         services.AddScoped<IHasherService, HasherService>();
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITenantService, TenantService>();
+        services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
     }
 }

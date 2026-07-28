@@ -27,7 +27,7 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(ts => ts.MaxPatients);
 
-            builder.Property(ts => ts.StartedAt);
+            builder.Property(ts => ts.StartsAt);
 
             builder.Property(ts => ts.EndsAt);
 

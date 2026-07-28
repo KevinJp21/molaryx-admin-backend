@@ -21,13 +21,6 @@ namespace Infrastructure.Services
 
         public async Task<TenantSubscription> CreateSubscriptionAsync(long idTenant, short idPlan, CancellationToken cancellationToken)
         {
-            var tenant = await _tenantRepository.GetByIdAsync(idTenant, cancellationToken);
-
-            if (tenant is null)
-            {
-                throw new InvalidOperationException("El consultorio no existe");
-            }
-
             var plan = await _planRepository.GetByIdAsync(idPlan, cancellationToken);
 
             if (plan is null || !plan.IsActive)
@@ -51,14 +44,12 @@ namespace Infrastructure.Services
                 MaxProfessionals = plan.MaxProfessionals,
                 MaxAssistants = plan.MaxAssistants,
                 MaxPatients = plan.MaxPatients,
-                StartedAt = null,
+                StartsAt = null,
                 EndsAt = null,
                 CreatedAt = SeedConstants.SeedDate
             };
 
             await _tenantSubscriptionRepository.AddAsync(subscription, cancellationToken);
-
-            await _tenantSubscriptionRepository.SaveChangesAsync(cancellationToken);
 
             return subscription;
         }
@@ -123,13 +114,11 @@ namespace Infrastructure.Services
                 MaxAssistants = maxAssistants,
                 MaxPatients = maxPatients,
 
-                StartedAt = null,
+                StartsAt = null,
                 EndsAt = null
             };
 
             await _tenantSubscriptionRepository.AddAsync( subscription, cancellationToken );
-
-            await _tenantSubscriptionRepository.SaveChangesAsync( cancellationToken );
 
             return subscription;
         }
