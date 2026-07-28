@@ -14,9 +14,9 @@ namespace Infrastructure.Persistence.Repositories
         public override async Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             return await DbSet
-                .Include(u => u.UserRole)
-                .Include(u => u.UserStatus)
-                .Include(u => u.Tenant)
+                .Include(u => u.UserRoles)
+                .Include(u => u.UserStatuses)
+                .Include(u => u.Tenants)
                 .FirstOrDefaultAsync(
                     u => u.IdUser == id,
                     cancellationToken

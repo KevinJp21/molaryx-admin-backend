@@ -8,8 +8,8 @@ namespace Domain.Entities
 
         public short IdPermission { get; set; }
 
-        public UserRole UserRole { get; set; } = null!;
+        public UserRole UserRoles { get; set; } = null!;
 
-        public Permission Permission { get; set; } = null!;
+        public Permission Permissions { get; set; } = null!;
     }
 }

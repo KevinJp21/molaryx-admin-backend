@@ -12,6 +12,10 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasKey(t => t.IdTenant);
 
+            builder.Property(t => t.IdTenantType).IsRequired();
+
+            builder.Property(t => t.IdTenantStatus).IsRequired();
+
             builder.Property(t => t.ConsultoryName).IsRequired().HasMaxLength(255);
 
             builder.Property(t => t.Email).IsRequired();
@@ -20,16 +24,19 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(t => t.Address).IsRequired();
 
-            builder.Property(t => t.IsFounder);
-
             builder.Property(t => t.CreatedAt).IsRequired();
 
             builder.Property(t => t.UpdatedAt);
 
             // Relaciones
 
-            builder.HasOne(t => t.TenantStatus)
-                .WithMany(s => s.Tenant)
+            builder.HasOne(t => t.TenantTypes)
+                .WithMany(tt => tt.Tenants)
+                .HasForeignKey(t => t.IdTenantType)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(t => t.TenantStatuses)
+                .WithMany(s => s.Tenants)
                 .HasForeignKey(t => t.IdTenantStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 

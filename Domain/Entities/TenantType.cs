@@ -3,13 +3,14 @@ using Domain.Common;
 
 namespace Domain.Entities
 {
-    public class Module : BaseEntity
+    public class TenantType : BaseEntity
     {
-        [Column("id_module")]
-        public short IdModule { get; set; }
+        [Column("id_tenant_type")]
+        public short IdTenantType { get; set; }
+
         [Column("code")]
         public string Code { get; set; } = string.Empty;
 
-        public ICollection<Permission> Permissions { get; set; } = [];
+        public ICollection<Tenant> Tenants { get; set; } = [];
     }
 }

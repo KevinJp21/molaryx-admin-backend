@@ -16,7 +16,7 @@ namespace Infrastructure.Persistence.Repositories
                 .AnyAsync(
                     rp =>
                         rp.IdUserRole == IdUserRole &&
-                        rp.Permission.Code == permissionCode,
+                        rp.Permissions.Code == permissionCode,
                     cancellationToken
                 );
         }

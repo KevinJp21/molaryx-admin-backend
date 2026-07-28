@@ -21,7 +21,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(p => p.UpdatedAt);
 
             builder.HasOne(p => p.Module)
-                .WithMany(m => m.Permission)
+                .WithMany(m => m.Permissions)
                 .HasForeignKey(p => p.IdModule)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasIndex(p => p.Code).IsUnique();

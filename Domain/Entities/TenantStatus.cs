@@ -11,6 +11,6 @@ namespace Domain.Entities
         public string Name { get; set; } = string.Empty;
 
         // Navigation
-        public ICollection<Tenant> Tenant { get; set; } = [];
+        public ICollection<Tenant> Tenants { get; set; } = [];
     }
 }

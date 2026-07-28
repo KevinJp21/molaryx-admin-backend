@@ -44,23 +44,23 @@ namespace Infrastructure.Persistence.Configuration
 
             // Relaciones
 
-            builder.HasOne(u => u.UserStatus)
-                .WithMany(s => s.User)
+            builder.HasOne(u => u.UserStatuses)
+                .WithMany(s => s.Users)
                 .HasForeignKey(u => u.IdUserStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(u => u.UserRole)
-                .WithMany(ur => ur.User)
+            builder.HasOne(u => u.UserRoles)
+                .WithMany(ur => ur.Users)
                 .HasForeignKey(u => u.IdUserRole)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(u => u.Tenant)
-                .WithMany(t => t.User)
+            builder.HasOne(u => u.Tenants)
+                .WithMany(t => t.Users)
                 .HasForeignKey(u => u.IdTenant)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(u => u.IdentificationType)
-                .WithMany(i => i.User)
+            builder.HasOne(u => u.IdentificationTypes)
+                .WithMany(i => i.Users)
                 .HasForeignKey(u => u.IdIdentificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 

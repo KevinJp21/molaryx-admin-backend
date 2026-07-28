@@ -23,25 +23,25 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasData(
                 new UserStatus
                 {
-                    IdUserStatus = (short)UserStatusEnum.ACTIVO,
+                    IdUserStatus = (short)UserStatusEnum.ACTIVE,
                     Name = "Activo",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new UserStatus
                 {
-                    IdUserStatus = (short)UserStatusEnum.INACTIVO,
+                    IdUserStatus = (short)UserStatusEnum.INACTIVE,
                     Name = "Inactivo",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new UserStatus
                 {
-                    IdUserStatus = (short)UserStatusEnum.HABILITACION_PENDIENTE,
+                    IdUserStatus = (short)UserStatusEnum.PENDING_APPROVAL,
                     Name = "Habilitación pendiente",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new UserStatus
                 {
-                    IdUserStatus = (short)UserStatusEnum.BLOQUEADO,
+                    IdUserStatus = (short)UserStatusEnum.BLOCKED,
                     Name = "Bloqueado",
                     CreatedAt = SeedConstants.SeedDate
                 }

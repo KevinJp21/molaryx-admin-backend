@@ -23,26 +23,32 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasData(
                 new TenantStatus
                 {
-                    IdTenantStatus = (short)TenantStatusEnum.ACTIVO,
+                    IdTenantStatus = (short)TenantStatusEnum.ACTIVE,
                     Name = "Activo",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new TenantStatus
                 {
-                    IdTenantStatus = (short)TenantStatusEnum.INACTIVO,
+                    IdTenantStatus = (short)TenantStatusEnum.INACTIVE,
                     Name = "Inactivo",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new TenantStatus
                 {
-                    IdTenantStatus = (short)TenantStatusEnum.HABILITACION_PENDIENTE,
+                    IdTenantStatus = (short)TenantStatusEnum.PENDING_APPROVAL,
                     Name = "Habilitación pendiente",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new TenantStatus
                 {
-                    IdTenantStatus = (short)TenantStatusEnum.BLOQUEADO,
+                    IdTenantStatus = (short)TenantStatusEnum.BLOCKED,
                     Name = "Bloqueado",
+                    CreatedAt = SeedConstants.SeedDate
+                },
+                new TenantStatus
+                {
+                    IdTenantStatus = (short)TenantStatusEnum.REJECTED,
+                    Name = "Rechazado",
                     CreatedAt = SeedConstants.SeedDate
                 }
             );

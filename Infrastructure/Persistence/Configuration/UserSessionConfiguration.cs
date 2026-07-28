@@ -32,8 +32,8 @@ namespace Infrastructure.Persistence.Configuration
 
             // Relaciones
 
-            builder.HasOne(s => s.User)
-                .WithMany(u => u.UserSession)
+            builder.HasOne(s => s.Users)
+                .WithMany(u => u.UserSessions)
                 .HasForeignKey(s => s.IdUser)
                 .OnDelete(DeleteBehavior.Restrict);
 

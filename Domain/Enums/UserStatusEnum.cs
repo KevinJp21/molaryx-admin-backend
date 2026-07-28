@@ -2,9 +2,9 @@ namespace Domain.Enums
 {
     public enum UserStatusEnum : short
     {
-        ACTIVO = 1,
-        INACTIVO = 2,
-        HABILITACION_PENDIENTE = 3,
-        BLOQUEADO = 4
+         ACTIVE = 1,
+        INACTIVE = 2,
+        PENDING_APPROVAL = 3,
+        BLOCKED = 4
     }
 }

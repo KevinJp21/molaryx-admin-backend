@@ -3,10 +3,10 @@ using Domain.Common;
 
 namespace Domain.Entities
 {
-    public class UserRole : BaseEntity
+    public class TenantSubscriptionStatus : BaseEntity
     {
-        [Column("id_user_role")]
-        public short IdUserRole { get; set; }
+        [Column("id_tenant_subscription_status")]
+        public short IdTenantSubscriptionStatus { get; set; }
 
         [Column("code")]
         public string Code { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ namespace Domain.Entities
         [Column("description")]
         public string? Description { get; set; }
 
-        public ICollection<User> Users { get; set; } = [];
-        public ICollection<RolePermission> RolePermissions { get; set; } = [];
+        // Navigation properties
+        public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
     }
 }

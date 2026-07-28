@@ -13,6 +13,6 @@ namespace Domain.Entities
         public string Code { get; set; } = string.Empty;
 
         public Module Module { get; set; } = null!;
-        public ICollection<RolePermission> RolePermission { get; set; } = [];
+        public ICollection<RolePermission> RolePermissions { get; set; } = [];
     }
 }

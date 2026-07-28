@@ -11,6 +11,6 @@ namespace Domain.Entities
         public string Name { get; set; } = string.Empty;
 
         // Navigation
-        public ICollection<User> User{ get; set; } = [];
+        public ICollection<User> Users{ get; set; } = [];
     }
 }

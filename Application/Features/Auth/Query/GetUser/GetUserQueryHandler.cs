@@ -20,14 +20,14 @@ namespace Application.Features.Auth.Query.GetUser
                 IdUser = user.IdUser,
                 Role = new UserRole
                 {
-                    IdUserRole = user.UserRole.IdUserRole,
-                    Name = user.UserRole.Name
+                    IdUserRole = user.UserRoles.IdUserRole,
+                    Name = user.UserRoles.Name
                 },
                 IdTenant = user.IdTenant,
                 Status = new UserStatus
                 {
-                    IdUserStatus = user.UserStatus.IdUserStatus,
-                    Name = user.UserStatus.Name
+                    IdUserStatus = user.UserStatuses.IdUserStatus,
+                    Name = user.UserStatuses.Name
                 },
                 Username = user.Username,
                 Name = $"{user.FirstName} {user.FirstSurname}",
