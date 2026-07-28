@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,32 +27,32 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(ts => ts.MaxPatients);
 
-            builder.Property(ts => ts.StartedAt).IsRequired();
+            builder.Property(ts => ts.StartedAt);
 
-            builder.Property(ts => ts.ExpiresAt);
+            builder.Property(ts => ts.EndsAt);
 
             builder.Property(ts => ts.CreatedAt).IsRequired();
 
             builder.Property(ts => ts.UpdatedAt);
 
-            builder.HasOne(ts => ts.TenantSubscriptionStatuses)
+            builder.HasOne(ts => ts.TenantSubscriptionStatus)
                 .WithMany(s => s.TenantSubscriptions)
                 .HasForeignKey(ts => ts.IdTenantSubscriptionStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(ts => ts.Tenants)
+            builder.HasOne(ts => ts.Tenant)
                 .WithMany(t => t.TenantSubscriptions)
                 .HasForeignKey(ts => ts.IdTenant)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(ts => ts.Plans)
+            builder.HasOne(ts => ts.Plan)
                 .WithMany(p => p.TenantSubscriptions)
                 .HasForeignKey(ts => ts.IdPlan)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(ts => ts.IdTenant);
-
-            builder.HasIndex(ts => ts.IdPlan);
+            builder.HasIndex(ts => ts.IdTenant)
+                .IsUnique()
+                .HasFilter($"id_tenant_subscription_status = {(short)TenantSubscriptionStatusEnum.ACTIVE}");
         }
     }
 }

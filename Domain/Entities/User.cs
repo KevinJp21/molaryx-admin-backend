@@ -37,10 +37,10 @@ namespace Domain.Entities
         public byte[] Salt { get; set; } = null!;
 
         // Navigation properties
-        public UserStatus UserStatuses { get; set; } = null!;
-        public UserRole UserRoles { get; set; } = null!;
-        public Tenant Tenants { get; set; } = null!;
-        public IdentificationType IdentificationTypes { get; set; } = null!;
+        public UserStatus UserStatus { get; set; } = null!;
+        public UserRole UserRole { get; set; } = null!;
+        public Tenant Tenant { get; set; } = null!;
+        public IdentificationType IdentificationType { get; set; } = null!;
         public ICollection<UserSession> UserSessions { get; set; } = [];
     }
 }

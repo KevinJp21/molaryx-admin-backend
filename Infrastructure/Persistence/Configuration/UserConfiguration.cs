@@ -38,28 +38,28 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.Salt).HasColumnType("bytea").IsRequired();
 
-            builder.Property(t => t.CreatedAt).IsRequired();
+            builder.Property(u => u.CreatedAt).IsRequired();
 
-            builder.Property(t => t.UpdatedAt);
+            builder.Property(u => u.UpdatedAt);
 
             // Relaciones
 
-            builder.HasOne(u => u.UserStatuses)
+            builder.HasOne(u => u.UserStatus)
                 .WithMany(s => s.Users)
                 .HasForeignKey(u => u.IdUserStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(u => u.UserRoles)
+            builder.HasOne(u => u.UserRole)
                 .WithMany(ur => ur.Users)
                 .HasForeignKey(u => u.IdUserRole)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(u => u.Tenants)
+            builder.HasOne(u => u.Tenant)
                 .WithMany(t => t.Users)
                 .HasForeignKey(u => u.IdTenant)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(u => u.IdentificationTypes)
+            builder.HasOne(u => u.IdentificationType)
                 .WithMany(i => i.Users)
                 .HasForeignKey(u => u.IdIdentificationType)
                 .OnDelete(DeleteBehavior.Restrict);

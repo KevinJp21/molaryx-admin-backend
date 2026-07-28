@@ -55,6 +55,14 @@ namespace Infrastructure.Persistence.Configuration
                 },
                 new TenantSubscriptionStatus
                 {
+                    IdTenantSubscriptionStatus = (short)TenantSubscriptionStatusEnum.SCHEDULED,
+                    Code = TenantSubscriptionStatusCode.SCHEDULED,
+                    Name = "Programada",
+                    Description = "La suscripción ha sido programada para comenzar en una fecha futura.",
+                    CreatedAt = SeedConstants.SeedDate
+                },
+                new TenantSubscriptionStatus
+                {
                     IdTenantSubscriptionStatus = (short)TenantSubscriptionStatusEnum.CANCELLED,
                     Code = TenantSubscriptionStatusCode.CANCELLED,
                     Name = "Cancelada",

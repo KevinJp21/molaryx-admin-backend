@@ -4,8 +4,9 @@ namespace Domain.Enums
     {
         PENDING = 1,
         ACTIVE = 2,
-        CANCELLED = 3,
-        EXPIRED = 4,
-        SUSPENDED = 5
+        SCHEDULED = 3,
+        CANCELLED = 4,
+        EXPIRED = 5,
+        SUSPENDED = 6
     }
 }

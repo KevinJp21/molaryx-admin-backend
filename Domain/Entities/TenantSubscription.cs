@@ -30,14 +30,14 @@ namespace Domain.Entities
         public int? MaxPatients { get; set; }
 
         [Column("started_at")]
-        public DateTime StartedAt { get; set; }
+        public DateTime? StartedAt { get; set; }
 
-        [Column("expires_at")]
-        public DateTime? ExpiresAt { get; set; }
+        [Column("ends_at")]
+        public DateTime? EndsAt  { get; set; }
 
         // Navigation properties
-        public Tenant Tenants { get; set; } = null!;
-        public Plan Plans { get; set; } = null!;
-        public TenantSubscriptionStatus TenantSubscriptionStatuses { get; set; } = null!;
+        public Tenant Tenant { get; set; } = null!;
+        public Plan Plan { get; set; } = null!;
+        public TenantSubscriptionStatus TenantSubscriptionStatus { get; set; } = null!;
     }
 }

@@ -20,12 +20,12 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(t => t.UpdatedAt);
 
-            builder.HasOne(rp => rp.UserRoles)
+            builder.HasOne(rp => rp.UserRole)
                 .WithMany(r => r.RolePermissions)
                 .HasForeignKey(rp => rp.IdUserRole)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(rp => rp.Permissions)
+            builder.HasOne(rp => rp.Permission)
                 .WithMany(p => p.RolePermissions)
                 .HasForeignKey(rp => rp.IdPermission)
                 .OnDelete(DeleteBehavior.Restrict);

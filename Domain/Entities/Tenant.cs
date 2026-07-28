@@ -27,8 +27,8 @@ namespace Domain.Entities
         public string Address { get; set; } = string.Empty;
 
         // Navigation properties
-        public TenantType TenantTypes { get; set; } = null!;
-        public TenantStatus TenantStatuses { get; set; } = null!;
+        public TenantType TenantType { get; set; } = null!;
+        public TenantStatus TenantStatus { get; set; } = null!;
 
         public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
         public ICollection<User> Users { get; set; } = [];

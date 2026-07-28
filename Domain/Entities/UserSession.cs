@@ -30,6 +30,6 @@ namespace Domain.Entities
         public DateTime? LastLogin { get; set; }
 
         // Navigation
-        public User Users { get; set; } = null!;
+        public User User { get; set; } = null!;
     }
 }
