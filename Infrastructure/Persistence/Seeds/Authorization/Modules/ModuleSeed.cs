@@ -12,19 +12,19 @@ public static class ModuleSeed
         new Module
         {
             IdModule = (short)ModuleEnum.TENANTS,
-            Code = ModuleCodes.Tenants,
+            Code = ModuleCodes.TENANTS,
             CreatedAt = SeedConstants.SeedDate
         },
         new Module
         {
             IdModule = (short)ModuleEnum.USERS,
-            Code = ModuleCodes.Users,
+            Code = ModuleCodes.USERS,
             CreatedAt = SeedConstants.SeedDate
         },
         new Module
         {
             IdModule = (short)ModuleEnum.PATIENTS,
-            Code = ModuleCodes.Patients,
+            Code = ModuleCodes.PATIENTS,
             CreatedAt = SeedConstants.SeedDate
         }
     ];

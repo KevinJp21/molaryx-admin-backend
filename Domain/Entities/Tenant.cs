@@ -13,6 +13,12 @@ namespace Domain.Entities
 
         [Column("id_tenant_status")]
         public short IdTenantStatus { get; set; }
+        
+        [Column("id_identification_type")]
+        public short? IdIdentificationType { get; set; }
+
+        [Column("identification_number")]
+        public string? IdentificationNumber { get; set; }
 
         [Column("consultory_name")]
         public string ConsultoryName { get; set; } = string.Empty;

@@ -3,12 +3,12 @@ namespace Domain.Constants
     public static class ModuleCodes
     {
         // Plataforma - SUPERADMIN
-        public const string Tenants = "TENANTS";
+        public const string TENANTS = "TENANTS";
 
         // Administración del Tenant - OWNER
-        public const string Users = "USERS";
+        public const string USERS = "USERS";
 
         // Operación del consultorio
-        public const string Patients = "PATIENTS";
+        public const string PATIENTS = "PATIENTS";
     }
 }

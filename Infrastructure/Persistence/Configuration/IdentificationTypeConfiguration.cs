@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Constants;
@@ -26,22 +27,29 @@ namespace Infrastructure.Persistence.Configuration
                 new IdentificationType
                 {
                     IdIdentificationType = (short)IdentificationTypeEnum.CC,
-                    Code = "CC",
+                    Code = IdentificationTypeCode.CC,
                     Name = "Cédula de ciudadanía",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new IdentificationType
                 {
                     IdIdentificationType = (short)IdentificationTypeEnum.CE,
-                    Code = "CE",
+                    Code = IdentificationTypeCode.CE,
                     Name = "Cédula de extranjería",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new IdentificationType
                 {
                     IdIdentificationType = (short)IdentificationTypeEnum.TI,
-                    Code = "TI",
+                    Code = IdentificationTypeCode.TI,
                     Name = "Tarjeta de identidad",
+                    CreatedAt = SeedConstants.SeedDate
+                },
+                new IdentificationType
+                {
+                    IdIdentificationType = (short)IdentificationTypeEnum.NIT,
+                    Code = IdentificationTypeCode.NIT,
+                    Name = "Número de Identificación Tributaria",
                     CreatedAt = SeedConstants.SeedDate
                 }
             );

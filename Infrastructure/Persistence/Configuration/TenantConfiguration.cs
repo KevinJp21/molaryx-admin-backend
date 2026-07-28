@@ -16,6 +16,10 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(t => t.IdTenantStatus).IsRequired();
 
+            builder.Property(t => t.IdIdentificationType);
+
+            builder.Property(t => t.IdentificationNumber).HasMaxLength(15);
+
             builder.Property(t => t.ConsultoryName).IsRequired().HasMaxLength(255);
 
             builder.Property(t => t.Email).IsRequired();

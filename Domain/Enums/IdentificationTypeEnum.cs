@@ -4,6 +4,7 @@ namespace Domain.Enums
     {
         CC = 1,
         CE = 2,
-        TI = 3
+        TI = 3,
+        NIT = 4,
     }
 }
