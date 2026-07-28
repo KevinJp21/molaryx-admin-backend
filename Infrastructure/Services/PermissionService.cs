@@ -1,11 +1,12 @@
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 
 namespace Infrastructure.Services
 {
-    public class PermissionService(IRoleHasPermissionRepository roleHasPermissionRepository) : IPermissionService
+    public class PermissionService(IUnitOfWork unitOfWork) : IPermissionService
     {
-        private readonly IRoleHasPermissionRepository _roleHasPermissionRepository = roleHasPermissionRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<bool> RoleHasPermissionAsync(
             short idUserRole,
@@ -13,7 +14,7 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken = default
         )
         {
-            return await _roleHasPermissionRepository.RoleHasPermissionAsync(
+            return await _unitOfWork.RoleHasPermissionRepository.RoleHasPermissionAsync(
                 idUserRole,
                 permissionCode,
                 cancellationToken

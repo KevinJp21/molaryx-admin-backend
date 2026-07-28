@@ -1,4 +1,5 @@
 using Domain.Constants;
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -8,27 +9,21 @@ using Infrastructure.Constants;
 namespace Infrastructure.Services
 {
     public class TenantSubscriptionService(
-        ITenantSubscriptionRepository tenantSubscriptionRepository,
-        ITenantRepository tenantRepository,
-        IPlanRepository planRepository
+        IUnitOfWork unitOfWork
     ) : ITenantSubscriptionService
     {
-        private readonly ITenantSubscriptionRepository _tenantSubscriptionRepository = tenantSubscriptionRepository;
-
-        private readonly ITenantRepository _tenantRepository = tenantRepository;
-
-        private readonly IPlanRepository _planRepository = planRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<TenantSubscription> CreateSubscriptionAsync(long idTenant, short idPlan, CancellationToken cancellationToken)
         {
-            var plan = await _planRepository.GetByIdAsync(idPlan, cancellationToken);
+            var plan = await _unitOfWork.PlanRepository.GetByIdAsync(idPlan, cancellationToken);
 
             if (plan is null || !plan.IsActive)
             {
                 throw new InvalidOperationException("El plan seleccionado no está disponible.");
             }
 
-            var activeSubscription = await _tenantSubscriptionRepository.GetActiveSubscriptionAsync(idTenant, cancellationToken);
+            var activeSubscription = await _unitOfWork.TenantSubscriptionRepository.GetActiveSubscriptionAsync(idTenant, cancellationToken);
 
             if (activeSubscription is not null)
             {
@@ -49,7 +44,7 @@ namespace Infrastructure.Services
                 CreatedAt = SeedConstants.SeedDate
             };
 
-            await _tenantSubscriptionRepository.AddAsync(subscription, cancellationToken);
+            await _unitOfWork.TenantSubscriptionRepository.AddAsync(subscription, cancellationToken);
 
             return subscription;
         }
@@ -63,14 +58,14 @@ namespace Infrastructure.Services
             int? maxPatients,
             CancellationToken cancellationToken)
         {
-            var tenant = await _tenantRepository.GetByIdAsync(idTenant, cancellationToken);
+            var tenant = await _unitOfWork.TenantRepository.GetByIdAsync(idTenant, cancellationToken);
 
             if (tenant is null)
             {
                 throw new InvalidOperationException("El consultorio no existe.");
             }
 
-            var plan = await _planRepository.GetByIdAsync(idPlan);
+            var plan = await _unitOfWork.PlanRepository.GetByIdAsync(idPlan);
 
             if (plan is null || !plan.IsActive)
             {
@@ -84,7 +79,7 @@ namespace Infrastructure.Services
                 );
             }
 
-            var activeSubscription = await _tenantSubscriptionRepository.GetActiveSubscriptionAsync(
+            var activeSubscription = await _unitOfWork.TenantSubscriptionRepository.GetActiveSubscriptionAsync(
                 idTenant,
                 cancellationToken
             );
@@ -118,7 +113,7 @@ namespace Infrastructure.Services
                 EndsAt = null
             };
 
-            await _tenantSubscriptionRepository.AddAsync( subscription, cancellationToken );
+            await _unitOfWork.TenantSubscriptionRepository.AddAsync( subscription, cancellationToken );
 
             return subscription;
         }

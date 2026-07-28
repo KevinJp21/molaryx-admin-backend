@@ -1,18 +1,20 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Context;
 using Application.DTOs.Users;
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 
 namespace Application.Features.Auth.Query.GetUser
 {
-    public class GetUserQueryHandler(IUserRepository userRepository, ICurrentUser currentUser) : IRequestHandler<GetUserQuery, UserDto>
+    public class GetUserQueryHandler(IUnitOfWork unitOfWork, ICurrentUser currentUser) : IRequestHandler<GetUserQuery, UserDto>
     {
-        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+
         private readonly ICurrentUser _currentUser = currentUser;
 
         public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByIdAsync((long)_currentUser.IdUser!, cancellationToken)
+            var user = await _unitOfWork.UserRepository.GetByIdAsync((long)_currentUser.IdUser!, cancellationToken)
                 ?? throw new Exception("Usuario no encontrado.");
 
             var mapperResult = new UserDto

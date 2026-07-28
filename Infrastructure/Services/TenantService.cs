@@ -1,4 +1,5 @@
 using Application.DTOs.Tenant.TenantRegistration;
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -7,10 +8,10 @@ using Domain.Enums;
 namespace Infrastructure.Services
 {
     public class TenantService(
-        ITenantRepository tenantRepository
+        IUnitOfWork unitOfWork
     ) : ITenantService
     {
-        private readonly ITenantRepository _tenantRepository = tenantRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<Tenant> CreatePendingTenantAsync(
             TenantRegistrationDto dto,
@@ -32,7 +33,7 @@ namespace Infrastructure.Services
                 Address = dto.Address
             };
 
-            await _tenantRepository.AddAsync(
+            await _unitOfWork.TenantRepository.AddAsync(
                 tenant,
                 cancellationToken
             );

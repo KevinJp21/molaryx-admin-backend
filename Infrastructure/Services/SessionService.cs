@@ -1,3 +1,4 @@
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -8,24 +9,17 @@ using Infrastructure.Persistence;
 namespace Infrastructure.Services
 {
     public class SessionService(
-        IUserSessionRepository userSessionRepository,
-        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
         ITokenService tokenService,
         IHttpContextAccessor httpContextAccessor,
         AppDbContext dbContext
     ) : ISessionService
     {
-        private readonly IUserSessionRepository _userSessionRepository =
-            userSessionRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        private readonly IUserRepository _userRepository =
-            userRepository;
+        private readonly ITokenService _tokenService = tokenService;
 
-        private readonly ITokenService _tokenService =
-            tokenService;
-
-        private readonly IHttpContextAccessor _httpContextAccessor =
-            httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         private readonly AppDbContext _dbContext =
         dbContext;
@@ -61,12 +55,12 @@ namespace Infrastructure.Services
                 LastLogin = currentDate
             };
 
-            await _userSessionRepository.AddAsync(
+            await _unitOfWork.UserSessionRepository.AddAsync(
                 session,
                 cancellationToken
             );
 
-            await _userSessionRepository.SaveChangesAsync(
+            await _unitOfWork.UserSessionRepository.SaveChangesAsync(
                 cancellationToken
             );
 
@@ -104,7 +98,7 @@ namespace Infrastructure.Services
             var refreshTokenHash =
                 _tokenService.HashRefreshToken(refreshToken);
 
-            var session = await _userSessionRepository
+            var session = await _unitOfWork.UserSessionRepository
                 .GetByRefreshTokenHashAsync(
                     refreshTokenHash,
                     cancellationToken
@@ -131,7 +125,7 @@ namespace Infrastructure.Services
                 );
             }
 
-            var user = await _userRepository.GetByIdAsync(
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(
                 session.IdUser,
                 cancellationToken
             ) ?? throw new NotFoundException(
@@ -169,7 +163,7 @@ namespace Infrastructure.Services
             try
             {
                 // Atomically revoke the current session
-                var revoked = await _userSessionRepository
+                var revoked = await _unitOfWork.UserSessionRepository
                     .RevokeSessionAsync(
                         session.IdUser,
                         refreshTokenHash,
@@ -185,13 +179,13 @@ namespace Infrastructure.Services
                 }
 
                 // Create the new session
-                await _userSessionRepository.AddAsync(
+                await _unitOfWork.UserSessionRepository.AddAsync(
                     newSession,
                     cancellationToken
                 );
 
                 // Save the revoked session and the new session
-                await _userSessionRepository.SaveChangesAsync(
+                await _unitOfWork.UserSessionRepository.SaveChangesAsync(
                     cancellationToken
                 );
 
@@ -241,7 +235,7 @@ namespace Infrastructure.Services
             var refreshTokenHash =
                 _tokenService.HashRefreshToken(refreshToken);
 
-            var revoked = await _userSessionRepository.RevokeSessionAsync(
+            var revoked = await _unitOfWork.UserSessionRepository.RevokeSessionAsync(
                 idUser,
                 refreshTokenHash,
                 currentDate,
@@ -258,7 +252,7 @@ namespace Infrastructure.Services
 
         public async Task RevokeAllSessionAsync(long idUser, CancellationToken cancellationToken)
         {
-            var sessions = await _userSessionRepository.GetActiveSessionsByUserIdAsync(idUser, cancellationToken);
+            var sessions = await _unitOfWork.UserSessionRepository.GetActiveSessionsByUserIdAsync(idUser, cancellationToken);
 
             if (!sessions.Any())
                 return;
@@ -271,7 +265,7 @@ namespace Infrastructure.Services
                 session.UpdatedAt = currentDate;
             }
 
-            await _userSessionRepository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.UserSessionRepository.SaveChangesAsync(cancellationToken);
         }
 
     }

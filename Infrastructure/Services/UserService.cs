@@ -1,4 +1,5 @@
 using Application.DTOs.Tenant.TenantRegistration;
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -7,12 +8,13 @@ using Domain.Enums;
 namespace Infrastructure.Services
 {
     public class UserService(
-        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
         IHasherService hasherService
     ) : IUserService
     {
-        private readonly IUserRepository _userRepository = userRepository;
         private readonly IHasherService _hasherService = hasherService;
+
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<User> CreatePendingOwnerAsync(
             OwnerRegistrationDto dto,
@@ -54,7 +56,7 @@ namespace Infrastructure.Services
                 Salt = salt
             };
 
-            await _userRepository.AddAsync(
+            await _unitOfWork.UserRepository.AddAsync(
                 user,
                 cancellationToken
             );

@@ -1,17 +1,46 @@
 ﻿using Domain.Contracts;
+using Domain.Contracts.IRepositories;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Persistence
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(
+        AppDbContext context,
+        ITenantRepository tenantRepository,
+        ITenantStatusRepository tenantStatusRepository,
+        IIdentificationTypeRepository identificationTypeRepository,
+        IUserRepository userRepository,
+        IUserRoleRepository userRoleRepository,
+        IUserStatusRepository userStatusRepository,
+        IUserSessionRepository userSessionRepository,
+        IRoleHasPermissionRepository roleHasPermissionRepository,
+        ITenantSubscriptionRepository tenantSubscriptionRepository,
+        IPlanRepository planRepository
+        ) : IUnitOfWork
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _context = context;
+        public ITenantRepository TenantRepository { get; } = tenantRepository;
+
+        public ITenantStatusRepository TenantStatusRepository { get; } = tenantStatusRepository;
+
+        public IIdentificationTypeRepository IdentificationTypeRepository { get; } = identificationTypeRepository;
+
+        public IUserRepository UserRepository { get; } = userRepository;
+
+        public IUserRoleRepository UserRoleRepository { get; } = userRoleRepository;
+
+        public IUserStatusRepository UserStatusRepository { get; } = userStatusRepository;
+
+        public IUserSessionRepository UserSessionRepository { get; } = userSessionRepository;
+
+        public IRoleHasPermissionRepository RoleHasPermissionRepository { get; } = roleHasPermissionRepository;
+
+        public ITenantSubscriptionRepository TenantSubscriptionRepository { get; } = tenantSubscriptionRepository;
+
+        public IPlanRepository PlanRepository { get; } = planRepository;
+
         private IDbContextTransaction? _currentTransaction;
 
-        public UnitOfWork(AppDbContext context)
-        {
-            _context = context;
-        }
         public bool IsInTransaction => _currentTransaction != null;
 
         public async Task BeginTransactionAsync(

@@ -2,17 +2,17 @@ using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Context;
 using Application.DTOs.Sessions;
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 
 namespace Application.Features.Auth.Query.GetSessions
 {
     public class GetSessionsQueryHandler(
-        IUserSessionRepository userSessionRepository,
+        IUnitOfWork unitOfWork,
         ICurrentUser currentUser
     ) : IRequestHandler<GetSessionsQuery, GetSessionsResponseDto>
     {
-        private readonly IUserSessionRepository _userSessionRepository =
-            userSessionRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         private readonly ICurrentUser _currentUser =
             currentUser;
@@ -33,7 +33,7 @@ namespace Application.Features.Auth.Query.GetSessions
                 : PaginationDefaults.DefaultSize;
 
             var (totalItems, sessions) =
-                await _userSessionRepository.GetAllSessionsByUserIdAsync(
+                await _unitOfWork.UserSessionRepository.GetAllSessionsByUserIdAsync(
                     _currentUser.IdUser!.Value,
                     request.Active,
                     page,

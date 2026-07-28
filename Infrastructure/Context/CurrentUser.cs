@@ -1,15 +1,16 @@
 ﻿using Application.Common;
 using Application.Context;
+using Domain.Contracts;
 using Domain.Contracts.IRepositories;
 using Domain.Entities;
 using System.Security.Claims;
 
 namespace Infrastructure.Context
 {
-    public class CurrentUser(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository) : ICurrentUser
+    public class CurrentUser(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork) : ICurrentUser
     {
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         private User? _cachedUser;
 
@@ -131,7 +132,7 @@ namespace Infrastructure.Context
             if (_cachedUser != null)
                 return _cachedUser;
 
-            _cachedUser = await _userRepository.GetByIdAsync(IdUser.Value);
+            _cachedUser = await _unitOfWork.UserRepository.GetByIdAsync(IdUser.Value);
             return _cachedUser;
         }
     }
