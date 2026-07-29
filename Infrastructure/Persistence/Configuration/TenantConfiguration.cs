@@ -24,7 +24,7 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(t => t.Email).IsRequired();
 
-            builder.Property(t => t.CellPhone).IsRequired();
+            builder.Property(t => t.PhoneNumber).IsRequired();
 
             builder.Property(t => t.Address).IsRequired();
 
@@ -49,7 +49,11 @@ namespace Infrastructure.Persistence.Configuration
                 .HasForeignKey(t => t.IdIdentificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasIndex(t => t.IdentificationNumber).IsUnique();
+
             builder.HasIndex(t => t.Email).IsUnique();
+
+            builder.HasIndex(t => t.PhoneNumber).IsUnique();
         }
     }
 }

@@ -27,8 +27,8 @@ namespace Domain.Entities
         public short IdIdentificationType { get; set; }
         [Column("identification_number")]
         public string IdentificationNumber { get; set; } = string.Empty;
-        [Column("phone")]
-        public string Phone { get; set; } = string.Empty;
+        [Column("phone_number")]
+        public string PhoneNumber { get; set; } = string.Empty;
         [Column("email")]
         public string Email { get; set; } = string.Empty;
         [Column("password")]

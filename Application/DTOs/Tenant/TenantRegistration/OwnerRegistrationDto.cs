@@ -16,7 +16,7 @@ namespace Application.DTOs.Tenant.TenantRegistration
 
         public string IdentificationNumber { get; set; } = string.Empty;
 
-        public string Phone { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
 
         public string Email { get; set; } = string.Empty;
 

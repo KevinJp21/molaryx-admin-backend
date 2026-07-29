@@ -26,8 +26,8 @@ namespace Domain.Entities
         [Column("email")]
         public string Email { get; set; } = string.Empty;
 
-        [Column("cell_phone")]
-        public string CellPhone { get; set; } = string.Empty;
+        [Column("phone_number")]
+        public string PhoneNumber { get; set; } = string.Empty;
 
         [Column("address")]
         public string Address { get; set; } = string.Empty;

@@ -22,5 +22,45 @@ namespace Infrastructure.Persistence.Repositories
                     cancellationToken
             );
         }
+
+        public async Task<bool> ExistsByUsernameAsync(string username, CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .AnyAsync
+                (
+                    u => u.Username == username,
+                    cancellationToken
+                );
+        }
+
+        public async Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .AnyAsync
+                (
+                    u => u.Email == email,
+                    cancellationToken
+                );
+        }
+
+        public async Task<bool> ExistsByIdentificationNumberAsync(string identificationNumber, CancellationToken cancellationToken)
+        {
+            return await DbSet
+                .AnyAsync
+                (
+                    u => u.IdentificationNumber == identificationNumber,
+                    cancellationToken
+                );
+        }
+        
+        public async Task<bool> ExistsByPhoneNumberAsync( string phoneNumber, CancellationToken cancellationToken)
+        {
+            return await DbSet
+                .AnyAsync
+                (
+                    u => u.PhoneNumber == phoneNumber,
+                    cancellationToken
+                );
+        }
     }
 }

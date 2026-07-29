@@ -22,6 +22,10 @@ namespace Application.Features.RegisterTenant.Command
 
             When(x => x.Tenant is not null, () =>
             {
+                RuleFor(x => x.PromotionCode)
+                    .MaximumLength(50)
+                    .WithMessage("El código de promoción es demasiado largo.")
+                    .When(x => !string.IsNullOrWhiteSpace(x.PromotionCode));
                 RuleFor(x => x.Tenant.ConsultoryName)
                     .NotEmpty()
                     .WithMessage("El nombre del consultorio es obligatorio.")
@@ -38,12 +42,12 @@ namespace Application.Features.RegisterTenant.Command
                     )
                     .WithMessage("El correo electrónico no es válido.");
 
-                RuleFor(x => x.Tenant.CellPhone)
+                RuleFor(x => x.Tenant.PhoneNumber)
                     .NotEmpty()
                     .WithMessage("El número de celular es obligatorio.")
-                    .Matches(RegexCatalog.PHONE)
+                    .Matches(RegexCatalog.PhoneNumber)
                     .When(
-                        x => !string.IsNullOrWhiteSpace(x.Tenant.CellPhone),
+                        x => !string.IsNullOrWhiteSpace(x.Tenant.PhoneNumber),
                         ApplyConditionTo.CurrentValidator
                     )
                     .WithMessage("El número de celular no es válido.");
@@ -179,15 +183,15 @@ namespace Application.Features.RegisterTenant.Command
                         "Ingrese un número de identificación válido."
                     );
 
-                RuleFor(x => x.Owner.Phone)
+                RuleFor(x => x.Owner.PhoneNumber)
                     .NotEmpty()
                     .WithMessage(
                         "El número de celular es obligatorio."
                     )
-                    .Matches(RegexCatalog.PHONE)
+                    .Matches(RegexCatalog.PhoneNumber)
                     .When(
                         x => !string.IsNullOrWhiteSpace(
-                            x.Owner.Phone
+                            x.Owner.PhoneNumber
                         ),
                         ApplyConditionTo.CurrentValidator
                     )

@@ -21,6 +21,54 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken
         )
         {
+
+            var username = dto.Username.Trim().ToLowerInvariant();
+
+            var usernameExists = await _unitOfWork.UserRepository.ExistsByUsernameAsync(
+                username,
+                cancellationToken
+            );
+
+            if (usernameExists)
+            {
+                throw new InvalidOperationException("El nombre de usuario ya se encuentra registrado.");
+            }
+
+            var email = dto.Email.Trim().ToLowerInvariant();
+
+            var emailExists = await _unitOfWork.UserRepository.ExistsByEmailAsync(
+                email,
+                cancellationToken
+            );
+
+            if (emailExists)
+            {
+                throw new InvalidOperationException("El correo electrónico ya se encuentra registrado.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.IdentificationNumber))
+            {
+                var identificationNumberExists = await _unitOfWork
+                    .UserRepository.ExistsByIdentificationNumberAsync(
+                        dto.IdentificationNumber,
+                        cancellationToken);
+
+                if (identificationNumberExists)
+                {
+                    throw new InvalidOperationException("El número de identificación ya se encuentra registrado.");
+                }
+            }
+
+            var phoneNumberExists = await _unitOfWork.UserRepository.ExistsByPhoneNumberAsync(
+                dto.PhoneNumber,
+                cancellationToken
+            );
+
+            if (phoneNumberExists)
+            {
+                throw new InvalidOperationException("El número de telefono ya se encuentra registrado.");
+            }
+
             var salt = _hasherService.GenerateSalt();
 
             var hashedPassword = _hasherService.ComputeHashBytes(
@@ -48,7 +96,7 @@ namespace Infrastructure.Services
                 IdIdentificationType = dto.IdIdentificationType,
                 IdentificationNumber = dto.IdentificationNumber,
 
-                Phone = dto.Phone,
+                PhoneNumber = dto.PhoneNumber,
                 Email = dto.Email,
 
                 Password = hashedPassword,

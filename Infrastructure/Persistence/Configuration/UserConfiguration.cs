@@ -32,6 +32,8 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.IdentificationNumber).IsRequired();
 
+            builder.Property(u => u.PhoneNumber).IsRequired();
+
             builder.Property(u => u.Email).IsRequired();
 
             builder.Property(u => u.Password).HasColumnType("bytea").IsRequired();
@@ -64,7 +66,13 @@ namespace Infrastructure.Persistence.Configuration
                 .HasForeignKey(u => u.IdIdentificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasIndex(u => u.Username).IsUnique();
+
+            builder.HasIndex(t => t.PhoneNumber).IsUnique();
+
             builder.HasIndex(t => t.Email).IsUnique();
+
+            builder.HasIndex(u => u.IdentificationNumber).IsUnique();
         }
     }
 }
