@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence
         IUserRoleRepository userRoleRepository,
         IUserStatusRepository userStatusRepository,
         IUserSessionRepository userSessionRepository,
-        IRoleHasPermissionRepository roleHasPermissionRepository,
+        IRolePermissionRepository RolePermissionRepository,
         ITenantSubscriptionRepository tenantSubscriptionRepository,
         IPlanRepository planRepository,
         IPromotionRepository promotionRepository
@@ -34,7 +34,7 @@ namespace Infrastructure.Persistence
 
         public IUserSessionRepository UserSessionRepository { get; } = userSessionRepository;
 
-        public IRoleHasPermissionRepository RoleHasPermissionRepository { get; } = roleHasPermissionRepository;
+        public IRolePermissionRepository RolePermissionRepository { get; } = RolePermissionRepository;
 
         public ITenantSubscriptionRepository TenantSubscriptionRepository { get; } = tenantSubscriptionRepository;
 

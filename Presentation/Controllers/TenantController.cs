@@ -16,6 +16,7 @@ namespace Presentation.Controllers
     {
         private readonly IMediator _mediator = mediator;
 
+        [Authorize(Policy = PermissionCodes.TENANTS_READ)]
         [HttpGet]
         public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants ([FromQuery] GetTenantsQuery query, CancellationToken cancellationToken)
         {

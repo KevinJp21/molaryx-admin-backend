@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class RoleHasPermissionRepository(AppDbContext dbContext) : BaseRepository<RolePermission, short>(dbContext), IRoleHasPermissionRepository
+    public class RolePermissionRepository(AppDbContext dbContext) : BaseRepository<RolePermission, short>(dbContext), IRolePermissionRepository
     {
         public async Task<bool> RoleHasPermissionAsync(
             short IdUserRole,
