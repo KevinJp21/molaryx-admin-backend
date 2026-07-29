@@ -1,4 +1,4 @@
-using Application.DTOs.Tenant.TenantRegistration;
+using Application.Features.Tenant.Command.RegisterTenant;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -13,7 +13,7 @@ namespace Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<Tenant> CreatePendingTenantAsync(
-            TenantRegistrationDto dto,
+            TenantRegistration dto,
             CancellationToken cancellationToken)
         {
 

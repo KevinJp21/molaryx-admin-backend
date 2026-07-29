@@ -1,7 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
-namespace Application.Features.RegisterTenant.Command
+namespace Application.Features.Tenant.Command.RegisterTenant
 {
     public class RegisterTenantCommandHandler
     (
@@ -17,10 +17,7 @@ namespace Application.Features.RegisterTenant.Command
         private readonly ITenantSubscriptionService _tenantSubscriptionService = tenantSubscriptionService;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<bool> Handle(
-            RegisterTenantCommand request,
-            CancellationToken cancellationToken)
-        {
+        public async Task<bool> Handle( RegisterTenantCommand request, CancellationToken cancellationToken) {
 
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 

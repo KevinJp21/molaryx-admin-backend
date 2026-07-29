@@ -3,21 +3,20 @@ using Application.Common.Pagination;
 using Application.Context;
 using Application.DTOs.Sessions;
 using Domain.Contracts;
-using Domain.Contracts.IRepositories;
 
 namespace Application.Features.Auth.Query.GetSessions
 {
     public class GetSessionsQueryHandler(
         IUnitOfWork unitOfWork,
         ICurrentUser currentUser
-    ) : IRequestHandler<GetSessionsQuery, GetSessionsResponseDto>
+    ) : IRequestHandler<GetSessionsQuery, PagedResult<UserSessionDto>>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         private readonly ICurrentUser _currentUser =
             currentUser;
 
-        public async Task<GetSessionsResponseDto> Handle(
+        public async Task<PagedResult<UserSessionDto>> Handle(
             GetSessionsQuery request,
             CancellationToken cancellationToken = default)
         {
@@ -41,7 +40,7 @@ namespace Application.Features.Auth.Query.GetSessions
                     cancellationToken
                 );
 
-            return new GetSessionsResponseDto
+            return new PagedResult<UserSessionDto>
             {
                 Items =
                 [

@@ -1,4 +1,5 @@
 using Application.Common.Mediator.Interfaces;
+using Application.Common.Pagination;
 using Application.DTOs.Auth;
 using Application.DTOs.Sessions;
 using Application.DTOs.Users;
@@ -8,7 +9,7 @@ using Application.Features.Auth.Command.LogoutAll;
 using Application.Features.Auth.Command.RefreshToken;
 using Application.Features.Auth.Query.GetSessions;
 using Application.Features.Auth.Query.GetUser;
-using Application.Features.RegisterTenant.Command;
+using Application.Features.Tenant.Command.RegisterTenant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
@@ -66,10 +67,10 @@ namespace Presentation.Controllers
         */
         [HttpGet]
         [EndpointDescription( "Obtiene las sesiones del usuario autenticado, incluyendo información del dispositivo, dirección IP, fecha de creación, fecha de expiración e identificación de la sesión actual." )]
-        public async Task<ActionResult<ApiResponse<GetSessionsResponseDto>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<PagedResult<UserSessionDto>>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
         {
             return Ok(
-                new ApiResponse<GetSessionsResponseDto>(
+                new ApiResponse<PagedResult<UserSessionDto>>(
                     "Sesiones obtenidas de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
                 )

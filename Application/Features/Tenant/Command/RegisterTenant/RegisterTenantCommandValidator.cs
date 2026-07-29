@@ -1,7 +1,7 @@
 using Application.Common.Regex;
 using FluentValidation;
 
-namespace Application.Features.RegisterTenant.Command
+namespace Application.Features.Tenant.Command.RegisterTenant
 {
     public class RegisterTenantCommandValidator
         : AbstractValidator<RegisterTenantCommand>

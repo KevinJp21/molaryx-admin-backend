@@ -1,4 +1,4 @@
-using Application.DTOs.Tenant.TenantRegistration;
+using Application.Features.Tenant.Command.RegisterTenant;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -16,7 +16,7 @@ namespace Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<User> CreatePendingOwnerAsync(
-            OwnerRegistrationDto dto,
+            OwnerRegistration dto,
             long idTenant,
             CancellationToken cancellationToken
         )

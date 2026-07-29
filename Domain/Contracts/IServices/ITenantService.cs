@@ -1,4 +1,4 @@
-using Application.DTOs.Tenant.TenantRegistration;
+using Application.Features.Tenant.Command.RegisterTenant;
 using Domain.Entities;
 
 namespace Domain.Contracts.IServices
@@ -7,7 +7,7 @@ namespace Domain.Contracts.IServices
     {
         Task<Tenant> CreatePendingTenantAsync
         (
-            TenantRegistrationDto dto,
+            TenantRegistration tenant,
             CancellationToken cancellationToken
         );
     }
