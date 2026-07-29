@@ -19,8 +19,13 @@ namespace Infrastructure.Persistence.Seeds.Authorization
             modelBuilder.Entity<Permission>()
                 .HasData(UserPermissionSeed.Data);
 
+
+            // Agregar permissos de cada rol
             modelBuilder.Entity<RolePermission>()
                 .HasData(OwnerPermissionSeed.Data);
+
+            modelBuilder.Entity<RolePermission>()
+                .HasData(SurperAdminPermissionSeed.Data);
         }
     }
 }

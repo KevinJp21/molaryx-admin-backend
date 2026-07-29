@@ -47,5 +47,35 @@ namespace Infrastructure.Persistence.Repositories
         {
             DbSet.Remove(entity);
         }
+
+        public virtual async Task<(int totalItems, List<TEntity> data)> GetPagedAsync(
+            int page,
+            int size,
+            ISpecification<TEntity>? spec = null,
+            CancellationToken cancellationToken = default)
+        {
+            var query = DbSet
+                .AsNoTracking()
+                .Where(spec?.Criteria ?? (_ => true));
+
+            foreach (var include in spec?.Includes ?? [])
+            {
+                query = query.Include(include);
+            }
+
+            foreach (var path in spec?.IncludePaths ?? [])
+            {
+                query = query.Include(path);
+            }
+
+            var totalItems = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync(cancellationToken);
+
+            return (totalItems, items);
+        }
     }
 }

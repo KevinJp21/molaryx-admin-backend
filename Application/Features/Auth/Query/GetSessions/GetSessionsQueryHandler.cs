@@ -3,6 +3,7 @@ using Application.Common.Pagination;
 using Application.Context;
 using Application.DTOs.Sessions;
 using Domain.Contracts;
+using Domain.Specifications;
 
 namespace Application.Features.Auth.Query.GetSessions
 {
@@ -20,25 +21,17 @@ namespace Application.Features.Auth.Query.GetSessions
             GetSessionsQuery request,
             CancellationToken cancellationToken = default)
         {
-            var page = request.Page is > 0
-                ? request.Page.Value
-                : PaginationDefaults.DefaultPage;
+            var spec = new UserSessionsSpec(
+                _currentUser.IdUser!.Value,
+                request.Active
+            );
 
-            var pageSize = request.Size is > 0
-                ? Math.Min(
-                    request.Size.Value,
-                    PaginationDefaults.MaxSize
-                )
-                : PaginationDefaults.DefaultSize;
-
-            var (totalItems, sessions) =
-                await _unitOfWork.UserSessionRepository.GetAllSessionsByUserIdAsync(
-                    _currentUser.IdUser!.Value,
-                    request.Active,
-                    page,
-                    pageSize,
-                    cancellationToken
-                );
+            var (totalItems, sessions) = await _unitOfWork.UserSessionRepository.GetAllSessionsByUserIdAsync(
+                spec,
+                PaginationHelper.GetEffectivePage(request.Page),
+                PaginationHelper.GetEffectivePageSize(request.Size),
+                cancellationToken
+            );
 
             return new PagedResult<UserSessionDto>
             {
@@ -58,11 +51,11 @@ namespace Application.Features.Auth.Query.GetSessions
                 }
             )
                 ],
-                Page = page,
-                Size = pageSize,
+                Page = PaginationHelper.GetEffectivePage(request.Page),
+                Size = PaginationHelper.GetEffectivePageSize(request.Size),
                 TotalItems = totalItems,
                 TotalPages = (int)Math.Ceiling(
-                    totalItems / (double)pageSize
+                    totalItems / (double)PaginationHelper.GetEffectivePageSize(request.Size)
                 )
             };
         }

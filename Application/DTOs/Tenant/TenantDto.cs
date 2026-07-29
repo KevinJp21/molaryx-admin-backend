@@ -16,20 +16,14 @@ namespace Application.DTOs.Tenant
 
         public string Address { get; set; } = string.Empty;
 
-        public OwnerDto Owner { get; set; } = null!;
+        public OwnerDto? Owner { get; set; } = null!;
     }
 
     public class OwnerDto
     {
         public string Username { get; set; } = string.Empty;
 
-        public string FirstName { get; set; } = string.Empty;
-
-        public string? SecondName { get; set; }
-
-        public string FirstSurname { get; set; } = string.Empty;
-
-        public string? SecondSurname { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public short IdIdentificationType { get; set; }
 
@@ -40,7 +34,5 @@ namespace Application.DTOs.Tenant
         public string PhoneNumber { get; set; } = string.Empty;
 
         public string Email { get; set; } = string.Empty;
-
-        public string Password { get; set; } = string.Empty;
     }
 }
