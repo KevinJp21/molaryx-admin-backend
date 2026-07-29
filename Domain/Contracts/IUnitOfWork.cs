@@ -18,7 +18,7 @@ namespace Domain.Contracts
 
         public IUserSessionRepository UserSessionRepository { get; }
 
-        public IRoleHasPermissionRepository RoleHasPermissionRepository { get; }
+        public IRolePermissionRepository RolePermissionRepository { get; }
 
         public ITenantSubscriptionRepository TenantSubscriptionRepository { get; }
 

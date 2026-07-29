@@ -13,7 +13,7 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken = default
         )
         {
-            return await _unitOfWork.RoleHasPermissionRepository.RoleHasPermissionAsync(
+            return await _unitOfWork.RolePermissionRepository.RoleHasPermissionAsync(
                 idUserRole,
                 permissionCode,
                 cancellationToken

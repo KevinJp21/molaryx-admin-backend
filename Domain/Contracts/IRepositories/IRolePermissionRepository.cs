@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Domain.Contracts.IRepositories
 {
-    public interface IRoleHasPermissionRepository : IBaseRepository<RolePermission, short>
+    public interface IRolePermissionRepository : IBaseRepository<RolePermission, short>
     {
         Task<bool> RoleHasPermissionAsync(
             short idUserRole,
