@@ -8,5 +8,11 @@ namespace Domain.Common
         Task UpdateAsync(TEntity entity, CancellationToken cancellationToken);
         Task SaveChangesAsync( CancellationToken cancellationToken );
         void Remove(TEntity entity);
+        Task<(int totalItems, List<TEntity> data)> GetPagedAsync(
+            int page,
+            int size,
+            ISpecification<TEntity>? spec = null,
+            CancellationToken cancellationToken = default
+        );
     }
 }

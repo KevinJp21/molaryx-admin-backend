@@ -1,5 +1,7 @@
+using Domain.Common;
 using Domain.Contracts.IRepositories;
 using Domain.Entities;
+using Domain.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
@@ -25,32 +27,15 @@ namespace Infrastructure.Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<(int count, List<UserSession> data)> GetAllSessionsByUserIdAsync(
-            long idUser,
-            bool? active,
+        public async Task<(int totalItems, List<UserSession> data)> GetAllSessionsByUserIdAsync(
+            ISpecification<UserSession> spec,
             int page,
             int size,
             CancellationToken cancellationToken = default)
         {
             var query = DbSet
                 .AsNoTracking()
-                .Where(us =>
-                    us.IdUser == idUser
-                );
-
-            if (active == true)
-            {
-                query = query.Where(us =>
-                    us.RevokedAt == null &&
-                    us.ExpiresAt > DateTime.UtcNow);
-            }
-
-            if (active == false)
-            {
-                query = query.Where(us =>
-                    us.RevokedAt != null ||
-                    us.ExpiresAt <= DateTime.UtcNow);
-            }
+                .Where(spec.Criteria!);
 
             var totalItems = await query.CountAsync(
                 cancellationToken
@@ -87,7 +72,7 @@ namespace Infrastructure.Persistence.Repositories
                             us => us.UpdatedAt,
                             currentDate
                         ),
-                        cancellationToken
+                    cancellationToken
                 );
 
             return affectedRows == 1;

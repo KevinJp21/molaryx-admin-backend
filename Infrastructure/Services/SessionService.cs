@@ -69,7 +69,7 @@ namespace Infrastructure.Services
                 idTenant,
                 email,
                 session.IdUserSession,
-                currentDate.AddMinutes(15)
+                currentDate.AddHours(1)
             );
 
             return (
@@ -199,7 +199,7 @@ namespace Infrastructure.Services
                     user.IdTenant,
                     user.Email,
                     newSession.IdUserSession,
-                    currentDate.AddMinutes(15)
+                    currentDate.AddHours(1)
                 );
 
                 return (
