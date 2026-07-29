@@ -16,6 +16,14 @@ namespace Application.DTOs.Tenant
 
         public string Address { get; set; } = string.Empty;
 
+        public short IdTenantType { get; set; }
+
+        public string TenantTypeCode { get; set; } = string.Empty;
+
+        public short IdTenantStatus { get; set; }
+
+        public string TenantStatusName { get; set; } = string.Empty;
+
         public OwnerDto? Owner { get; set; } = null!;
     }
 

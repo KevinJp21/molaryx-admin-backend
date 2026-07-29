@@ -35,8 +35,8 @@ namespace Infrastructure.Persistence.Configuration
                 },
                 new TenantStatus
                 {
-                    IdTenantStatus = (short)TenantStatusEnum.PENDING_APPROVAL,
-                    Name = "Habilitación pendiente",
+                    IdTenantStatus = (short)TenantStatusEnum.PENDING,
+                    Name = "Pendiente",
                     CreatedAt = SeedConstants.SeedDate
                 },
                 new TenantStatus

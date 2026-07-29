@@ -61,10 +61,6 @@ namespace Presentation.Controllers
             );
         }
 
-        /*
-            Ejemplo de uso politicas de permisos
-            [Authorize(Policy = PermissionCodes.TENANTS_CREATE)]
-        */
         [HttpGet]
         [EndpointDescription( "Obtiene las sesiones del usuario autenticado, incluyendo información del dispositivo, dirección IP, fecha de creación, fecha de expiración e identificación de la sesión actual." )]
         public async Task<ActionResult<ApiResponse<PagedResult<UserSessionDto>>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
