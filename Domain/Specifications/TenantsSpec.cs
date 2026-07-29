@@ -8,6 +8,9 @@ namespace Domain.Specifications
         public TenantsSpec()
         {
             AddInclude(t => t.IdentificationType);
+            AddInclude(t => t.TenantStatus);
+            AddInclude(t => t.TenantType);
+
             AddInclude(t => t.Users);
             AddInclude("Users.IdentificationType");
         }

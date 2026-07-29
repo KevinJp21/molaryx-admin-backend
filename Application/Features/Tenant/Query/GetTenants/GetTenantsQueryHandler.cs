@@ -42,6 +42,10 @@ namespace Application.Features.Tenant.Query.GetTenants
                         Email = t.Email,
                         PhoneNumber = t.PhoneNumber,
                         Address = t.Address,
+                        IdTenantType = t.TenantType.IdTenantType,
+                        TenantTypeCode = t.TenantType.Code,
+                        IdTenantStatus = t.TenantStatus.IdTenantStatus,
+                        TenantStatusName = t.TenantStatus.Name,
                         Owner = t.Users.Where(u => u.IdUserRole == (short)UserRoleEnum.OWNER)
                         .Select(u => new OwnerDto{
                             Username = u.Username,
