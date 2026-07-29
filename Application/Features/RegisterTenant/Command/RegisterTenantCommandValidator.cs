@@ -45,7 +45,7 @@ namespace Application.Features.RegisterTenant.Command
                 RuleFor(x => x.Tenant.PhoneNumber)
                     .NotEmpty()
                     .WithMessage("El número de celular es obligatorio.")
-                    .Matches(RegexCatalog.PhoneNumber)
+                    .Matches(RegexCatalog.PHONE_NUMBER)
                     .When(
                         x => !string.IsNullOrWhiteSpace(x.Tenant.PhoneNumber),
                         ApplyConditionTo.CurrentValidator
@@ -188,7 +188,7 @@ namespace Application.Features.RegisterTenant.Command
                     .WithMessage(
                         "El número de celular es obligatorio."
                     )
-                    .Matches(RegexCatalog.PhoneNumber)
+                    .Matches(RegexCatalog.PHONE_NUMBER)
                     .When(
                         x => !string.IsNullOrWhiteSpace(
                             x.Owner.PhoneNumber

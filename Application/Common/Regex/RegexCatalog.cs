@@ -14,6 +14,6 @@
 
         public const string IDENTIFICATION_NUMBER = @"^\d{6,10}$";
 
-        public const string PhoneNumber = @"^3\d{9}$";
+        public const string PHONE_NUMBER = @"^3\d{9}$";
     }
 }
