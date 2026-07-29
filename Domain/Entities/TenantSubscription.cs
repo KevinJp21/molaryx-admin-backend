@@ -17,6 +17,9 @@ namespace Domain.Entities
         [Column("id_plan")]
         public short IdPlan { get; set; }
 
+        [Column("id_promotion")]
+        public long? IdPromotion { get; set; }
+
         [Column("price")]
         public decimal Price { get; set; }
 
@@ -33,11 +36,15 @@ namespace Domain.Entities
         public DateTime? StartsAt { get; set; }
 
         [Column("ends_at")]
-        public DateTime? EndsAt  { get; set; }
+        public DateTime? EndsAt { get; set; }
+        
+        [Column("promotion_ends_at")]
+        public DateTime? PromotionEndsAt { get; set; }
 
         // Navigation properties
         public Tenant Tenant { get; set; } = null!;
         public Plan Plan { get; set; } = null!;
+        public Promotion? Promotion { get; set; }
         public TenantSubscriptionStatus TenantSubscriptionStatus { get; set; } = null!;
     }
 }

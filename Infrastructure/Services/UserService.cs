@@ -1,6 +1,5 @@
 using Application.DTOs.Tenant.TenantRegistration;
 using Domain.Contracts;
-using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;

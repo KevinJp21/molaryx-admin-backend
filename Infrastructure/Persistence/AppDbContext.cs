@@ -19,6 +19,8 @@ namespace Infrastructure.Persistence
         public DbSet<IdentificationType> IdentificationTypes { get; set; } = null!;
         public DbSet<Module> Modules { get; set; } = null!;
         public DbSet<Permission> Permissions { get; set; } = null!;
+        public DbSet<Promotion> Promotions { get; set; } = null!;
+        public DbSet<PromotionPlan> PromotionPlans { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

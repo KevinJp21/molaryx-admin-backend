@@ -22,7 +22,7 @@ namespace Application.Features.RegisterTenant.Command
             CancellationToken cancellationToken)
         {
 
-            await _unitOfWork.BeginTransactionAsync( cancellationToken );
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
             try
             {
@@ -42,16 +42,20 @@ namespace Application.Features.RegisterTenant.Command
                 await _tenantSubscriptionService.CreateSubscriptionAsync(
                     tenant.IdTenant,
                     request.IdPlan,
+                    request.PromotionCode,
                     cancellationToken
                 );
 
-                await _unitOfWork.CommitTransactionAsync( cancellationToken );
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
                 return true;
             }
             catch
             {
-                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                if (_unitOfWork.IsInTransaction)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                }
                 throw;
             }
         }

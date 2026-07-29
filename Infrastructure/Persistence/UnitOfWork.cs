@@ -15,7 +15,8 @@ namespace Infrastructure.Persistence
         IUserSessionRepository userSessionRepository,
         IRoleHasPermissionRepository roleHasPermissionRepository,
         ITenantSubscriptionRepository tenantSubscriptionRepository,
-        IPlanRepository planRepository
+        IPlanRepository planRepository,
+        IPromotionRepository promotionRepository
         ) : IUnitOfWork
     {
         private readonly AppDbContext _context = context;
@@ -38,6 +39,8 @@ namespace Infrastructure.Persistence
         public ITenantSubscriptionRepository TenantSubscriptionRepository { get; } = tenantSubscriptionRepository;
 
         public IPlanRepository PlanRepository { get; } = planRepository;
+
+        public IPromotionRepository PromotionRepository { get; } = promotionRepository;
 
         private IDbContextTransaction? _currentTransaction;
 

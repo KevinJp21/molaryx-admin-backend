@@ -1,5 +1,4 @@
 using Domain.Contracts;
-using Domain.Contracts.IRepositories;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Exceptions;

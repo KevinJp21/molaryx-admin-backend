@@ -34,5 +34,7 @@ namespace Domain.Entities
 
         // Navigation properties
         public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
+
+        public ICollection<PromotionPlan> PromotionPlans { get; set; } = [];
     }
 }

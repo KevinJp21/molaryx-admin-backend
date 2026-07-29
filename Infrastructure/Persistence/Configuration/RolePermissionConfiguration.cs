@@ -16,10 +16,6 @@ namespace Infrastructure.Persistence.Configuration
                 rp.IdPermission
             });
 
-            builder.Property(t => t.CreatedAt).IsRequired();
-
-            builder.Property(t => t.UpdatedAt);
-
             builder.HasOne(rp => rp.UserRole)
                 .WithMany(r => r.RolePermissions)
                 .HasForeignKey(rp => rp.IdUserRole)

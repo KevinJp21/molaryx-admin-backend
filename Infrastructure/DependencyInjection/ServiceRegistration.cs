@@ -83,5 +83,6 @@ public static class ServiceRegistration
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITenantService, TenantService>();
         services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
+        services.AddScoped<IPromotionService, PromotionService>();
     }
 }

@@ -21,6 +21,8 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(ts => ts.Price).IsRequired().HasPrecision(12, 2);
 
+            builder.Property(ts => ts.IdPromotion);
+
             builder.Property(ts => ts.MaxProfessionals);
 
             builder.Property(ts => ts.MaxAssistants);
@@ -48,6 +50,11 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasOne(ts => ts.Plan)
                 .WithMany(p => p.TenantSubscriptions)
                 .HasForeignKey(ts => ts.IdPlan)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(ts => ts.Promotion)
+                .WithMany(p => p.tenantSubscriptions)
+                .HasForeignKey(ts => ts.IdPromotion)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(ts => ts.IdTenant)

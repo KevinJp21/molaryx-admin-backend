@@ -4,7 +4,7 @@ namespace Domain.Contracts.IServices
 {
     public interface ITenantSubscriptionService
     {
-        Task<TenantSubscription> CreateSubscriptionAsync(long idTenant, short idPlan, CancellationToken cancellationToken);
+        Task<TenantSubscription> CreateSubscriptionAsync(long idTenant, short idPlan, string? promotionCode, CancellationToken cancellationToken);
 
         Task<TenantSubscription> CreateCustomSubscriptionAsync(
             long idTenant,

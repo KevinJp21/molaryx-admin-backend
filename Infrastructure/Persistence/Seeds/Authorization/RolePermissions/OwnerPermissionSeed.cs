@@ -9,23 +9,19 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
         public static RolePermission[] Data => [
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_CREATE,
-                CreatedAt = SeedConstants.SeedDate
+                IdPermission = (short)PermissionEnum.USERS_CREATE
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_READ,
-                CreatedAt = SeedConstants.SeedDate
+                IdPermission = (short)PermissionEnum.USERS_READ
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_UPDATE,
-                CreatedAt = SeedConstants.SeedDate
+                IdPermission = (short)PermissionEnum.USERS_UPDATE
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.USERS_DELETE,
-                CreatedAt = SeedConstants.SeedDate
+                IdPermission = (short)PermissionEnum.USERS_DELETE
             },
         ];
     }
