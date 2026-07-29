@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
 using Npgsql;
+using Infrastructure.Persistence.Repositories;
+using Domain.Contracts.IServices;
+using Infrastructure.Security;
+using Infrastructure.Services;
+using Domain.Contracts;
 
 namespace Infrastructure.DependencyInjection;
 
@@ -30,7 +35,54 @@ public static class ServiceRegistration
 
             options.UseNpgsql(dataSource);
         });
-
+        AddServices(services);
+        AddRepositories(services);
         return services;
+    }
+
+    private static void AddRepositories(IServiceCollection services)
+    {
+        /*
+             1. Registrar explícitamente la implementación de UnitOfWork.
+             2. Obtener el ensamblado donde residen las implementaciones de repositorios
+                (se toma el ensamblado que contiene a `UserRepository` como referencia).
+             3. Buscar tipos concretos (clases no abstractas) cuyo nombre termine con "Repository".
+             4. Para cada implementación encontrada, localizar la interfaz asociada cuyo nombre
+                sea "I" + nombreDeLaClase (por ejemplo, UserRepository -> IUserRepository).
+             5. Registrar cada pareja interfaz-implementación como Scoped.
+             6. De este modo, cualquier repositorio nuevo añadido seguirá el patrón "I{Name}Repository"
+                / "{Name}Repository" y será registrado automáticamente sin modificar este método.
+            */
+
+        // Registrar UnitOfWork explícitamente
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Registrar automáticamente repositorios que sigan el patrón "I{Name}Repository" / "{Name}Repository"
+
+        var repoAssembly = typeof(UserRepository).Assembly;
+
+        var repoTypes = repoAssembly.GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Repository"));
+
+        foreach (var impl in repoTypes)
+        {
+            var iface = impl.GetInterfaces().FirstOrDefault(i => i.Name == "I" + impl.Name);
+            if (iface != null)
+            {
+                services.AddScoped(iface, impl);
+            }
+        }
+    }
+
+    private static void AddServices(IServiceCollection services)
+    {
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IHasherService, HasherService>();
+        services.AddScoped<ISessionService, SessionService>();
+        services.AddScoped<IPermissionService, PermissionService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITenantService, TenantService>();
+        services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
+        services.AddScoped<IPromotionService, PromotionService>();
     }
 }

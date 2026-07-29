@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public abstract class BaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey> where TEntity : BaseEntity where TKey : notnull
+    public abstract class BaseRepository<TEntity, TKey> : IBaseRepository<TEntity, TKey> where TEntity : class where TKey : notnull
     {
         protected readonly AppDbContext Context;
         protected readonly DbSet<TEntity> DbSet;
@@ -27,6 +27,20 @@ namespace Infrastructure.Persistence.Repositories
         public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
         {
             return await DbSet.FindAsync([id], cancellationToken);
+        }
+
+        public virtual Task UpdateAsync( TEntity entity, CancellationToken cancellationToken = default)
+        {
+            DbSet.Update(entity);
+
+            return Task.CompletedTask;
+        }
+
+        public virtual async Task SaveChangesAsync( CancellationToken cancellationToken = default)
+        {
+            await Context.SaveChangesAsync(
+                cancellationToken
+            );
         }
 
         public virtual void Remove(TEntity entity)

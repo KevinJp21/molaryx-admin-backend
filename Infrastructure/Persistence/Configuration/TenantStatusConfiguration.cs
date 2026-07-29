@@ -1,4 +1,6 @@
 using Domain.Entities;
+using Domain.Enums;
+using Infrastructure.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,17 +14,44 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasKey(s => s.IdTenantStatus);
 
-            builder.Property(s => s.IdTenantStatus).ValueGeneratedOnAdd();
-
-            builder.Property(s => s.Code).IsRequired();
-
             builder.Property(s => s.Name).IsRequired().HasMaxLength(255);
 
             builder.Property(s => s.CreatedAt).IsRequired();
 
             builder.Property(s => s.UpdatedAt);
-
-            builder.HasIndex(s => s.Code).IsUnique();
+            
+            builder.HasData(
+                new TenantStatus
+                {
+                    IdTenantStatus = (short)TenantStatusEnum.ACTIVE,
+                    Name = "Activo",
+                    CreatedAt = SeedConstants.SeedDate
+                },
+                new TenantStatus
+                {
+                    IdTenantStatus = (short)TenantStatusEnum.INACTIVE,
+                    Name = "Inactivo",
+                    CreatedAt = SeedConstants.SeedDate
+                },
+                new TenantStatus
+                {
+                    IdTenantStatus = (short)TenantStatusEnum.PENDING_APPROVAL,
+                    Name = "Habilitación pendiente",
+                    CreatedAt = SeedConstants.SeedDate
+                },
+                new TenantStatus
+                {
+                    IdTenantStatus = (short)TenantStatusEnum.BLOCKED,
+                    Name = "Bloqueado",
+                    CreatedAt = SeedConstants.SeedDate
+                },
+                new TenantStatus
+                {
+                    IdTenantStatus = (short)TenantStatusEnum.REJECTED,
+                    Name = "Rechazado",
+                    CreatedAt = SeedConstants.SeedDate
+                }
+            );
         }
     }
 }
