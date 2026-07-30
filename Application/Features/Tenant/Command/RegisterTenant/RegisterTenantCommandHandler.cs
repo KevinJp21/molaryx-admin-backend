@@ -28,6 +28,7 @@ namespace Application.Features.Tenant.Command.RegisterTenant
                     cancellationToken
                 );
 
+                // Se guardan cambios porque el tenant debe existir para asignarlo a un user
                 await _unitOfWork.SaveChangeAsync(cancellationToken);
 
                 await _userService.CreatePendingOwnerAsync(

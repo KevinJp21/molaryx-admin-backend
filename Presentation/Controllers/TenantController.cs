@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.DTOs.Tenant;
+using Application.Features.Tenant.Command.ActivateTenant;
 using Application.Features.Tenant.Query.GetTenants;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -18,12 +19,23 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = PermissionCodes.TENANTS_READ)]
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants ([FromQuery] GetTenantsQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants([FromQuery] GetTenantsQuery query, CancellationToken cancellationToken)
         {
             return Ok(
                 new ApiResponse<PagedResult<TenantDto>>(
                     "Tenants obtenidos de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
+                )
+            );
+        }
+        
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<bool>>> ActivateTenant ([FromBody] ActivateTenantCommand body, CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Cuenta activada de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
                 )
             );
         }

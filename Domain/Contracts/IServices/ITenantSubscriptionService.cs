@@ -15,5 +15,9 @@ namespace Domain.Contracts.IServices
             int? maxPatients,
             CancellationToken cancellationToken
         );
+
+        Task<TenantSubscription> ActivateSubscriptionAsync(long idTenantSubscription, CancellationToken cancellationToken);
+
+        Task<int> UpdateExpiredPromotionsAsync(CancellationToken cancellationToken);
     }
 }

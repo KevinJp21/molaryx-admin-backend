@@ -204,5 +204,79 @@ namespace Infrastructure.Services
 
             return subscription;
         }
+
+        public async Task<TenantSubscription> ActivateSubscriptionAsync(
+            long idTenantSubscription,
+            CancellationToken cancellationToken)
+        {
+            var subscription = await _unitOfWork.TenantSubscriptionRepository
+                .GetByIdWithPromotionAsync(idTenantSubscription, cancellationToken);
+
+            if (subscription is null)
+            {
+                throw new InvalidOperationException("La subscription no existe.");
+            }
+
+            if (subscription.IdTenantSubscriptionStatus != (short)TenantSubscriptionStatusEnum.PENDING)
+            {
+                throw new InvalidOperationException("La suscripción no se encuentra pendiente de activación.");
+            }
+
+            var startsAt = DateTime.UtcNow;
+
+            subscription.IdTenantSubscriptionStatus = (short)TenantSubscriptionStatusEnum.ACTIVE;
+
+            subscription.StartsAt = startsAt;
+
+            if (subscription.IdPromotion.HasValue)
+            {
+                if (subscription.Promotion is null)
+                {
+                    throw new InvalidOperationException("No se pudo obtener la promoción asociada a la suscripción.");
+                }
+
+                subscription.PromotionEndsAt = startsAt.AddMonths(subscription.Promotion.DurationMonths);
+            }
+
+            await _unitOfWork.TenantSubscriptionRepository
+                .UpdateAsync(subscription, cancellationToken);
+
+            return subscription;
+        }
+
+        public async Task<int> UpdateExpiredPromotionsAsync(CancellationToken cancellationToken)
+        {
+            var expiredSubscriptions = await _unitOfWork.TenantSubscriptionRepository
+                .GetSubscriptionsWithExpiredPromotionsAsync(
+                    DateTime.UtcNow,
+                    cancellationToken
+                );
+
+            var updatedCount = 0;
+
+            foreach (var subscription in expiredSubscriptions)
+            {
+                if (subscription.Plan.Price is null)
+                {
+                    continue;
+                }
+
+                subscription.Price = subscription.Plan.Price.Value;
+
+                subscription.IdPromotion = null;
+                subscription.PromotionEndsAt = null;
+
+                await _unitOfWork.TenantSubscriptionRepository.UpdateAsync(subscription, cancellationToken);
+
+                updatedCount++;
+            }
+
+            if (updatedCount > 0)
+            {
+                await _unitOfWork.SaveChangeAsync(cancellationToken);
+            }
+
+            return updatedCount;
+        }
     }
 }

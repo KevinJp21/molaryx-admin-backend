@@ -31,6 +31,6 @@ namespace Domain.Entities
 
         // Navigation properties
         public ICollection<PromotionPlan> PromotionPlans { get; set; } = [];
-        public ICollection<TenantSubscription> tenantSubscriptions { get; set; } = [];
+        public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
     }
 }
