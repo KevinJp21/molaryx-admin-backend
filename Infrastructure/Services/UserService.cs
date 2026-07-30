@@ -81,7 +81,7 @@ namespace Infrastructure.Services
                 IdTenant = idTenant,
 
                 IdUserStatus =
-                    (short)UserStatusEnum.PENDING_APPROVAL,
+                    (short)UserStatusEnum.PENDING,
 
                 IdUserRole =
                     (short)UserRoleEnum.OWNER,
@@ -107,6 +107,29 @@ namespace Infrastructure.Services
                 user,
                 cancellationToken
             );
+
+            return user;
+        }
+
+        public async Task<User> ActivateUserAsync(
+            long idUser,
+            CancellationToken cancellationToken)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(idUser, cancellationToken);
+
+            if (user is null)
+            {
+                throw new InvalidOperationException("El usuario no existe.");
+            }
+
+            if (user.IdUserStatus != (short)UserStatusEnum.PENDING)
+            {
+                throw new InvalidOperationException("El usuario no se encuentra pendiente de activación.");
+            }
+
+            user.IdUserStatus = (short)UserStatusEnum.ACTIVE;
+
+            await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
 
             return user;
         }

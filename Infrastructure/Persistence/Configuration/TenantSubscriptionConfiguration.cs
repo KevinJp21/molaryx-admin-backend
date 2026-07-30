@@ -53,7 +53,7 @@ namespace Infrastructure.Persistence.Configuration
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(ts => ts.Promotion)
-                .WithMany(p => p.tenantSubscriptions)
+                .WithMany(p => p.TenantSubscriptions)
                 .HasForeignKey(ts => ts.IdPromotion)
                 .OnDelete(DeleteBehavior.Restrict);
 

@@ -11,5 +11,11 @@ namespace Domain.Contracts.IServices
             long idTenant,
             CancellationToken cancellationToken
         );
+
+        Task<User> ActivateUserAsync
+        (
+            long idUser,
+            CancellationToken cancellationToken
+        );
     }
 }

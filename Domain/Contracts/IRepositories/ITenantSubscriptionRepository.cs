@@ -6,5 +6,9 @@ namespace Domain.Contracts.IRepositories
     public interface ITenantSubscriptionRepository : IBaseRepository<TenantSubscription, long>
     {
         Task<TenantSubscription?> GetActiveSubscriptionAsync(long IdTenant, CancellationToken cancellationToken);
+
+        Task<TenantSubscription?> GetByIdWithPromotionAsync(long idTenantSubscription, CancellationToken cancellationToken);
+
+        Task<List<TenantSubscription>> GetSubscriptionsWithExpiredPromotionsAsync( DateTime currentDate, CancellationToken cancellationToken );
     }
 }

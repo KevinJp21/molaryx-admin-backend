@@ -17,5 +17,33 @@ namespace Infrastructure.Persistence.Repositories
                     cancellationToken
                 );
         }
+
+        public async Task<TenantSubscription?> GetByIdWithPromotionAsync(
+            long idTenantSubscription,
+            CancellationToken cancellationToken
+        )
+        {
+            return await DbSet
+                .Include(ts => ts.Promotion)
+                .FirstOrDefaultAsync(
+                    ts => ts.IdTenantSubscription == idTenantSubscription,
+                    cancellationToken
+                );
+        }
+
+        public async Task<List<TenantSubscription>> GetSubscriptionsWithExpiredPromotionsAsync(
+            DateTime currentDate,
+            CancellationToken cancellationToken)
+        {
+            return await DbSet
+                .Include(ts => ts.Promotion)
+                .Include(ts => ts.Plan)
+                .Where(ts =>
+                    ts.IdTenantSubscriptionStatus == (short)TenantSubscriptionStatusEnum.ACTIVE
+                    && ts.IdPromotion.HasValue
+                    && ts.PromotionEndsAt.HasValue
+                    && ts.PromotionEndsAt.Value <= currentDate
+                ).ToListAsync(cancellationToken);
+        }
     }
 }

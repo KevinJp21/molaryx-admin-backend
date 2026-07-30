@@ -57,7 +57,7 @@ namespace Infrastructure.Services
                 IdTenantType = (short)TenantTypeEnum.STANDARD,
 
                 IdTenantStatus =
-                    (short)TenantStatusEnum.PENDING_APPROVAL,
+                    (short)TenantStatusEnum.PENDING,
 
                 IdIdentificationType = dto.IdIdentificationType,
                 IdentificationNumber = dto.IdentificationNumber,
@@ -72,6 +72,33 @@ namespace Infrastructure.Services
                 tenant,
                 cancellationToken
             );
+
+            return tenant;
+        }
+
+        public async Task<Tenant> ActivateTenantAsync(
+            long idTenant,
+            CancellationToken cancellationToken)
+        {
+            var tenant = await _unitOfWork.TenantRepository
+                .GetByIdAsync(
+                    idTenant,
+                    cancellationToken
+                );
+
+            if (tenant is null)
+            {
+                throw new InvalidOperationException("El consultorio no existe.");
+            }
+
+            if (tenant.IdTenantStatus != (short)TenantStatusEnum.PENDING)
+            {
+                throw new InvalidOperationException("El consultorio no se encuentra pendiente de aprobación.");
+            }
+
+            tenant.IdTenantStatus = (short)TenantStatusEnum.ACTIVE;
+
+            await _unitOfWork.TenantRepository.UpdateAsync(tenant, cancellationToken);
 
             return tenant;
         }
