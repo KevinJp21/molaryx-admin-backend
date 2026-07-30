@@ -17,7 +17,7 @@ namespace Presentation.Controllers
     {
         private readonly IMediator _mediator = mediator;
 
-        [Authorize(Policy = PermissionCodes.TENANTS_READ)]
+        [Authorize(Policy = PermissionCodes.GET_TENANTS)]
         [HttpGet]
         public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants([FromQuery] GetTenantsQuery query, CancellationToken cancellationToken)
         {
@@ -29,6 +29,7 @@ namespace Presentation.Controllers
             );
         }
         
+        [Authorize(Policy = PermissionCodes.ACTIVATE_TENANT)]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<bool>>> ActivateTenant ([FromBody] ActivateTenantCommand body, CancellationToken cancellationToken)
         {
