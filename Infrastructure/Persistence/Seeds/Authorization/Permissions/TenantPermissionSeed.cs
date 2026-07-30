@@ -11,30 +11,16 @@ public static class TenantPermissionSeed
     [
         new Permission
         {
-            IdPermission = (short)PermissionEnum.TENANTS_READ,
+            IdPermission = (short)PermissionEnum.GET_TENANTS,
             IdModule = (short)ModuleEnum.TENANTS,
-            Code = PermissionCodes.TENANTS_READ,
+            Code = PermissionCodes.GET_TENANTS,
             CreatedAt = SeedConstants.SeedDate
         },
         new Permission
         {
-            IdPermission = (short)PermissionEnum.TENANTS_CREATE,
+            IdPermission = (short)PermissionEnum.ACTIVATE_TENANT,
             IdModule = (short)ModuleEnum.TENANTS,
-            Code = PermissionCodes.TENANTS_CREATE,
-            CreatedAt = SeedConstants.SeedDate
-        },
-        new Permission
-        {
-            IdPermission = (short)PermissionEnum.TENANTS_UPDATE,
-            IdModule = (short)ModuleEnum.TENANTS,
-            Code = PermissionCodes.TENANTS_UPDATE,
-            CreatedAt = SeedConstants.SeedDate
-        },
-        new Permission
-        {
-            IdPermission = (short)PermissionEnum.TENANTS_DELETE,
-            IdModule = (short)ModuleEnum.TENANTS,
-            Code = PermissionCodes.TENANTS_DELETE,
+            Code = PermissionCodes.ACTIVATE_TENANT,
             CreatedAt = SeedConstants.SeedDate
         }
     ];
