@@ -11,13 +11,13 @@ namespace Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<Promotion> ValidatePromotionAsync(
-            string code,
+            long idPromotion,
             short idPlan,
             CancellationToken cancellationToken
         )
         {
             var promotion = await _unitOfWork.PromotionRepository.GetAvailablePromotionAsync(
-                code,
+                idPromotion,
                 cancellationToken
             );
 

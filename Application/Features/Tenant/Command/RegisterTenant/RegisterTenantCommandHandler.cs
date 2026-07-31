@@ -1,29 +1,37 @@
 using Application.Common.Mediator.Interfaces;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
+using Domain.Entities;
+using Domain.Enums;
 namespace Application.Features.Tenant.Command.RegisterTenant
 {
     public class RegisterTenantCommandHandler
     (
-        ITenantService tenantService,
-        IUserService userService,
-        ITenantSubscriptionService tenantSubscriptionService,
-        IUnitOfWork unitOfWork
+        ITenantService _tenantService,
+        IUserService _userService,
+        ITenantSubscriptionService _tenantSubscriptionService,
+        IPromotionService _promotionService,
+        IUnitOfWork _unitOfWork
     ) : IRequestHandler<RegisterTenantCommand, bool>
     {
 
-        private readonly ITenantService _tenantService = tenantService;
-        private readonly IUserService _userService = userService;
-        private readonly ITenantSubscriptionService _tenantSubscriptionService = tenantSubscriptionService;
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        public async Task<bool> Handle(RegisterTenantCommand request, CancellationToken cancellationToken)
+        {
 
-        public async Task<bool> Handle( RegisterTenantCommand request, CancellationToken cancellationToken) {
+            Promotion? promotion = null;
+
+            if (request.IdPromotion is long idPromotion)
+            {
+                 promotion = await _promotionService.ValidatePromotionAsync(idPromotion, request.IdPlan, cancellationToken);
+            }
+
 
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
             try
             {
                 var tenant = await _tenantService.CreatePendingTenantAsync(
+                    promotion?.IdTenantType ?? (short)TenantTypeEnum.STANDARD,
                     request.Tenant,
                     cancellationToken
                 );
@@ -40,7 +48,7 @@ namespace Application.Features.Tenant.Command.RegisterTenant
                 await _tenantSubscriptionService.CreateSubscriptionAsync(
                     tenant.IdTenant,
                     request.IdPlan,
-                    request.PromotionCode,
+                    request.IdPromotion,
                     cancellationToken
                 );
 

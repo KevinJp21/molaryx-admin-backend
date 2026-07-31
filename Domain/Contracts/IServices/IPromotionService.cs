@@ -5,7 +5,7 @@ namespace Domain.Contracts.IServices
     public interface IPromotionService
     {
         Task<Promotion> ValidatePromotionAsync(
-            string code,
+            long idPromotion,
             short idPlan,
             CancellationToken cancellationToken
         );

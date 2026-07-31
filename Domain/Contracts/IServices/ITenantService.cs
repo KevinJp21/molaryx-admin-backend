@@ -7,6 +7,7 @@ namespace Domain.Contracts.IServices
     {
         Task<Tenant> CreatePendingTenantAsync
         (
+            short idTenantType,
             TenantRegistration tenant,
             CancellationToken cancellationToken
         );

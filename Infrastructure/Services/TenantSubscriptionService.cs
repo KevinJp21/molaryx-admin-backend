@@ -17,7 +17,7 @@ namespace Infrastructure.Services
         public async Task<TenantSubscription> CreateSubscriptionAsync(
             long idTenant,
             short idPlan,
-            string? promotionCode,
+            long? idPromotion,
             CancellationToken cancellationToken
         )
         {
@@ -62,18 +62,15 @@ namespace Infrastructure.Services
             }
 
             decimal price;
-            long? idPromotion = null;
 
-            if (!string.IsNullOrWhiteSpace(promotionCode))
+            if (idPromotion != null)
             {
                 var promotion = await _promotionService
                     .ValidatePromotionAsync(
-                        promotionCode,
+                        idPromotion.Value,
                         idPlan,
                         cancellationToken
                     );
-
-                idPromotion = promotion.IdPromotion;
 
                 price = _promotionService.GetPromotionPrice(
                     promotion,

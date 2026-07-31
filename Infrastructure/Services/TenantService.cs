@@ -13,6 +13,7 @@ namespace Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         public async Task<Tenant> CreatePendingTenantAsync(
+            short idTenantType,
             TenantRegistration dto,
             CancellationToken cancellationToken)
         {
@@ -54,7 +55,7 @@ namespace Infrastructure.Services
 
             var tenant = new Tenant
             {
-                IdTenantType = (short)TenantTypeEnum.STANDARD,
+                IdTenantType = idTenantType,
 
                 IdTenantStatus =
                     (short)TenantStatusEnum.PENDING,
