@@ -12,5 +12,6 @@ namespace Domain.Entities
         public string Code { get; set; } = string.Empty;
 
         public ICollection<Tenant> Tenants { get; set; } = [];
+        public ICollection<Promotion> Promotions { get; set; } = [];
     }
 }

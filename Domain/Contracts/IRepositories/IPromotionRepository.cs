@@ -6,12 +6,12 @@ namespace Domain.Contracts.IRepositories
     public interface IPromotionRepository : IBaseRepository<Promotion, long>
     {
         Task<Promotion?> GetActivePromotionAsync(
-            string code,
+            long idPromotion,
             CancellationToken cancellationToken
         );
 
         Task<Promotion?> GetAvailablePromotionAsync(
-            string code,
+            long idPromotion,
             CancellationToken cancellationToken
         );
     }

@@ -12,6 +12,8 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasKey(p => p.IdPromotion);
 
+            builder.Property(p => p.IdTenantType);
+
             builder.Property(p => p.Code).IsRequired().HasMaxLength(50);
 
             builder.Property(p => p.Name).IsRequired().HasMaxLength(255);
@@ -29,6 +31,11 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(p => p.CreatedAt).IsRequired();
 
             builder.Property(p => p.UpdatedAt);
+
+            builder.HasOne(p => p.TenantType)
+                .WithMany(tt => tt.Promotions)
+                .HasForeignKey(p => p.IdTenantType)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

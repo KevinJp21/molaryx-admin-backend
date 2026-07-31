@@ -6,19 +6,19 @@ namespace Infrastructure.Persistence.Repositories
 {
     public class PromotionRepository(AppDbContext dbContext) : BaseRepository<Promotion, long>(dbContext), IPromotionRepository
     {
-        public async Task<Promotion?> GetActivePromotionAsync(string code, CancellationToken cancellationToken)
+        public async Task<Promotion?> GetActivePromotionAsync(long idPromotion, CancellationToken cancellationToken)
         {
             return await DbSet
                 .Include(p => p.PromotionPlans)
                 .FirstOrDefaultAsync(
                     p =>
-                        p.Code == code &&
+                        p.IdPromotion == idPromotion &&
                         p.IsActive,
                         cancellationToken
                 );
         }
 
-        public async Task<Promotion?> GetAvailablePromotionAsync(string code, CancellationToken cancellationToken)
+        public async Task<Promotion?> GetAvailablePromotionAsync(long idPromotion, CancellationToken cancellationToken)
         {
             var now = DateTime.UtcNow;
 
@@ -26,7 +26,7 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(p => p.PromotionPlans)
                 .FirstOrDefaultAsync(
                     p =>
-                        p.Code == code &&
+                        p.IdPromotion == idPromotion &&
                         p.IsActive &&
                         p.StartsAt <= now &&
                         (

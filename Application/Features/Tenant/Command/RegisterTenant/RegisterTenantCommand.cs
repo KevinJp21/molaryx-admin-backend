@@ -5,7 +5,7 @@ namespace Application.Features.Tenant.Command.RegisterTenant
     public class RegisterTenantCommand : IRequest<bool>
     {
         public short IdPlan { get; set; }
-        public string? PromotionCode { get; set; }
+        public long? IdPromotion { get; set; }
         public OwnerRegistration Owner { get; set; } = null!;
         public TenantRegistration Tenant { get; set; } = null!;
     }

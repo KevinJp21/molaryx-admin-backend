@@ -8,6 +8,9 @@ namespace Domain.Entities
         [Column("id_promotion")]
         public long IdPromotion { get; set; }
 
+        [Column("id_tenant_type")]
+        public short? IdTenantType { get; set; }
+
         [Column("code")]
         public string Code { get; set; } = string.Empty;
 
@@ -32,5 +35,6 @@ namespace Domain.Entities
         // Navigation properties
         public ICollection<PromotionPlan> PromotionPlans { get; set; } = [];
         public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
+        public TenantType? TenantType { get; set; }
     }
 }

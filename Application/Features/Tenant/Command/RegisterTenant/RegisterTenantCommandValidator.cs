@@ -22,10 +22,6 @@ namespace Application.Features.Tenant.Command.RegisterTenant
 
             When(x => x.Tenant is not null, () =>
             {
-                RuleFor(x => x.PromotionCode)
-                    .MaximumLength(50)
-                    .WithMessage("El código de promoción es demasiado largo.")
-                    .When(x => !string.IsNullOrWhiteSpace(x.PromotionCode));
                 RuleFor(x => x.Tenant.ConsultoryName)
                     .NotEmpty()
                     .WithMessage("El nombre del consultorio es obligatorio.")
