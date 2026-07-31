@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Application.Features.Tenant.Command.RegisterTenant;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
@@ -15,11 +16,11 @@ namespace Infrastructure.Services
 
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<User> CreatePendingOwnerAsync(
-            OwnerRegistration dto,
+        public async Task<User> CreatePendingOwnerAsync<TOwnerRegistration>(
+            TOwnerRegistration dto,
             long idTenant,
             CancellationToken cancellationToken
-        )
+        ) where TOwnerRegistration : IOwnerRegistration
         {
 
             var username = dto.Username.Trim().ToLowerInvariant();
@@ -43,7 +44,7 @@ namespace Infrastructure.Services
 
             if (emailExists)
             {
-                throw new InvalidOperationException("El correo electrónico ya se encuentra registrado.");
+                throw new InvalidOperationException("El correo electrónico del usuario ya se encuentra registrado.");
             }
 
             if (!string.IsNullOrWhiteSpace(dto.IdentificationNumber))
@@ -55,7 +56,7 @@ namespace Infrastructure.Services
 
                 if (identificationNumberExists)
                 {
-                    throw new InvalidOperationException("El número de identificación ya se encuentra registrado.");
+                    throw new InvalidOperationException("El número de identificación del usuario ya se encuentra registrado.");
                 }
             }
 
@@ -66,7 +67,7 @@ namespace Infrastructure.Services
 
             if (phoneNumberExists)
             {
-                throw new InvalidOperationException("El número de telefono ya se encuentra registrado.");
+                throw new InvalidOperationException("El número de telefono del usuario ya se encuentra registrado.");
             }
 
             var salt = _hasherService.GenerateSalt();

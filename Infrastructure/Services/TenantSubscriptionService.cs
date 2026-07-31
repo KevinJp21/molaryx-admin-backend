@@ -115,7 +115,6 @@ namespace Infrastructure.Services
 
         public async Task<TenantSubscription> CreateCustomSubscriptionAsync(
             long idTenant,
-            short idPlan,
             decimal price,
             short? maxProfessionals,
             short? maxAssistants,
@@ -138,7 +137,7 @@ namespace Infrastructure.Services
 
             var plan = await _unitOfWork.PlanRepository
                 .GetByIdAsync(
-                    idPlan,
+                    (short)PlanEnum.BUSINESS,
                     cancellationToken
                 );
 
@@ -180,7 +179,7 @@ namespace Infrastructure.Services
             var subscription = new TenantSubscription
             {
                 IdTenant = idTenant,
-                IdPlan = idPlan,
+                IdPlan = (short)PlanEnum.BUSINESS,
                 IdTenantSubscriptionStatus =
                     (short)TenantSubscriptionStatusEnum.PENDING,
 

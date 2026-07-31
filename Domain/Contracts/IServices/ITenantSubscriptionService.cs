@@ -8,7 +8,6 @@ namespace Domain.Contracts.IServices
 
         Task<TenantSubscription> CreateCustomSubscriptionAsync(
             long idTenant,
-            short idPlan,
             decimal price,
             short? maxProfessionals,
             short? maxAssistants,
