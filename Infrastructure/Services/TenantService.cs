@@ -1,5 +1,4 @@
 using Application.Common.Interfaces;
-using Application.Features.Tenant.Command.RegisterTenant;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;

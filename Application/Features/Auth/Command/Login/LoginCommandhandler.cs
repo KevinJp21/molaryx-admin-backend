@@ -2,6 +2,7 @@ using Application.Common.Mediator.Interfaces;
 using Application.DTOs.Auth;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
+using Domain.Enums;
 using Domain.Exceptions;
 
 namespace Application.Features.Auth.Command.Login
@@ -16,7 +17,8 @@ namespace Application.Features.Auth.Command.Login
         public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var user = await _unitOfWork.UserRepository.GetByEmailAsync(request.Email, cancellationToken)
-                ?? throw new NotFoundException("Usuario o contraseña invalida.");
+                ?? throw new InvalidCredentialsException("Usuario o contraseña invalida.");
+
 
             var hashedPassword = _hasherService.ComputeHashBytes(request.Password, user.Salt);
 
@@ -25,7 +27,34 @@ namespace Application.Features.Auth.Command.Login
                 throw new InvalidCredentialsException("Usuario o contraseña invalida.");
             }
 
-            var ( AuthToken, refreshToken ) = await _sessionService.CreateSessionAsync(
+            switch (user.IdUserStatus)
+            {
+                case (short)UserStatusEnum.PENDING:
+                    throw new InvalidOperationException("La cuenta se encuentra pendiente de activación.");
+
+                case (short)UserStatusEnum.BLOCKED:
+                    throw new InvalidOperationException("La cuenta se encuentra bloqueada.");
+
+                case (short)UserStatusEnum.INACTIVE:
+                    throw new InvalidOperationException("La cuenta se encuentra inactiva.");
+            }
+
+            switch (user.Tenant.IdTenantStatus)
+            {
+                case (short)TenantStatusEnum.BLOCKED:
+                    throw new InvalidOperationException("El consultorio se encuentra bloqueado.");
+
+                case (short)TenantStatusEnum.INACTIVE:
+                    throw new InvalidOperationException("El consultorio se encuentra inactivo.");
+
+                case (short)TenantStatusEnum.PENDING:
+                    throw new InvalidOperationException("El consultorio se encuentra pendiente de activación.");
+
+                case (short)TenantStatusEnum.REJECTED:
+                    throw new InvalidOperationException("El consultorio ha sido rechazado.");
+            }
+
+            var (AuthToken, refreshToken) = await _sessionService.CreateSessionAsync(
                 user.IdUser,
                 user.IdUserRole,
                 user.IdTenant,

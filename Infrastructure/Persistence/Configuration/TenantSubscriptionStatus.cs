@@ -81,7 +81,7 @@ namespace Infrastructure.Persistence.Configuration
                 {
                     IdTenantSubscriptionStatus = (short)TenantSubscriptionStatusEnum.SUSPENDED,
                     Code = TenantSubscriptionStatusCode.SUSPENDED,
-                    Name = "Suspendida",
+                    Name = "Suspendido",
                     Description = "La suscripción ha sido suspendida temporalmente.",
                     CreatedAt = SeedConstants.SeedDate
                 }
