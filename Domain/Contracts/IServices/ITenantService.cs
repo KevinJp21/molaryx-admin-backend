@@ -1,3 +1,4 @@
+using Application.Common.Interfaces;
 using Application.Features.Tenant.Command.RegisterTenant;
 using Domain.Entities;
 
@@ -5,12 +6,12 @@ namespace Domain.Contracts.IServices
 {
     public interface ITenantService
     {
-        Task<Tenant> CreatePendingTenantAsync
+        Task<Tenant> CreatePendingTenantAsync<TTenantRegistration>
         (
             short idTenantType,
-            TenantRegistration tenant,
+            TTenantRegistration tenant,
             CancellationToken cancellationToken
-        );
+        ) where TTenantRegistration : ITenantRegistration;
 
         Task<Tenant> ActivateTenantAsync
         (

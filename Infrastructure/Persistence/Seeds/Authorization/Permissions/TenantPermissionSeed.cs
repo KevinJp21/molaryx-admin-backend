@@ -22,6 +22,13 @@ public static class TenantPermissionSeed
             IdModule = (short)ModuleEnum.TENANTS,
             Code = PermissionCodes.ACTIVATE_TENANT,
             CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.CREATE_BUSINESS_TENANT,
+            IdModule = (short)ModuleEnum.TENANTS,
+            Code = PermissionCodes.CREATE_BUSINESS_TENANT,
+            CreatedAt = SeedConstants.SeedDate
         }
     ];
 }
