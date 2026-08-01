@@ -31,5 +31,7 @@ services:
       Jwt__Issuer: ${JWT_ISSUER}
       Jwt__Audience: ${JWT_AUDIENCE}
 
+      Resend__ApiKey: ${RESEND_API_KEY}
+
 volumes:
   molaryx_postgres_data:

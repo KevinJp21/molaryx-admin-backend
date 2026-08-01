@@ -1,6 +1,6 @@
 namespace Domain.Constants
 {
-    public class IdentificationTypeCode
+    public static class IdentificationTypeCode
     {
         public const string CC = "CC";
         public const string CE = "CE";

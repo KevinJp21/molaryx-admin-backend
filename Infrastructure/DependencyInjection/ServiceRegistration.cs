@@ -6,6 +6,7 @@ using Domain.Contracts.IServices;
 using Infrastructure.Security;
 using Infrastructure.Services;
 using Domain.Contracts;
+using Resend;
 
 namespace Infrastructure.DependencyInjection;
 
@@ -35,7 +36,7 @@ public static class ServiceRegistration
 
             options.UseNpgsql(dataSource);
         });
-        AddServices(services);
+        AddServices(services, configuration);
         AddRepositories(services);
         return services;
     }
@@ -74,7 +75,7 @@ public static class ServiceRegistration
         }
     }
 
-    private static void AddServices(IServiceCollection services)
+    private static void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IHasherService, HasherService>();
@@ -84,5 +85,7 @@ public static class ServiceRegistration
         services.AddScoped<ITenantService, TenantService>();
         services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
         services.AddScoped<IPromotionService, PromotionService>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddResend(options => options.ApiToken = configuration["Resend:ApiKey"]!);
     }
 }
