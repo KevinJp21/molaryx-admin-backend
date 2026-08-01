@@ -39,19 +39,25 @@ namespace Application.Features.Auth.Command.Login
                     throw new InvalidOperationException("La cuenta se encuentra inactiva.");
             }
 
-            switch (user.Tenant.IdTenantStatus)
+            if (user.Tenant is not null)
             {
-                case (short)TenantStatusEnum.BLOCKED:
-                    throw new InvalidOperationException("El consultorio se encuentra bloqueado.");
+            if (user.Tenant is not null)
+            {
+                switch (user.Tenant.IdTenantStatus)
+                {
+                    case (short)TenantStatusEnum.BLOCKED:
+                        throw new InvalidOperationException("El consultorio se encuentra bloqueado.");
 
-                case (short)TenantStatusEnum.INACTIVE:
-                    throw new InvalidOperationException("El consultorio se encuentra inactivo.");
+                    case (short)TenantStatusEnum.INACTIVE:
+                        throw new InvalidOperationException("El consultorio se encuentra inactivo.");
 
-                case (short)TenantStatusEnum.PENDING:
-                    throw new InvalidOperationException("El consultorio se encuentra pendiente de activación.");
+                    case (short)TenantStatusEnum.PENDING:
+                        throw new InvalidOperationException("El consultorio se encuentra pendiente de activación.");
 
-                case (short)TenantStatusEnum.REJECTED:
-                    throw new InvalidOperationException("El consultorio ha sido rechazado.");
+                    case (short)TenantStatusEnum.REJECTED:
+                        throw new InvalidOperationException("El consultorio ha sido rechazado.");
+                }
+            }
             }
 
             var (AuthToken, refreshToken) = await _sessionService.CreateSessionAsync(

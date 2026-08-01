@@ -11,7 +11,9 @@ namespace Application.Features.Tenant.Command.RegisterTenant
         IUserService _userService,
         ITenantSubscriptionService _tenantSubscriptionService,
         IPromotionService _promotionService,
-        IUnitOfWork _unitOfWork
+        IEmailNotificationService _emailNotificationService,
+        IUnitOfWork _unitOfWork,
+        ILogger<RegisterTenantCommandHandler> _logger
     ) : IRequestHandler<RegisterTenantCommand, bool>
     {
 
@@ -22,7 +24,7 @@ namespace Application.Features.Tenant.Command.RegisterTenant
 
             if (request.IdPromotion is long idPromotion)
             {
-                 promotion = await _promotionService.ValidatePromotionAsync(idPromotion, request.IdPlan, cancellationToken);
+                promotion = await _promotionService.ValidatePromotionAsync(idPromotion, request.IdPlan, cancellationToken);
             }
 
 
@@ -53,6 +55,23 @@ namespace Application.Features.Tenant.Command.RegisterTenant
                 );
 
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+                try
+                {
+                    await _emailNotificationService.SendWelcomeEmailAsync(
+                        request.Owner,
+                        request.Tenant,
+                        cancellationToken
+                    );
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error al enviar el correo de bienvenida al usuario {OwnerEmail}.",
+                        request.Owner.Email
+                    );
+                }
 
                 return true;
             }

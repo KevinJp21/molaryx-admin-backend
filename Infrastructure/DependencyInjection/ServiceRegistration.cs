@@ -87,5 +87,6 @@ public static class ServiceRegistration
         services.AddScoped<IPromotionService, PromotionService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddResend(options => options.ApiToken = configuration["Resend:ApiKey"]!);
+        services.AddScoped<IEmailNotificationService, EmailNotificationService>();
     }
 }

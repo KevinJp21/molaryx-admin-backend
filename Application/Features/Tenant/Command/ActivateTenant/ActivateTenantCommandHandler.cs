@@ -8,7 +8,9 @@ namespace Application.Features.Tenant.Command.ActivateTenant
         ITenantService _tenantService,
         IUserService _userService,
         ITenantSubscriptionService _tenantSubscriptionService,
-        IUnitOfWork _unitOfWork
+        IEmailNotificationService _emailNotificationService,
+        IUnitOfWork _unitOfWork,
+        ILogger<ActivateTenantCommandHandler> _logger
     ) : IRequestHandler<ActivateTenantCommand, bool>
     {
 
@@ -19,12 +21,12 @@ namespace Application.Features.Tenant.Command.ActivateTenant
             try
             {
 
-                await _userService.ActivateUserAsync(
+                var user = await _userService.ActivateUserAsync(
                     request.IdUser,
                     cancellationToken
                 );
 
-                await _tenantService.ActivateTenantAsync(
+                var tenant = await _tenantService.ActivateTenantAsync(
                     request.IdTenant,
                     cancellationToken
                 );
@@ -35,6 +37,22 @@ namespace Application.Features.Tenant.Command.ActivateTenant
                 );
 
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+                try
+                {
+                    await _emailNotificationService.SendAccountActivatedEmailAsync(
+                        user,
+                        tenant,
+                        cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error al enviar el correo de activación de cuenta al usuario {UserEmail}.",
+                        user.Email
+                    );
+                }
 
                 return true;
             }

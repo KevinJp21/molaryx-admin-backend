@@ -8,7 +8,11 @@ namespace Infrastructure.Persistence.Repositories
     {
         public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
-            return await DbSet.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+            return await DbSet
+                .Include(u => u.UserRole)
+                .Include(u => u.UserStatus)
+                .Include(u => u.Tenant)
+                .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         }
 
         public override async Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
