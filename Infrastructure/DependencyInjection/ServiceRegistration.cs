@@ -7,6 +7,10 @@ using Infrastructure.Security;
 using Infrastructure.Services;
 using Domain.Contracts;
 using Resend;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using Shared.Common;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Infrastructure.DependencyInjection;
 
@@ -88,5 +92,41 @@ public static class ServiceRegistration
         services.AddScoped<IEmailService, EmailService>();
         services.AddResend(options => options.ApiToken = configuration["Resend:ApiKey"]!);
         services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.OnRejected = async (context, cancellationToken) =>
+            {
+                context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+
+                await context.HttpContext.Response.WriteAsJsonAsync(
+                    new ApiResponse<object>{
+                        Ok = false,
+                        Message = "Has realizado demasiadas solicitudes. Inténtalo nuevamente más tarde.",
+                        Data= null
+                    },
+                    cancellationToken
+                );
+            };
+
+            options.AddPolicy("auth", httpContext =>
+            {
+                var ipAddress =
+                    httpContext.Connection.RemoteIpAddress?.ToString()
+                    ?? "unknown";
+
+                return RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: $"ip:{ipAddress}",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 10,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                        AutoReplenishment = true
+                    }
+                );
+            });
+        });
     }
 }
