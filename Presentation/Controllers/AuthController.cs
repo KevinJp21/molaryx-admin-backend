@@ -12,6 +12,7 @@ using Application.Features.Auth.Query.GetUser;
 using Application.Features.Tenant.Command.RegisterTenant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shared.Common;
 
 namespace Presentation.Controllers
@@ -23,6 +24,7 @@ namespace Presentation.Controllers
     {
         private readonly IMediator _mediator = mediator;
 
+        [EnableRateLimiting("auth")]
         [AllowAnonymous]
         [HttpPost]
         [EndpointDescription("Autentica al usuario y crea una nueva sesión, generando un access token y un refresh token.")]
@@ -36,6 +38,7 @@ namespace Presentation.Controllers
             );
         }
 
+        [EnableRateLimiting("auth")]
         [AllowAnonymous]
         [HttpPost]
         [EndpointDescription("Registra un nuevo usuario propietario y crea el consultorio asociado junto con su suscripción seleccionada. El registro queda pendiente de aprobación administrativa antes de que el usuario pueda acceder al sistema.")]

@@ -115,6 +115,8 @@ app.UseCors("PoliticaCors");
 
 app.UseExceptionHandler(app => { });
 
+app.UseRateLimiter();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
