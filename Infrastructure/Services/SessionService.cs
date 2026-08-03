@@ -33,7 +33,7 @@ namespace Infrastructure.Services
 
             var currentDate = DateTime.UtcNow;
 
-            var refreshToken = _tokenService.GenerateRefreshToken();
+            var refreshToken = _tokenService.GenerateToken();
 
             var refreshTokenHash =
                 _tokenService.HashRefreshToken(refreshToken);
@@ -63,7 +63,7 @@ namespace Infrastructure.Services
                 cancellationToken
             );
 
-            var authToken = _tokenService.GenerateToken(
+            var authToken = _tokenService.GenerateJwt(
                 idUser,
                 idUserRole,
                 idTenant,
@@ -133,7 +133,7 @@ namespace Infrastructure.Services
 
             // Generate new refresh token
             var newRefreshToken =
-                _tokenService.GenerateRefreshToken();
+                _tokenService.GenerateToken();
 
             var newRefreshTokenHash =
                 _tokenService.HashRefreshToken(
@@ -193,7 +193,7 @@ namespace Infrastructure.Services
                     cancellationToken
                 );
 
-                var authToken = _tokenService.GenerateToken(
+                var authToken = _tokenService.GenerateJwt(
                     user.IdUser,
                     user.IdUserRole,
                     user.IdTenant,

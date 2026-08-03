@@ -14,5 +14,10 @@ namespace Domain.Contracts.IServices
             User user,
             Tenant tenant,
             CancellationToken cancellationToken = default);
+
+        Task SendResetPasswordEmailAsync(
+            User user,
+            string token,
+            CancellationToken cancellationToken = default);
     }
 }
