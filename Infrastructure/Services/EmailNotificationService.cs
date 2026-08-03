@@ -58,7 +58,7 @@ namespace Infrastructure.Services
             );
         }
 
-        public async Task SendResetPasswordEmailAsync(
+        public async Task SendResetPasswordTokenEmailAsync(
             User user,
             string token,
             CancellationToken cancellationToken = default
@@ -71,6 +71,29 @@ namespace Infrastructure.Services
                 {
                     ["Name"] = firstName,
                     ["ResetUrl"] = _configuration["App:FrontendUrl"] + _configuration["App:ResetPasswordUrl"] + $"?token={token}",
+                }
+            );
+
+            await _emailService.SendAsync(
+                EmailFrom.NoReply,
+                user.Email,
+                "Restablece tu contraseña",
+                html,
+                cancellationToken
+            );
+        }
+
+        public async Task SendResetPasswordEmailAsync(
+            User user,
+            CancellationToken cancellationToken = default)
+        {
+
+            var firstName = user.FirstName.Trim().Split(' ')[0];
+            var html = EmailTemplateService.RenderTemplate(
+                "ResetPassword",
+                new Dictionary<string, string>
+                {
+                    ["Name"] = firstName,
                 }
             );
 

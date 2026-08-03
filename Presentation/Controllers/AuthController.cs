@@ -8,6 +8,7 @@ using Application.Features.Auth.Command.Login;
 using Application.Features.Auth.Command.Logout;
 using Application.Features.Auth.Command.LogoutAll;
 using Application.Features.Auth.Command.RefreshToken;
+using Application.Features.Auth.Command.ResetPassword;
 using Application.Features.Auth.Query.GetSessions;
 using Application.Features.Auth.Query.GetUser;
 using Application.Features.Tenant.Command.RegisterTenant;
@@ -35,6 +36,38 @@ namespace Presentation.Controllers
                 new ApiResponse<LoginResponseDto>(
                     "Inicio de sesion de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
+                )
+            );
+        }
+
+
+        [EnableRateLimiting("forgot-password")]
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<bool>>> ForgotPassword([FromBody] ForgotPasswordCommand body, CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.",
+                    await _mediator.Send(
+                        body,
+                        cancellationToken
+                    )
+                )
+            );
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<bool>>> ResetPassword([FromBody] ResetPasswordCommand body, CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Contraseña restablecida correctamente.",
+                    await _mediator.Send(
+                        body,
+                        cancellationToken
+                    )
                 )
             );
         }
@@ -110,22 +143,6 @@ namespace Presentation.Controllers
                     "Todas las sesiones fueron cerradas correctamente.",
                     await _mediator.Send(
                         new LogoutAllCommand(),
-                        cancellationToken
-                    )
-                )
-            );
-        }
-
-        [EnableRateLimiting("auth")]
-        [AllowAnonymous]
-        [HttpPost]
-        public async Task<ActionResult<ApiResponse<bool>>> ForgotPassword([FromBody] ForgotPasswordCommand body,CancellationToken cancellationToken)
-        {
-            return Ok(
-                new ApiResponse<bool>(
-                    "Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.",
-                    await _mediator.Send(
-                        body,
                         cancellationToken
                     )
                 )

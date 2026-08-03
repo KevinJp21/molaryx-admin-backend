@@ -10,7 +10,7 @@ namespace Application.Features.Auth.Command.Login
                 .NotEmpty()
                 .WithMessage("El correo electrónico es obligatorio.")
                 .EmailAddress()
-                .WithMessage("El correo electrónico no es valido");
+                .WithMessage("El correo electrónico no es válido");
 
             RuleFor(l => l.Password)
                 .NotEmpty()

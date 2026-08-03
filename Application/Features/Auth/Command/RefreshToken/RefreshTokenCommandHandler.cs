@@ -4,10 +4,8 @@ using Domain.Contracts.IServices;
 
 namespace Application.Features.Auth.Command.RefreshToken
 {
-    public class RefreshTokenCommandHandler(ISessionService sessionService) : IRequestHandler<RefreshTokenCommand, RefreshTokenResponseDto>
+    public class RefreshTokenCommandHandler(ISessionService _sessionService) : IRequestHandler<RefreshTokenCommand, RefreshTokenResponseDto>
     {
-        private readonly ISessionService _sessionService = sessionService;
-
         public async Task<RefreshTokenResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
             var (authToken, refreshToken) =
