@@ -26,6 +26,8 @@ namespace Domain.Contracts
 
         public IPromotionRepository PromotionRepository { get; }
 
+        public IPasswordResetTokenRepository PasswordResetTokenRepository { get; }
+
         Task<int> SaveChangeAsync(CancellationToken? cancellationToken);
 
         Task BeginTransactionAsync(CancellationToken? cancellationToken = null);

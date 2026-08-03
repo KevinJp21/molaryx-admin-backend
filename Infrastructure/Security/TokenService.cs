@@ -12,7 +12,7 @@ namespace Infrastructure.Security
     {
         private readonly JsonWebTokenHandler _tokenHandler = new();
 
-        public string GenerateToken(
+        public string GenerateJwt(
             long idUser,
             short idUserRole,
             long? idTenant,
@@ -61,9 +61,16 @@ namespace Infrastructure.Security
             return _tokenHandler.CreateToken(tokenDescriptor);
         }
 
-        public string GenerateRefreshToken()
+        public string GenerateToken()
         {
             var randomBytes = RandomNumberGenerator.GetBytes(64);
+
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        public string GenerateResetPasswordToken()
+        {
+            var randomBytes = RandomNumberGenerator.GetBytes(32);
 
             return Convert.ToBase64String(randomBytes);
         }

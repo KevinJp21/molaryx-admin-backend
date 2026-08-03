@@ -92,6 +92,7 @@ public static class ServiceRegistration
         services.AddScoped<IEmailService, EmailService>();
         services.AddResend(options => options.ApiToken = configuration["Resend:ApiKey"]!);
         services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+        services.AddScoped<IPasswordResetTokenService, PasswordResetTokenService>();
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

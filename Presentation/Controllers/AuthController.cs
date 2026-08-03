@@ -3,6 +3,7 @@ using Application.Common.Pagination;
 using Application.DTOs.Auth;
 using Application.DTOs.Sessions;
 using Application.DTOs.Users;
+using Application.Features.Auth.Command.ForgotPassword;
 using Application.Features.Auth.Command.Login;
 using Application.Features.Auth.Command.Logout;
 using Application.Features.Auth.Command.LogoutAll;
@@ -53,7 +54,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        [EndpointDescription("Obtiene la información del usuario actualmente autenticado a partir de su sesión activa." )]
+        [EndpointDescription("Obtiene la información del usuario actualmente autenticado a partir de su sesión activa.")]
         public async Task<ActionResult<ApiResponse<UserDto>>> GetUser(CancellationToken cancellationToken)
         {
             return Ok(
@@ -65,7 +66,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        [EndpointDescription( "Obtiene las sesiones del usuario autenticado, incluyendo información del dispositivo, dirección IP, fecha de creación, fecha de expiración e identificación de la sesión actual." )]
+        [EndpointDescription("Obtiene las sesiones del usuario autenticado, incluyendo información del dispositivo, dirección IP, fecha de creación, fecha de expiración e identificación de la sesión actual.")]
         public async Task<ActionResult<ApiResponse<PagedResult<UserSessionDto>>>> GetSessions([FromQuery] GetSessionsQuery query, CancellationToken cancellationToken)
         {
             return Ok(
@@ -78,7 +79,7 @@ namespace Presentation.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [EndpointDescription( "Renueva el auth token y el refresh token utilizando un refresh token válido." )]
+        [EndpointDescription("Renueva el auth token y el refresh token utilizando un refresh token válido.")]
         public async Task<ActionResult<ApiResponse<RefreshTokenResponseDto>>> RefreshToken([FromBody] RefreshTokenCommand body, CancellationToken cancellationToken)
         {
             return Ok(
@@ -89,7 +90,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        [EndpointDescription( "Cierra la sesión asociada al usuario autenticado y al refresh token proporcionado, invalidando dicho refresh token para evitar su reutilización." )]
+        [EndpointDescription("Cierra la sesión asociada al usuario autenticado y al refresh token proporcionado, invalidando dicho refresh token para evitar su reutilización.")]
         public async Task<ActionResult<ApiResponse<bool>>> Logout([FromBody] LogoutCommand body, CancellationToken cancellationToken)
         {
             return Ok(
@@ -101,7 +102,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        [EndpointDescription( "Cierra todas las sesiones activas del usuario autenticado, invalidando los refresh tokens asociados a sus sesiones." )]
+        [EndpointDescription("Cierra todas las sesiones activas del usuario autenticado, invalidando los refresh tokens asociados a sus sesiones.")]
         public async Task<ActionResult<ApiResponse<bool>>> LogoutAll(CancellationToken cancellationToken)
         {
             return Ok(
@@ -109,6 +110,22 @@ namespace Presentation.Controllers
                     "Todas las sesiones fueron cerradas correctamente.",
                     await _mediator.Send(
                         new LogoutAllCommand(),
+                        cancellationToken
+                    )
+                )
+            );
+        }
+
+        [EnableRateLimiting("auth")]
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<bool>>> ForgotPassword([FromBody] ForgotPasswordCommand body,CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.",
+                    await _mediator.Send(
+                        body,
                         cancellationToken
                     )
                 )

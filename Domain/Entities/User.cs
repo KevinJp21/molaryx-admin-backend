@@ -42,5 +42,6 @@ namespace Domain.Entities
         public Tenant Tenant { get; set; } = null!;
         public IdentificationType IdentificationType { get; set; } = null!;
         public ICollection<UserSession> UserSessions { get; set; } = [];
+        public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = [];
     }
 }
