@@ -14,10 +14,8 @@ namespace Presentation.Controllers
     [Authorize]
     [Route("api/v1/[controller]/[action]")]
     [ApiController]
-    public class TenantController(IMediator mediator) : ControllerBase
+    public class TenantController(IMediator _mediator) : ControllerBase
     {
-        private readonly IMediator _mediator = mediator;
-
         [Authorize(Policy = PermissionCodes.GET_TENANTS)]
         [HttpGet]
         public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants([FromQuery] GetTenantsQuery query, CancellationToken cancellationToken)

@@ -22,10 +22,8 @@ namespace Presentation.Controllers
     [Authorize]
     [Route("api/v1/[controller]/[action]")]
     [ApiController]
-    public class AuthController(IMediator mediator) : ControllerBase
+    public class AuthController(IMediator _mediator) : ControllerBase
     {
-        private readonly IMediator _mediator = mediator;
-
         [EnableRateLimiting("auth")]
         [AllowAnonymous]
         [HttpPost]
@@ -39,7 +37,6 @@ namespace Presentation.Controllers
                 )
             );
         }
-
 
         [EnableRateLimiting("forgot-password")]
         [AllowAnonymous]
