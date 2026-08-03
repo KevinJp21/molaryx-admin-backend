@@ -79,6 +79,7 @@ namespace Infrastructure.Services
 
             user.Salt = salt;
             user.Password = hashedPassword;
+            user.UpdatedAt = DateTime.UtcNow;
 
             passwordResetToken.UsedAt = DateTime.UtcNow;
 
