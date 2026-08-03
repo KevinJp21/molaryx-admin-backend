@@ -36,7 +36,7 @@ namespace Infrastructure.Services
             var refreshToken = _tokenService.GenerateToken();
 
             var refreshTokenHash =
-                _tokenService.HashRefreshToken(refreshToken);
+                _tokenService.HashToken(refreshToken);
 
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -95,7 +95,7 @@ namespace Infrastructure.Services
             }
 
             var refreshTokenHash =
-                _tokenService.HashRefreshToken(refreshToken);
+                _tokenService.HashToken(refreshToken);
 
             var session = await _unitOfWork.UserSessionRepository
                 .GetByRefreshTokenHashAsync(
@@ -136,7 +136,7 @@ namespace Infrastructure.Services
                 _tokenService.GenerateToken();
 
             var newRefreshTokenHash =
-                _tokenService.HashRefreshToken(
+                _tokenService.HashToken(
                     newRefreshToken
                 );
 
@@ -232,7 +232,7 @@ namespace Infrastructure.Services
             var currentDate = DateTime.UtcNow;
 
             var refreshTokenHash =
-                _tokenService.HashRefreshToken(refreshToken);
+                _tokenService.HashToken(refreshToken);
 
             var revoked = await _unitOfWork.UserSessionRepository.RevokeSessionAsync(
                 idUser,

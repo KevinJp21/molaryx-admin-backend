@@ -1,4 +1,3 @@
-using Application.Features.Auth.Command.ForgotPassword;
 using FluentValidation;
 
 namespace Application.Features.Auth.Command.ForgotPassword
@@ -11,7 +10,7 @@ namespace Application.Features.Auth.Command.ForgotPassword
                 .NotEmpty()
                 .WithMessage("El correo electrónico es obligatorio.")
                 .EmailAddress()
-                .WithMessage("El correo electrónico no es valido");
+                .WithMessage("El correo electrónico no es válido");
         }
     }
 }

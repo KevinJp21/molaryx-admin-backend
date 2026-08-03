@@ -8,7 +8,8 @@ namespace Infrastructure.Services
     public class PasswordResetTokenService(
         IUnitOfWork _unitOfWork,
         ITokenService _tokenService,
-        IEmailNotificationService _emailNotificationService
+        IEmailNotificationService _emailNotificationService,
+        IHasherService _hasherService
         ) : IPasswordResetTokenService
     {
         public async Task<bool> SendResetPasswordTokenAsync(string email, CancellationToken cancellationToken = default)
@@ -32,11 +33,12 @@ namespace Infrastructure.Services
             }
 
             var token = _tokenService.GenerateResetPasswordToken();
+            var tokenHash = _tokenService.HashToken(token);
 
             var passwordResetToken = new PasswordResetToken
             {
                 IdUser = user.IdUser,
-                Token = token,
+                Token = tokenHash,
                 ExpiresAt = currentDate.AddMinutes(15),
                 CreatedAt = currentDate
             };
@@ -45,8 +47,44 @@ namespace Infrastructure.Services
 
             await _unitOfWork.SaveChangeAsync(cancellationToken);
 
-            await _emailNotificationService.SendResetPasswordEmailAsync(user, token, cancellationToken);
+            await _emailNotificationService.SendResetPasswordTokenEmailAsync(user, token, cancellationToken);
 
+
+            return true;
+        }
+
+        public async Task<bool> ResetPasswordAsync(
+            string token,
+            string password,
+            string confirmPassword,
+            CancellationToken cancellationToken = default)
+        {
+
+            var tokenHash = _tokenService.HashToken(token);
+
+            var passwordResetToken = await _unitOfWork.PasswordResetTokenRepository.GetByTokenAsync(tokenHash, cancellationToken) ??
+                throw new InvalidOperationException("El token no es válido o ha expirado");
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(passwordResetToken.IdUser, cancellationToken) ??
+                throw new InvalidOperationException("El usuario no es válido");
+
+            if (user.IdUserStatus != (short)UserStatusEnum.ACTIVE)
+            {
+                throw new InvalidOperationException("No es posible cambiar la contraseña para este usuario");
+            }
+
+            var salt = _hasherService.GenerateSalt();
+
+            var hashedPassword = _hasherService.ComputeHashBytes(password, salt);
+
+            user.Salt = salt;
+            user.Password = hashedPassword;
+
+            passwordResetToken.UsedAt = DateTime.UtcNow;
+
+            await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+            await _emailNotificationService.SendResetPasswordEmailAsync(user, cancellationToken);
 
             return true;
         }

@@ -79,6 +79,27 @@ public static class ServiceRegistration
         }
     }
 
+    private static RateLimitPartition<string> CreateIpRateLimit(
+    HttpContext httpContext,
+    int permitLimit,
+    TimeSpan window)
+    {
+        var ipAddress =
+            httpContext.Connection.RemoteIpAddress?.ToString()
+            ?? "unknown";
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: $"ip:{ipAddress}",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = permitLimit,
+                Window = window,
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }
+        );
+    }
+
     private static void AddServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ITokenService, TokenService>();
@@ -102,10 +123,11 @@ public static class ServiceRegistration
                 context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
 
                 await context.HttpContext.Response.WriteAsJsonAsync(
-                    new ApiResponse<object>{
+                    new ApiResponse<object>
+                    {
                         Ok = false,
                         Message = "Has realizado demasiadas solicitudes. Inténtalo nuevamente más tarde.",
-                        Data= null
+                        Data = null
                     },
                     cancellationToken
                 );
@@ -113,19 +135,19 @@ public static class ServiceRegistration
 
             options.AddPolicy("auth", httpContext =>
             {
-                var ipAddress =
-                    httpContext.Connection.RemoteIpAddress?.ToString()
-                    ?? "unknown";
+                return CreateIpRateLimit(
+                    httpContext,
+                    permitLimit: 10,
+                    window: TimeSpan.FromMinutes(1)
+                );
+            });
 
-                return RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: $"ip:{ipAddress}",
-                    factory: _ => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 10,
-                        Window = TimeSpan.FromMinutes(1),
-                        QueueLimit = 0,
-                        AutoReplenishment = true
-                    }
+            options.AddPolicy("forgot-password", httpContext =>
+            {
+                return CreateIpRateLimit(
+                    httpContext,
+                    permitLimit: 3,
+                    window: TimeSpan.FromMinutes(15)
                 );
             });
         });

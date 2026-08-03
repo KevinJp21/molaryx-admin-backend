@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Application.Common;
 using Domain.Contracts.IServices;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -72,13 +73,13 @@ namespace Infrastructure.Security
         {
             var randomBytes = RandomNumberGenerator.GetBytes(32);
 
-            return Convert.ToBase64String(randomBytes);
+            return WebEncoders.Base64UrlEncode(randomBytes);
         }
 
-        public string HashRefreshToken(string refreshToken)
+        public string HashToken(string token)
         {
             var hash = SHA256.HashData(
-                Encoding.UTF8.GetBytes(refreshToken)
+                Encoding.UTF8.GetBytes(token)
             );
 
             return Convert.ToBase64String(hash);
