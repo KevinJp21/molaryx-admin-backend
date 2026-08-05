@@ -1,5 +1,5 @@
 using Application.Common.Mediator.Interfaces;
-using Application.Features.Plan.Query;
+using Application.Features.Plan.Query.GetPublicPlans;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
 
@@ -10,9 +10,11 @@ namespace Presentation.Controllers
     public class PlanController(IMediator _mediator) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<List<GetPlansQueryResponse>>>> GetPlans([FromQuery] GetPlansQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<List<GetPublicPlansQueryResponse>>>> GetPublicPlans(
+            [FromQuery] GetPublicPlansQuery query,
+            CancellationToken cancellationToken)
         {
-            return Ok(new ApiResponse<List<GetPlansQueryResponse>>(
+            return Ok(new ApiResponse<List<GetPublicPlansQueryResponse>>(
                 "Planes obtenidos de manera exitosa.",
                 await _mediator.Send(query, cancellationToken)
             ));
