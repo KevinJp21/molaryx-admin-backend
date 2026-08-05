@@ -1,6 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.DTOs.Masters;
-using Application.Features.Masters.Query.IdentificationType;
+using Application.Features.Masters.Query.GetIdentificationTypes;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
 
@@ -11,8 +11,8 @@ namespace Presentation.Controllers
     public class MastersCOntroller(IMediator _mediator) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<IdentificationTypeDto>>> GetIdentificationType(
-            [FromQuery] GetIdentificationTypeQuery query,
+        public async Task<ActionResult<ApiResponse<List<IdentificationTypeDto>>>> GetIdentificationTypes(
+            [FromQuery] GetIdentificationTypesQuery query,
             CancellationToken cancellationToken
         )
         {

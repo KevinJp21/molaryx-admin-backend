@@ -2,6 +2,26 @@ using System.Linq.Expressions;
 
 namespace Domain.Common
 {
+
+/*
+Las Specifications se utilizan para representar un escenario específico de consulta.
+
+Su objetivo es mantener el repositorio genérico y encapsular la lógica de:
+- Filtros (Where)
+- Includes
+- Ordenamientos
+- Paginación
+- Consultas diferentes según el contexto (Público, Admin, Reportes, etc.)
+
+El mismo repositorio puede ejecutar distintas consultas simplemente recibiendo una Specification diferente.
+
+No crear Specifications para consultas simples como:
+- GetByIdAsync
+- ExistsAsync
+- GetByEmailAsync
+
+En esos casos es preferible un método directo en el repositorio.
+*/
     public abstract class BaseSpecification<T> : ISpecification<T>
     {
         public Expression<Func<T, bool>> Criteria { get; protected set; } = _ => true;

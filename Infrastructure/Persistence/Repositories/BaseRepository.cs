@@ -13,9 +13,25 @@ namespace Infrastructure.Persistence.Repositories
             DbSet = Context.Set<TEntity>();
         }
 
-        public virtual async Task<TEntity[]?> GetAll(CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity[]?> GetAll(
+            ISpecification<TEntity>? spec = null,
+            CancellationToken cancellationToken = default)
         {
-            return await DbSet.ToArrayAsync(cancellationToken);
+            IQueryable<TEntity> query = DbSet;
+
+            query = query.Where(spec?.Criteria ?? (_ => true));
+
+            foreach (var include in spec?.Includes ?? [])
+            {
+                query = query.Include(include);
+            }
+
+            foreach (var includePath in spec?.IncludePaths ?? [])
+            {
+                query = query.Include(includePath);
+            }
+
+            return await query.ToArrayAsync(cancellationToken);
         }
 
         public virtual async Task<bool> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
