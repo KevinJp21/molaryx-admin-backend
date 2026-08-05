@@ -2,13 +2,13 @@ using Application.Common.Mediator.Interfaces;
 using Application.DTOs.Masters;
 using Domain.Contracts;
 
-namespace Application.Features.Masters.Query.IdentificationType
+namespace Application.Features.Masters.Query.GetIdentificationTypes
 {
-    public class GetIdentificationTypeQueryHandler(IUnitOfWork _unitOfWork) : IRequestHandler<GetIdentificationTypeQuery, List<IdentificationTypeDto>>
+    public class GetIdentificationTypesQueryHandler(IUnitOfWork _unitOfWork) : IRequestHandler<GetIdentificationTypesQuery, List<IdentificationTypeDto>>
     {
-        public async Task<List<IdentificationTypeDto>> Handle(GetIdentificationTypeQuery request, CancellationToken cancellationToken = default)
+        public async Task<List<IdentificationTypeDto>> Handle(GetIdentificationTypesQuery request, CancellationToken cancellationToken = default)
         {
-            var identificationTypes = await _unitOfWork.IdentificationTypeRepository.GetAll(cancellationToken) ??
+            var identificationTypes = await _unitOfWork.IdentificationTypeRepository.GetAll(cancellationToken: cancellationToken) ??
                 throw new InvalidOperationException("No se encontraron tipos de identificación");
 
             return [.. identificationTypes.Select(
