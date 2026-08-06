@@ -9,7 +9,7 @@ namespace Application.Features.Plan.Query.GetPublicPlans
         public short? MaxProfessionals { get; set; }
         public short? MaxAssistants { get; set; }
         public int? MaxPatients { get; set; }
-        public List<PromotionPlanResponse> PromotionPlans { get; set; } = [];
+        public PromotionPlanResponse? PromotionPlan { get; set; }
     }
 
     public class PromotionPlanResponse

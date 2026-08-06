@@ -1,11 +1,10 @@
-using System.IO.Compression;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
+using Shared.Utils;
 
 namespace Presentation.Behaviors
 {
-
     public static class ApiBehavior
     {
         public static IServiceCollection AddApiBehaviorConfiguration(this IServiceCollection services)
@@ -16,9 +15,16 @@ namespace Presentation.Behaviors
                 {
                     var errors = context.ModelState
                         .Where(x => x.Value?.Errors.Count > 0)
-                        .SelectMany(x => x.Value!.Errors)
-                        .Select(x => x.ErrorMessage)
-                        .ToList();
+                        .ToDictionary(
+                            x => string.IsNullOrEmpty(x.Key)
+                                ? "request"
+                                : x.Key.ToLowerEachProperty(),
+                            x => x.Value!.Errors
+                                .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage)
+                                    ? "Valor inválido."
+                                    : e.ErrorMessage)
+                                .ToArray()
+                        );
 
                     var response = new ApiResponse<object>
                     {

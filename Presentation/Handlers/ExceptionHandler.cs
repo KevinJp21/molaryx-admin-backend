@@ -70,7 +70,7 @@ namespace Presentation.Handlers
             {
                 Ok = false,
                 Data = null,
-                Errors = new List<string>(),
+                Errors = null,
                 HttpStatusCode = HttpStatusCode.InternalServerError
             };
 
@@ -78,7 +78,7 @@ namespace Presentation.Handlers
             {
                 case CustomValidationException ex:
                     response.HttpStatusCode = HttpStatusCode.BadRequest;
-                    response.Message = ex.Message;
+                    response.Message = "Se encontraron errores de validación.";
                     response.Errors = ex.Errors;
                     break;
 
@@ -89,7 +89,6 @@ namespace Presentation.Handlers
 
                 case UnauthorizedAccessException ex:
                     response.HttpStatusCode = HttpStatusCode.Unauthorized;
-
                     response.Message = ex.Message;
                     break;
 
@@ -109,14 +108,13 @@ namespace Presentation.Handlers
                     break;
 
                 default:
-                    response.Message =
-                        "Error interno en el servidor.";
+                    response.Message = "Error interno en el servidor.";
 
                     if (_hostEnvironment.IsDevelopment())
                     {
-                        response.Errors = new List<string>
+                        response.Errors = new Dictionary<string, string[]>
                         {
-                            exception.Message
+                            ["exception"] = [exception.Message]
                         };
                     }
 

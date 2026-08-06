@@ -1,8 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Domain.Contracts.IRepositories;
 using Domain.Exceptions;
-using Domain.Specifications;
-
+//todo revisar el error de sessions al aplciar un filtro
 namespace Application.Features.Plan.Query.GetPublicPlans
 {
     public class GetPublicPlansQueryHandler(IPlanRepository _planRepository)
@@ -12,24 +11,33 @@ namespace Application.Features.Plan.Query.GetPublicPlans
             GetPublicPlansQuery request,
             CancellationToken cancellationToken)
         {
-            var plans = await _planRepository.GetAll(new PublicPlansSpecification(), cancellationToken)
-                ?? throw new NotFoundException("No se encontraron planes disponibles.");
+            var plans = await _planRepository.GetPublicPlansAsync(cancellationToken);
 
-            return [.. plans.Select(p => new GetPublicPlansQueryResponse
+            if (plans.Count == 0)
+                throw new NotFoundException("No se encontraron planes disponibles.");
+
+            return [.. plans.Select(p =>
             {
-                IdPlan = p.IdPlan,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                MaxProfessionals = p.MaxProfessionals,
-                MaxAssistants = p.MaxAssistants,
-                MaxPatients = p.MaxPatients,
-                PromotionPlans = [.. p.PromotionPlans.Select(pp => new PromotionPlanResponse
+                var promotionPlan = p.PromotionPlans.FirstOrDefault();
+
+                return new GetPublicPlansQueryResponse
                 {
-                    IdPromotion = pp.IdPromotion,
-                    PromotionName = pp.Promotion.Name,
-                    Price = pp.Price
-                })]
+                    IdPlan = p.IdPlan,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    MaxProfessionals = p.MaxProfessionals,
+                    MaxAssistants = p.MaxAssistants,
+                    MaxPatients = p.MaxPatients,
+                    PromotionPlan = promotionPlan is null
+                        ? null
+                        : new PromotionPlanResponse
+                        {
+                            IdPromotion = promotionPlan.IdPromotion,
+                            PromotionName = promotionPlan.Promotion.Name,
+                            Price = promotionPlan.Price
+                        }
+                };
             })];
         }
     }
