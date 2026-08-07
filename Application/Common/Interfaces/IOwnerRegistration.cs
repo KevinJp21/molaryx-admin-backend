@@ -16,6 +16,8 @@ namespace Application.Common.Interfaces
 
         public string IdentificationNumber { get; set; }
 
+        public DateOnly BirthDate { get; set; }
+
         public string PhoneNumber { get; set; }
 
         public string Email { get; set; }

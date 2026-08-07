@@ -1,4 +1,5 @@
 using Application.Common.Regex;
+using Application.Common.Validation;
 using FluentValidation;
 
 namespace Application.Features.Tenant.Command.CreateBusinessTenant
@@ -54,12 +55,22 @@ namespace Application.Features.Tenant.Command.CreateBusinessTenant
                     x => x.Tenant.IdIdentificationType.HasValue,
                     () =>
                     {
+                        RuleFor(x => x.Tenant.IdIdentificationType!.Value)
+                            .Must(IdentificationValidation.IsValidType)
+                            .WithMessage(
+                                "El tipo de identificación del consultorio no es válido."
+                            );
+
                         RuleFor(x => x.Tenant.IdentificationNumber)
                             .NotEmpty()
                             .WithMessage(
                                 "El número de identificación es obligatorio."
                             )
-                            .Matches(RegexCatalog.NIT)
+                            .Must((cmd, number) =>
+                                IdentificationValidation.MatchesType(
+                                    cmd.Tenant.IdIdentificationType!.Value,
+                                    number
+                                ))
                             .When(
                                 x => !string.IsNullOrWhiteSpace(
                                     x.Tenant.IdentificationNumber
@@ -159,20 +170,43 @@ namespace Application.Features.Tenant.Command.CreateBusinessTenant
                         "Ingrese un apellido válido."
                     );
 
+                RuleFor(x => x.Owner.IdIdentificationType)
+                    .Must(IdentificationValidation.IsAllowedForOwner)
+                    .WithMessage(
+                        "El tipo de identificación del propietario no es válido. Use CC o CE."
+                    );
+
                 RuleFor(x => x.Owner.IdentificationNumber)
                     .NotEmpty()
                     .WithMessage(
                         "El número de identificación es obligatorio."
                     )
-                    .Matches(RegexCatalog.IDENTIFICATION_NUMBER)
+                    .Must((cmd, number) =>
+                        IdentificationValidation.MatchesType(
+                            cmd.Owner.IdIdentificationType,
+                            number
+                        ))
                     .When(
                         x => !string.IsNullOrWhiteSpace(
                             x.Owner.IdentificationNumber
+                        )
+                        && IdentificationValidation.IsAllowedForOwner(
+                            x.Owner.IdIdentificationType
                         ),
                         ApplyConditionTo.CurrentValidator
                     )
                     .WithMessage(
                         "Ingrese un número de identificación válido."
+                    );
+
+                RuleFor(x => x.Owner.BirthDate)
+                    .NotEmpty()
+                    .WithMessage(
+                        "La fecha de nacimiento es obligatoria."
+                    )
+                    .Must(birthDate => IdentificationValidation.IsAdult(birthDate))
+                    .WithMessage(
+                        "El propietario debe ser mayor de 18 años."
                     );
 
                 RuleFor(x => x.Owner.PhoneNumber)

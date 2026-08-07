@@ -95,6 +95,7 @@ namespace Infrastructure.Services
 
                 IdIdentificationType = dto.IdIdentificationType,
                 IdentificationNumber = dto.IdentificationNumber,
+                BirthDate = dto.BirthDate,
 
                 PhoneNumber = dto.PhoneNumber,
                 Email = dto.Email,
