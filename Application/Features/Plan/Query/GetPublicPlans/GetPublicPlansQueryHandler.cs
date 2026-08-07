@@ -14,7 +14,7 @@ namespace Application.Features.Plan.Query.GetPublicPlans
             var plans = await _planRepository.GetPublicPlansAsync(cancellationToken);
 
             if (plans.Count == 0)
-                throw new NotFoundException("No se encontraron planes disponibles.");
+                throw new NotFoundException("No se encontraron planes disponibles, intente nuevamente más tarde.");
 
             return [.. plans.Select(p =>
             {

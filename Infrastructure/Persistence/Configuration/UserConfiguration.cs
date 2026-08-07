@@ -32,6 +32,8 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.IdentificationNumber).IsRequired();
 
+            builder.Property(u => u.BirthDate).IsRequired();
+
             builder.Property(u => u.PhoneNumber).IsRequired();
 
             builder.Property(u => u.Email).IsRequired();

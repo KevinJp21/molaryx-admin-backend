@@ -2,7 +2,7 @@
 {
     public static class RegexCatalog
     {
-        public const string USERNAME = @"^[a-zA-Z0-9_]{4,30}$";
+        public const string USERNAME = @"^[a-zA-Z][a-zA-Z0-9._-]{2,29}$";
 
         public const string NAME = @"^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s+[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$";
 
