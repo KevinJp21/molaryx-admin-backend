@@ -72,7 +72,7 @@ namespace Presentation.Config.Jwt
 
                             var response = new ApiResponse<object>
                             {
-                                Ok = false,
+                                Success = false,
                                 Message =
                                     "Usuario no autenticado.",
                                 Data = null

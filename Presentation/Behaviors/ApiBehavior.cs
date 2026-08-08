@@ -28,7 +28,7 @@ namespace Presentation.Behaviors
 
                     var response = new ApiResponse<object>
                     {
-                        Ok = false,
+                        Success = false,
                         Message = "Se encontraron errores de validación.",
                         Data = null,
                         Errors = errors,

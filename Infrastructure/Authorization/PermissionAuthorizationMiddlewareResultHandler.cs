@@ -28,7 +28,7 @@ namespace Infrastructure.Authorization
 
                 var response = new ApiResponse<object>
                 {
-                    Ok = false,
+                    Success = false,
                     Message = "No tienes permisos para realizar esta acción.",
                     Data = null
                 };

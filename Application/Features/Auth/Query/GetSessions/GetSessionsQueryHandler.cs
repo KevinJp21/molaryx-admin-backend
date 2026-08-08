@@ -5,6 +5,8 @@ using Application.DTOs.Sessions;
 using Domain.Contracts;
 using Domain.Specifications;
 
+//todo revisar el error de sessions al aplicar un filtro
+
 namespace Application.Features.Auth.Query.GetSessions
 {
     public class GetSessionsQueryHandler(
