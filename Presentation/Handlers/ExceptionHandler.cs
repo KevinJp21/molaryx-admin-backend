@@ -68,7 +68,7 @@ namespace Presentation.Handlers
         {
             response = new ApiResponse<object>
             {
-                Ok = false,
+                Success = false,
                 Data = null,
                 Errors = null,
                 HttpStatusCode = HttpStatusCode.InternalServerError

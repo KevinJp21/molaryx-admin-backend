@@ -210,7 +210,7 @@ namespace Application.Features.Tenant.Command.RegisterTenant
                     )
                     .Must(birthDate => IdentificationValidation.IsAdult(birthDate))
                     .WithMessage(
-                        "El propietario debe ser mayor de 18 años."
+                        "Debe ser mayor de edad para registrarse."
                     );
 
                 RuleFor(x => x.Owner.PhoneNumber)

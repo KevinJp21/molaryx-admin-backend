@@ -125,7 +125,7 @@ public static class ServiceRegistration
                 await context.HttpContext.Response.WriteAsJsonAsync(
                     new ApiResponse<object>
                     {
-                        Ok = false,
+                        Success = false,
                         Message = "Has realizado demasiadas solicitudes. Inténtalo nuevamente más tarde.",
                         Data = null
                     },

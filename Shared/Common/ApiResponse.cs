@@ -5,8 +5,8 @@ namespace Shared.Common
 {
     public class ApiResponse<T>(string message = "Respuesta exitosa", T? data = default)
     {
-        [JsonPropertyName("ok")]
-        public bool Ok { get; set; } = true;
+        [JsonPropertyName("success")]
+        public bool Success { get; set; } = true;
 
         [JsonPropertyName("message")]
         public string Message { get; set; } = message;
