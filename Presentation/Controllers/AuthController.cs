@@ -2,7 +2,6 @@ using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.DTOs.Auth;
 using Application.DTOs.Sessions;
-using Application.DTOs.Users;
 using Application.Features.Auth.Command.ForgotPassword;
 using Application.Features.Auth.Command.Login;
 using Application.Features.Auth.Command.Logout;
@@ -85,10 +84,10 @@ namespace Presentation.Controllers
 
         [HttpGet]
         [EndpointDescription("Obtiene la información del usuario actualmente autenticado a partir de su sesión activa.")]
-        public async Task<ActionResult<ApiResponse<UserDto>>> GetUser(CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<GetUserQueryResponse>>> GetUser(CancellationToken cancellationToken)
         {
             return Ok(
-                new ApiResponse<UserDto>(
+                new ApiResponse<GetUserQueryResponse>(
                     "Información de usuario obtenida de manera exitosa.",
                     await _mediator.Send(new GetUserQuery(), cancellationToken)
                 )

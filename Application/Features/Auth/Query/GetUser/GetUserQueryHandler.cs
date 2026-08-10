@@ -1,25 +1,24 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Context;
-using Application.DTOs.Users;
 using Domain.Contracts;
-using Domain.Contracts.IRepositories;
 
 namespace Application.Features.Auth.Query.GetUser
 {
-    public class GetUserQueryHandler(IUnitOfWork unitOfWork, ICurrentUser currentUser) : IRequestHandler<GetUserQuery, UserDto>
+    public class GetUserQueryHandler(IUnitOfWork unitOfWork, ICurrentUser currentUser) : IRequestHandler<GetUserQuery, GetUserQueryResponse>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         private readonly ICurrentUser _currentUser = currentUser;
 
-        public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
+        public async Task<GetUserQueryResponse> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync((long)_currentUser.IdUser!, cancellationToken)
                 ?? throw new Exception("Usuario no encontrado.");
 
-            var mapperResult = new UserDto
+            var permissions = await _unitOfWork.UserRepository.GetPermissionsByUserIdAsync((long)_currentUser.IdUser!, cancellationToken);
+
+            var mapperResult = new GetUserQueryResponse
             {
-                IdUser = user.IdUser,
                 Role = new UserRole
                 {
                     IdUserRole = user.UserRole.IdUserRole,
@@ -34,11 +33,16 @@ namespace Application.Features.Auth.Query.GetUser
                 Username = user.Username,
                 Name = $"{user.FirstName} {user.FirstSurname}",
                 Email = user.Email,
-                
+                Permissions = [.. permissions
+                    .GroupBy(p => p.Module.Code)
+                    .Select(g => new ModulePermissions
+                    {
+                        Module = g.Key,
+                        Codes = [.. g.Select(p => p.Code)]
+                    })]
             };
 
             return mapperResult;
         }
     }
-    
 }

@@ -14,5 +14,7 @@ namespace Domain.Contracts.IRepositories
         Task<bool> ExistsByIdentificationNumberAsync(string identificationNumber, CancellationToken cancellationToken);
 
         Task<bool> ExistsByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken);
+
+        Task<List<Permission>> GetPermissionsByUserIdAsync(long userId, CancellationToken cancellationToken);
     }
 }

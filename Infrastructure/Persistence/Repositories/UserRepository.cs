@@ -56,8 +56,8 @@ namespace Infrastructure.Persistence.Repositories
                     cancellationToken
                 );
         }
-        
-        public async Task<bool> ExistsByPhoneNumberAsync( string phoneNumber, CancellationToken cancellationToken)
+
+        public async Task<bool> ExistsByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
         {
             return await DbSet
                 .AnyAsync
@@ -65,6 +65,23 @@ namespace Infrastructure.Persistence.Repositories
                     u => u.PhoneNumber == phoneNumber,
                     cancellationToken
                 );
+        }
+
+        public async Task<List<Permission>> GetPermissionsByUserIdAsync(long userId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .AsNoTracking()
+                .Where(u => u.IdUser == userId)
+                .SelectMany(u => u.UserRole.RolePermissions)
+                .Select(rp => new Permission
+                {
+                    Code = rp.Permission.Code,
+                    Module = new Module
+                    {
+                        Code = rp.Permission.Module.Code
+                    }
+                })
+                .ToListAsync(cancellationToken);
         }
     }
 }
