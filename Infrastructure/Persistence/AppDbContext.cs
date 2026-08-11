@@ -21,6 +21,12 @@ namespace Infrastructure.Persistence
         public DbSet<Permission> Permissions { get; set; } = null!;
         public DbSet<Promotion> Promotions { get; set; } = null!;
         public DbSet<PromotionPlan> PromotionPlans { get; set; } = null!;
+        public DbSet<Patient> Patients { get; set; } = null!;
+        public DbSet<Service> Services { get; set; } = null!;
+        public DbSet<Appointment> Appointments { get; set; } = null!;
+        public DbSet<AppointmentStatus> AppointmentStatuses { get; set; } = null!;
+        public DbSet<Professional> Professionals { get; set; } = null!;
+        public DbSet<ProfessionalSchedule> ProfessionalSchedules { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

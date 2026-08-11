@@ -49,12 +49,12 @@ namespace Infrastructure.Persistence.Configuration
             // Relaciones
 
             builder.HasOne(u => u.UserStatus)
-                .WithMany(s => s.Users)
+                .WithMany()
                 .HasForeignKey(u => u.IdUserStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(u => u.UserRole)
-                .WithMany(ur => ur.Users)
+                .WithMany()
                 .HasForeignKey(u => u.IdUserRole)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -64,7 +64,7 @@ namespace Infrastructure.Persistence.Configuration
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(u => u.IdentificationType)
-                .WithMany(i => i.Users)
+                .WithMany()
                 .HasForeignKey(u => u.IdIdentificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 

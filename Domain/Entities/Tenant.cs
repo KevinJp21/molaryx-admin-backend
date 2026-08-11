@@ -38,5 +38,10 @@ namespace Domain.Entities
         public IdentificationType IdentificationType { get; set; } = null!;
         public ICollection<TenantSubscription> TenantSubscriptions { get; set; } = [];
         public ICollection<User> Users { get; set; } = [];
+        public ICollection<Professional> Professionals { get; set; } = [];
+        public ICollection<Patient> Patients { get; set; } = [];
+        public ICollection<Service> Services { get; set; } = [];
+        public ICollection<Appointment> Appointments { get; set; } = [];
+        public ICollection<ProfessionalSchedule> ProfessionalSchedules { get; set; } = [];
     }
 }

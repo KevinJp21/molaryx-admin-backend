@@ -9,8 +9,5 @@ namespace Domain.Entities
         public short IdUserStatus { get; set; }
         [Column("name")]
         public string Name { get; set; } = string.Empty;
-
-        // Navigation
-        public ICollection<User> Users{ get; set; } = [];
     }
 }
