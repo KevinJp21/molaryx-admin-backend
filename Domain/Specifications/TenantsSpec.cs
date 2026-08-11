@@ -13,6 +13,7 @@ namespace Domain.Specifications
 
             AddInclude(t => t.Users);
             AddInclude($"{nameof(Tenant.Users)}.{nameof(User.IdentificationType)}");
+            AddInclude(t => t.TenantSubscriptions);
         }
     }
 }

@@ -17,7 +17,8 @@ namespace Infrastructure.Persistence
         ITenantSubscriptionRepository tenantSubscriptionRepository,
         IPlanRepository planRepository,
         IPromotionRepository promotionRepository,
-        IPasswordResetTokenRepository passwordResetTokenRepository
+        IPasswordResetTokenRepository passwordResetTokenRepository,
+        IPatientsRepository patientsRepository
         ) : IUnitOfWork
     {
         private readonly AppDbContext _context = context;
@@ -44,6 +45,8 @@ namespace Infrastructure.Persistence
         public IPromotionRepository PromotionRepository { get; } = promotionRepository;
 
         public IPasswordResetTokenRepository PasswordResetTokenRepository { get; } = passwordResetTokenRepository;
+
+        public IPatientsRepository PatientsRepository { get; } = patientsRepository;
 
         private IDbContextTransaction? _currentTransaction;
 

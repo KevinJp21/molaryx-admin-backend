@@ -2,7 +2,6 @@ using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.DTOs.Tenant;
 using Domain.Contracts;
-using Domain.Entities;
 using Domain.Enums;
 using Domain.Specifications;
 
@@ -35,6 +34,11 @@ namespace Application.Features.Platform.Tenant.Query.GetTenants
                 Items = [
                     .. tenants.Select(t => new TenantDto
                     {
+                        IdTenant = t.IdTenant,
+                        IdTenantSubscription = t.TenantSubscriptions
+                            .OrderByDescending(ts => ts.CreatedAt)
+                            .Select(ts => (long?)ts.IdTenantSubscription)
+                            .FirstOrDefault(),
                         IdIdentificationType = t.IdIdentificationType,
                         IdentificationNumber = t.IdentificationNumber,
                         IdentificationCode = t.IdentificationType.Code,
@@ -48,6 +52,7 @@ namespace Application.Features.Platform.Tenant.Query.GetTenants
                         TenantStatusName = t.TenantStatus.Name,
                         Owner = t.Users.Where(u => u.IdUserRole == (short)UserRoleEnum.OWNER)
                         .Select(u => new OwnerDto{
+                            IdUser = u.IdUser,
                             Username = u.Username,
                             Name = string.Join(
                                 " ",

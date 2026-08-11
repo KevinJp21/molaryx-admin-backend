@@ -16,7 +16,7 @@ namespace Presentation.Controllers.Platform
     [ApiController]
     public class PlatformTenantsController(IMediator _mediator) : ControllerBase
     {
-        [Authorize(Policy = PermissionCodes.GET_TENANTS)]
+        [Authorize(Policy = PermissionCodes.GET_PF_TENANTS)]
         [HttpGet]
         public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants(
             [FromQuery] GetTenantsQuery query,
@@ -30,7 +30,7 @@ namespace Presentation.Controllers.Platform
             );
         }
 
-        [Authorize(Policy = PermissionCodes.ACTIVATE_TENANT)]
+        [Authorize(Policy = PermissionCodes.ACTIVATE_PF_TENANT)]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<bool>>> ActivateTenant(
             [FromBody] ActivateTenantCommand body,
@@ -44,7 +44,7 @@ namespace Presentation.Controllers.Platform
             );
         }
 
-        [Authorize(Policy = PermissionCodes.CREATE_BUSINESS_TENANT)]
+        [Authorize(Policy = PermissionCodes.CREATE_PF_BUSINESS_TENANT)]
         [HttpPost]
         public async Task<ActionResult<ApiResponse<bool>>> CreateBusinessTenant(
             [FromBody] CreateBusinessTenantCommand body,
