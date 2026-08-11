@@ -35,17 +35,17 @@ namespace Infrastructure.Persistence.Configuration
             // Relaciones
 
             builder.HasOne(t => t.TenantType)
-                .WithMany(tt => tt.Tenants)
+                .WithMany()
                 .HasForeignKey(t => t.IdTenantType)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(t => t.TenantStatus)
-                .WithMany(s => s.Tenants)
+                .WithMany()
                 .HasForeignKey(t => t.IdTenantStatus)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(t => t.IdentificationType)
-                .WithMany(it => it.Tenants)
+                .WithMany()
                 .HasForeignKey(t => t.IdIdentificationType)
                 .OnDelete(DeleteBehavior.Restrict);
 

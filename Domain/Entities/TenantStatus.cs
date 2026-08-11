@@ -9,8 +9,5 @@ namespace Domain.Entities
         public short IdTenantStatus { get; set; }
         [Column("name")]
         public string Name { get; set; } = string.Empty;
-
-        // Navigation
-        public ICollection<Tenant> Tenants { get; set; } = [];
     }
 }
