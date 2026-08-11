@@ -2,6 +2,10 @@ namespace Application.DTOs.Tenant
 {
     public class TenantDto
     {
+        public long IdTenant { get; set; }
+
+        public long? IdTenantSubscription { get; set; }
+
         public short? IdIdentificationType { get; set; }
 
         public string? IdentificationNumber { get; set; }
@@ -29,6 +33,8 @@ namespace Application.DTOs.Tenant
 
     public class OwnerDto
     {
+        public long IdUser { get; set; }
+
         public string Username { get; set; } = string.Empty;
 
         public string Name { get; set; } = string.Empty;

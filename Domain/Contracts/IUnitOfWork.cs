@@ -28,6 +28,8 @@ namespace Domain.Contracts
 
         public IPasswordResetTokenRepository PasswordResetTokenRepository { get; }
 
+        public IPatientsRepository PatientsRepository { get; }
+
         Task<int> SaveChangeAsync(CancellationToken? cancellationToken);
 
         Task BeginTransactionAsync(CancellationToken? cancellationToken = null);

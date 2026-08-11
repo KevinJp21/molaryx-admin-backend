@@ -1,6 +1,5 @@
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.Constants;
 
 namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
 {
@@ -10,12 +9,16 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
             // Tenant
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.SUPER_ADMIN,
-                IdPermission = (short)PermissionEnum.GET_TENANTS
+                IdPermission = (short)PermissionEnum.GET_PF_TENANTS
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.SUPER_ADMIN,
-                IdPermission = (short)PermissionEnum.ACTIVATE_TENANT
-            }
+                IdPermission = (short)PermissionEnum.ACTIVATE_PF_TENANT
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.SUPER_ADMIN,
+                IdPermission = (short)PermissionEnum.CREATE_PF_BUSINESS_TENANT
+            },
         ];
     }
 }

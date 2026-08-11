@@ -2,8 +2,12 @@ namespace Domain.Enums
 {
     public enum PermissionEnum : short
     {
-        GET_TENANTS = 1,
-        ACTIVATE_TENANT = 2,
-        CREATE_BUSINESS_TENANT = 3
+        /* Tenants */
+        GET_PF_TENANTS = 1,
+        ACTIVATE_PF_TENANT = 2,
+        CREATE_PF_BUSINESS_TENANT = 3,
+
+        /* Patients */
+        GET_USER_PATIENTS = 4,
     }
 }
