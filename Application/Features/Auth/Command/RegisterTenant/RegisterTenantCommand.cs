@@ -1,24 +1,18 @@
 using Application.Common.Interfaces;
 using Application.Common.Mediator.Interfaces;
 
-namespace Application.Features.Tenant.Command.CreateBusinessTenant
+namespace Application.Features.Auth.Command.RegisterTenant
 {
-    public class CreateBusinessTenantCommand : IRequest<bool>
+    public class RegisterTenantCommand : IRequest<bool>
     {
-        public BusinessPlanRequest Plan { get; set; } = null!;
-        public BusinessTenantRequest Tenant { get; set; } = null!;
-        public BusinessOwnerRequest Owner { get; set; } = null!;
+        public short IdPlan { get; set; }
+        public long? IdPromotion { get; set; }
+        public TenantRegistration Tenant { get; set; } = null!;
+        public OwnerRegistration Owner { get; set; } = null!;
     }
 
-    public class BusinessPlanRequest
-    {
-        public decimal Price { get; set; }
-        public short MaxProfessionals { get; set; }
-        public short MaxAssistants { get; set; }
-        public int MaxPatients { get; set; }
-    }
-
-    public class BusinessTenantRequest : ITenantRegistration
+        
+    public class TenantRegistration : ITenantRegistration
     {
         public short? IdIdentificationType { get; set; }
 
@@ -33,7 +27,7 @@ namespace Application.Features.Tenant.Command.CreateBusinessTenant
         public string Address { get; set; } = string.Empty;
     }
 
-    public class BusinessOwnerRequest : IOwnerRegistration
+    public class OwnerRegistration : IOwnerRegistration
     {
         public string Username { get; set; } = string.Empty;
 

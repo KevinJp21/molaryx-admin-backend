@@ -1,6 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 
-namespace Application.Features.Tenant.Command.ActivateTenant
+namespace Application.Features.Platform.Tenant.Command.ActivateTenant
 {
     public class ActivateTenantCommand : IRequest<bool>
     {

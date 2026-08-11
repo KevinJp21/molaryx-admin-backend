@@ -3,7 +3,7 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
-namespace Application.Features.Tenant.Command.RegisterTenant
+namespace Application.Features.Auth.Command.RegisterTenant
 {
     public class RegisterTenantCommandHandler
     (

@@ -7,7 +7,7 @@ using Domain.Enums;
 using Domain.Specifications;
 
 
-namespace Application.Features.Tenant.Query.GetTenants
+namespace Application.Features.Platform.Tenant.Query.GetTenants
 {
     public class GetTenantsQueryHandler(IUnitOfWork unitOfWork)
         : IRequestHandler<GetTenantsQuery, PagedResult<TenantDto>>

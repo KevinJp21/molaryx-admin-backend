@@ -2,7 +2,7 @@ using Application.Common.Regex;
 using Application.Common.Validation;
 using FluentValidation;
 
-namespace Application.Features.Tenant.Command.CreateBusinessTenant
+namespace Application.Features.Platform.Tenant.Command.CreateBusinessTenant
 {
     public class CreateBusinessTenantCommandValidator
         : AbstractValidator<CreateBusinessTenantCommand>

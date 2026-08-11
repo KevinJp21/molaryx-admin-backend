@@ -2,7 +2,7 @@ using Application.Common.Mediator.Interfaces;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Enums;
-namespace Application.Features.Tenant.Command.CreateBusinessTenant
+namespace Application.Features.Platform.Tenant.Command.CreateBusinessTenant
 {
     public class CreateBusinessTenantCommandHandler
     (
