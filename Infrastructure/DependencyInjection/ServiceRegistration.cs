@@ -7,10 +7,8 @@ using Infrastructure.Security;
 using Infrastructure.Services;
 using Domain.Contracts;
 using Resend;
-using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using Shared.Common;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Infrastructure.DependencyInjection;
 
@@ -30,16 +28,12 @@ public static class ServiceRegistration
             );
         }
 
+        var dataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
+        services.AddSingleton(dataSource);
+
         services.AddDbContext<AppDbContext>(options =>
-        {
-            var dataSourceBuilder = new NpgsqlDataSourceBuilder(
-                configuration.GetConnectionString("DefaultConnection")
-            );
-
-            var dataSource = dataSourceBuilder.Build();
-
-            options.UseNpgsql(dataSource);
-        });
+            options.UseNpgsql(dataSource)
+        );
         AddServices(services, configuration);
         AddRepositories(services);
         return services;
