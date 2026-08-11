@@ -31,33 +31,26 @@ En esos casos es preferible un método directo en el repositorio.
         public List<string> IncludePaths { get; } = [];
 
         protected Expression<Func<T, bool>> And(Expression<Func<T, bool>> other)
-        {
-            var param = Expression.Parameter(typeof(T), "x");
-
-            var body = Expression.Invoke(
-                Expression.AndAlso(
-                    Expression.Invoke(Criteria, param),
-                    Expression.Invoke(other, param)
-                ),
-                param
-            );
-
-            return Expression.Lambda<Func<T, bool>>(body, param);
-        }
+            => Combine(Criteria, other, Expression.AndAlso);
 
         protected Expression<Func<T, bool>> Or(Expression<Func<T, bool>> other)
+            => Combine(Criteria, other, Expression.OrElse);
+
+        private static Expression<Func<T, bool>> Combine(
+            Expression<Func<T, bool>> left,
+            Expression<Func<T, bool>> right,
+            Func<Expression, Expression, BinaryExpression> merge)
         {
-            var param = Expression.Parameter(typeof(T), "x");
+            var parameter = Expression.Parameter(typeof(T), "x");
 
-            var body = Expression.Invoke(
-                Expression.OrElse(
-                    Expression.Invoke(Criteria, param),
-                    Expression.Invoke(other, param)
-                ),
-                param
-            );
+            var leftBody = new ReplaceParameterVisitor(left.Parameters[0], parameter)
+                .Visit(left.Body)!;
+            var rightBody = new ReplaceParameterVisitor(right.Parameters[0], parameter)
+                .Visit(right.Body)!;
 
-            return Expression.Lambda<Func<T, bool>>(body, param);
+            return Expression.Lambda<Func<T, bool>>(
+                merge(leftBody, rightBody),
+                parameter);
         }
 
         protected void AddInclude(Expression<Func<T, object>> include)
@@ -68,6 +61,14 @@ En esos casos es preferible un método directo en el repositorio.
         protected void AddInclude(string path)
         {
             IncludePaths.Add(path);
+        }
+
+        private sealed class ReplaceParameterVisitor(
+            ParameterExpression source,
+            ParameterExpression target) : ExpressionVisitor
+        {
+            protected override Expression VisitParameter(ParameterExpression node)
+                => node == source ? target : base.VisitParameter(node);
         }
     }
 }
