@@ -2,7 +2,7 @@ using Application.Common.Regex;
 using Application.Common.Validation;
 using FluentValidation;
 
-namespace Application.Features.Tenant.Command.RegisterTenant
+namespace Application.Features.Auth.Command.RegisterTenant
 {
     public class RegisterTenantCommandValidator
         : AbstractValidator<RegisterTenantCommand>

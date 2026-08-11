@@ -10,7 +10,7 @@ using Application.Features.Auth.Command.RefreshToken;
 using Application.Features.Auth.Command.ResetPassword;
 using Application.Features.Auth.Query.GetSessions;
 using Application.Features.Auth.Query.GetUser;
-using Application.Features.Tenant.Command.RegisterTenant;
+using Application.Features.Auth.Command.RegisterTenant;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;

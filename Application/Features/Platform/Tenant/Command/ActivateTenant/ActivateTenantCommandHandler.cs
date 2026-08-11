@@ -2,7 +2,7 @@ using Application.Common.Mediator.Interfaces;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 
-namespace Application.Features.Tenant.Command.ActivateTenant
+namespace Application.Features.Platform.Tenant.Command.ActivateTenant
 {
     public class ActivateTenantCommandHandler(
         ITenantService _tenantService,

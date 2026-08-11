@@ -1,4 +1,4 @@
-using Application.Features.Tenant.Command.RegisterTenant;
+using Application.Features.Auth.Command.RegisterTenant;
 using Domain.Constants;
 using Domain.Contracts.IServices;
 using Domain.Entities;
