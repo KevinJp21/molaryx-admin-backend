@@ -31,7 +31,8 @@ namespace Application.Features.Auth.Query.GetUser
                     Name = user.UserStatus.Name
                 },
                 Username = user.Username,
-                Name = $"{user.FirstName} {user.FirstSurname}",
+                Names = $"{user.FirstName}{(!string.IsNullOrEmpty(user.SecondName) ? $" {user.SecondName}" : string.Empty)}",
+                Surnames = $"{user.FirstSurname}{(!string.IsNullOrEmpty(user.SecondSurname) ? $" {user.SecondSurname}" : string.Empty)}",
                 Email = user.Email,
                 Permissions = [.. permissions
                     .GroupBy(p => p.Module.Code)
