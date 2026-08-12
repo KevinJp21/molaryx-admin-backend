@@ -6,7 +6,8 @@ namespace Application.Features.Auth.Query.GetUser
         public long? IdTenant { get; set; }
         public UserStatus Status { get; set; } = null!;
         public string Username { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
+        public string Names { get; set; } = string.Empty;
+        public string Surnames { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public List<ModulePermissions> Permissions { get; set; } = [];
     }
