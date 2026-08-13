@@ -9,6 +9,7 @@ namespace Domain.Constants
         public const string CREATE_PF_BUSINESS_TENANT = "CREATE_PF_BUSINESS_TENANT";
 
         /* Patients */
-        public const string GET_USER_PATIENTS = "GET_USER_PATIENTS";
+        public const string GET_PATIENTS = "GET_PATIENTS";
+        public const string CREATE_PATIENT = "CREATE_PATIENT";
     }
 }

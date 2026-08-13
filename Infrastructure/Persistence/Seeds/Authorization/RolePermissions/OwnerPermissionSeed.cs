@@ -8,7 +8,11 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
         public static RolePermission[] Data => [
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.GET_USER_PATIENTS
+                IdPermission = (short)PermissionEnum.GET_PATIENTS
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.CREATE_PATIENT
             }
         ];
     }

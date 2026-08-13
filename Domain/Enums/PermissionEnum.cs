@@ -8,6 +8,7 @@ namespace Domain.Enums
         CREATE_PF_BUSINESS_TENANT = 3,
 
         /* Patients */
-        GET_USER_PATIENTS = 4,
+        GET_PATIENTS = 4,
+        CREATE_PATIENT = 5,
     }
 }

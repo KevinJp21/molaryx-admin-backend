@@ -11,9 +11,16 @@ public static class PatientsPermissionSeed
     [
         new Permission
         {
-            IdPermission = (short)PermissionEnum.GET_USER_PATIENTS,
+            IdPermission = (short)PermissionEnum.GET_PATIENTS,
             IdModule = (short)ModuleEnum.PATIENTS,
-            Code = PermissionCodes.GET_USER_PATIENTS,
+            Code = PermissionCodes.GET_PATIENTS,
+            CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.CREATE_PATIENT,
+            IdModule = (short)ModuleEnum.PATIENTS,
+            Code = PermissionCodes.CREATE_PATIENT,
             CreatedAt = SeedConstants.SeedDate
         }
     ];
