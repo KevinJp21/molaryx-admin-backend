@@ -20,6 +20,16 @@ namespace Infrastructure.Persistence.Repositories
                 .Where(p => p.IdTenant == idTenant)
                 .Where(spec?.Criteria ?? (_ => true));
 
+                foreach (var include in spec?.Includes ?? [])
+                {
+                    query = query.Include(include);
+                }
+
+                foreach (var includePath in spec?.IncludePaths ?? [])
+                {
+                    query = query.Include(includePath);
+                }
+
             var totalItems = await query.CountAsync(cancellationToken);
 
             var patients = await query

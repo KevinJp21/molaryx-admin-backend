@@ -12,7 +12,7 @@ using Shared.Common;
 namespace Presentation.Controllers.Platform
 {
     [Authorize]
-    [Route("api/v1/platform/tenants/[action]")]
+    [Route("api/v1/platform/tenant/[action]")]
     [ApiController]
     public class PlatformTenantsController(IMediator _mediator) : ControllerBase
     {
