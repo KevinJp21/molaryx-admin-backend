@@ -2,6 +2,7 @@ using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Context;
 using Domain.Contracts;
+using Domain.Specifications;
 
 namespace Application.Features.Users.Patient.Query
 {
@@ -17,11 +18,13 @@ namespace Application.Features.Users.Patient.Query
                     "El usuario no pertenece a un consultorio."
                 );
 
+            var spec = new PatientsSpec();
+
             var (totalItems, patients) = await _unitOfWork.PatientsRepository.GetAllPatientsByIdTenantAsync(
                 idTenant,
                 PaginationHelper.GetEffectivePage(request.Page),
                 PaginationHelper.GetEffectivePageSize(request.Size),
-                null,
+                spec,
                 cancellationToken
             );
 
@@ -31,6 +34,7 @@ namespace Application.Features.Users.Patient.Query
                 {
                     IdPatient = patient.IdPatient,
                     IdIdentificationType = patient.IdIdentificationType,
+                    IdentificationType = patient.IdentificationType.Name,
                     IdentificationNumber = patient.IdentificationNumber,
                     FirstName = patient.FirstName,
                     SecondName = patient.SecondName!,

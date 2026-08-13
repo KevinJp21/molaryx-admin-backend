@@ -4,6 +4,7 @@ namespace Application.Features.Users.Patient.Query
     {
         public long IdPatient { get; set; }
         public short IdIdentificationType { get; set; }
+        public string IdentificationType { get; set; } = string.Empty;
         public string IdentificationNumber { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string? SecondName { get; set; }

@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Common;
 
-namespace Presentation.Controllers.User
+namespace Presentation.Controllers.Users
 {
     [Authorize]
-    [Route("api/v1/user/patients/[action]")]
+    [Route("api/v1/user/patient/[action]")]
     [ApiController]
     public class UserPatientsController(IMediator _mediator) : ControllerBase
     {
