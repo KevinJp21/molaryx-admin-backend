@@ -4,7 +4,7 @@ using Application.Context;
 using Domain.Contracts;
 using Domain.Specifications;
 
-namespace Application.Features.Users.Patient.Query
+namespace Application.Features.Patients.Query
 {
     public class GetPatientsQueryHandler(
         IUnitOfWork _unitOfWork,

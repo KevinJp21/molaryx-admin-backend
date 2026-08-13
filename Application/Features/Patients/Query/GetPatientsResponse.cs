@@ -1,4 +1,4 @@
-namespace Application.Features.Users.Patient.Query
+namespace Application.Features.Patients.Query
 {
     public class GetPatientsResponse
     {

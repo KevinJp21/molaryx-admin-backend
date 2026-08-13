@@ -33,10 +33,10 @@ namespace Domain.Entities
         public DateOnly BirthDate { get; set; }
 
         [Column("phone_number")]
-        public string? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         [Column("email")]
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Column("is_active")]
         public bool IsActive { get; set; }

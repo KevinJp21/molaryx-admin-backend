@@ -20,15 +20,15 @@ namespace Infrastructure.Persistence.Repositories
                 .Where(p => p.IdTenant == idTenant)
                 .Where(spec?.Criteria ?? (_ => true));
 
-                foreach (var include in spec?.Includes ?? [])
-                {
-                    query = query.Include(include);
-                }
+            foreach (var include in spec?.Includes ?? [])
+            {
+                query = query.Include(include);
+            }
 
-                foreach (var includePath in spec?.IncludePaths ?? [])
-                {
-                    query = query.Include(includePath);
-                }
+            foreach (var includePath in spec?.IncludePaths ?? [])
+            {
+                query = query.Include(includePath);
+            }
 
             var totalItems = await query.CountAsync(cancellationToken);
 
@@ -39,6 +39,47 @@ namespace Infrastructure.Persistence.Repositories
                 .ToListAsync(cancellationToken);
 
             return (totalItems, patients);
+        }
+
+        public async Task<int> CountActivePatientsByIdTenantAsync(long idTenant, CancellationToken cancellationToken)
+        {
+            return await DbSet
+                .Where(p => p.IdTenant == idTenant && p.IsActive)
+                .CountAsync(cancellationToken);
+        }
+
+        public async Task<bool> ExistsByEmailAsync(
+            long idTenant,
+            string email,
+            CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(
+                p => p.IdTenant == idTenant && p.Email == email,
+                cancellationToken
+            );
+        }
+
+        public async Task<bool> ExistsByIdentificationNumberAsync(
+            long idTenant,
+            string identificationNumber,
+            CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(
+                p => p.IdTenant == idTenant
+                    && p.IdentificationNumber == identificationNumber,
+                cancellationToken
+            );
+        }
+
+        public async Task<bool> ExistsByPhoneNumberAsync(
+            long idTenant,
+            string phoneNumber,
+            CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(
+                p => p.IdTenant == idTenant && p.PhoneNumber == phoneNumber,
+                cancellationToken
+            );
         }
     }
 }

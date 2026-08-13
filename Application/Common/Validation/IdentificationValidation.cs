@@ -15,6 +15,12 @@ namespace Application.Common.Validation
                 (short)IdentificationTypeEnum.CC or
                 (short)IdentificationTypeEnum.CE;
 
+        public static bool IsAllowedForPatient(short idIdentificationType) =>
+            idIdentificationType is
+                (short)IdentificationTypeEnum.CC or
+                (short)IdentificationTypeEnum.CE or
+                (short)IdentificationTypeEnum.TI;
+
         public static bool MatchesType(short idIdentificationType, string? identificationNumber)
         {
             if (string.IsNullOrWhiteSpace(identificationNumber))

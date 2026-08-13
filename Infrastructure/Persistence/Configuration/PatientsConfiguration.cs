@@ -20,8 +20,8 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(p => p.FirstSurname).IsRequired();
             builder.Property(p => p.SecondSurname);
             builder.Property(p => p.BirthDate).IsRequired();
-            builder.Property(p => p.PhoneNumber);
-            builder.Property(p => p.Email);
+            builder.Property(p => p.PhoneNumber).IsRequired();
+            builder.Property(p => p.Email).IsRequired();
             builder.Property(p => p.IsActive).IsRequired();
 
             builder.HasOne(p => p.Tenant)
@@ -37,10 +37,11 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasIndex(p => new
             {
                 p.IdTenant,
-                p.IdIdentificationType,
                 p.IdentificationNumber
             }).IsUnique();
 
+            builder.HasIndex(p => new { p.IdTenant, p.Email }).IsUnique();
+            builder.HasIndex(p => new { p.IdTenant, p.PhoneNumber }).IsUnique();
             builder.HasIndex(p => new { p.IdTenant, p.IdPatient }).IsUnique();
         }
     }
