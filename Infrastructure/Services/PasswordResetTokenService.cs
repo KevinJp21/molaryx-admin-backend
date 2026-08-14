@@ -2,6 +2,7 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -15,16 +16,20 @@ namespace Infrastructure.Services
         public async Task<bool> SendResetPasswordTokenAsync(string email, CancellationToken cancellationToken = default)
         {
             var currentDate = DateTime.UtcNow;
-            var user = await _unitOfWork.UserRepository.GetByEmailAsync(email, cancellationToken);
+            var user = await _unitOfWork.UserRepository.GetFirstAsync(
+                UserSpec.ByEmail(email),
+                cancellationToken);
 
             if (user is null || user.IdUserStatus != (short)UserStatusEnum.ACTIVE)
             {
                 return true;
             }
 
-            var activeTokens = await _unitOfWork.PasswordResetTokenRepository.GetActiveTokensByUserIdAsync(user.IdUser, cancellationToken);
+            var activeTokens = await _unitOfWork.PasswordResetTokenRepository.GetAll(
+                PasswordResetTokenSpec.ActiveByUser(user.IdUser),
+                cancellationToken) ?? [];
 
-            if (activeTokens.Count > 0)
+            if (activeTokens.Length > 0)
             {
                 foreach (var activeToken in activeTokens)
                 {
@@ -62,7 +67,9 @@ namespace Infrastructure.Services
 
             var tokenHash = _tokenService.HashToken(token);
 
-            var passwordResetToken = await _unitOfWork.PasswordResetTokenRepository.GetByTokenAsync(tokenHash, cancellationToken) ??
+            var passwordResetToken = await _unitOfWork.PasswordResetTokenRepository.GetFirstAsync(
+                    PasswordResetTokenSpec.ByValidToken(tokenHash),
+                    cancellationToken) ??
                 throw new InvalidOperationException("El token no es válido o ha expirado");
 
             var user = await _unitOfWork.UserRepository.GetByIdAsync(passwordResetToken.IdUser, cancellationToken) ??

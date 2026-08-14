@@ -1,6 +1,7 @@
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -16,8 +17,8 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken
         )
         {
-            var promotion = await _unitOfWork.PromotionRepository.GetAvailablePromotionAsync(
-                idPromotion,
+            var promotion = await _unitOfWork.PromotionRepository.GetFirstAsync(
+                PromotionSpec.Available(idPromotion, DateTime.UtcNow),
                 cancellationToken
             );
 

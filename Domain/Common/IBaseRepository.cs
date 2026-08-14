@@ -12,6 +12,11 @@ namespace Domain.Common
         Task UpdateAsync(TEntity entity, CancellationToken cancellationToken);
         Task SaveChangesAsync( CancellationToken cancellationToken );
         void Remove(TEntity entity);
+        Task<TEntity?> GetFirstAsync(
+            ISpecification<TEntity> spec,
+            CancellationToken cancellationToken = default
+        );
+
         Task<(int totalItems, List<TEntity> data)> GetPagedAsync(
             int page,
             int size,

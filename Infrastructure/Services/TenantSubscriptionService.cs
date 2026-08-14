@@ -3,6 +3,7 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -49,8 +50,8 @@ namespace Infrastructure.Services
 
             var activeSubscription = await _unitOfWork
                 .TenantSubscriptionRepository
-                .GetActiveSubscriptionAsync(
-                    idTenant,
+                .GetFirstAsync(
+                    TenantSubscriptionSpec.ActiveByTenant(idTenant),
                     cancellationToken
                 );
 
@@ -157,8 +158,8 @@ namespace Infrastructure.Services
 
             var activeSubscription = await _unitOfWork
                 .TenantSubscriptionRepository
-                .GetActiveSubscriptionAsync(
-                    idTenant,
+                .GetFirstAsync(
+                    TenantSubscriptionSpec.ActiveByTenant(idTenant),
                     cancellationToken
                 );
 
@@ -206,7 +207,9 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken)
         {
             var subscription = await _unitOfWork.TenantSubscriptionRepository
-                .GetByIdWithPromotionAsync(idTenantSubscription, cancellationToken);
+                .GetFirstAsync(
+                    TenantSubscriptionSpec.ByIdWithPromotion(idTenantSubscription),
+                    cancellationToken);
 
             if (subscription is null)
             {
@@ -243,10 +246,10 @@ namespace Infrastructure.Services
         public async Task<int> UpdateExpiredPromotionsAsync(CancellationToken cancellationToken)
         {
             var expiredSubscriptions = await _unitOfWork.TenantSubscriptionRepository
-                .GetSubscriptionsWithExpiredPromotionsAsync(
-                    DateTime.UtcNow,
+                .GetAll(
+                    TenantSubscriptionSpec.WithExpiredPromotions(DateTime.UtcNow),
                     cancellationToken
-                );
+                ) ?? [];
 
             var updatedCount = 0;
 

@@ -3,6 +3,7 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -24,8 +25,8 @@ namespace Infrastructure.Services
 
             var username = dto.Username.Trim().ToLowerInvariant();
 
-            var usernameExists = await _unitOfWork.UserRepository.ExistsByUsernameAsync(
-                username,
+            var usernameExists = await _unitOfWork.UserRepository.ExistsAsync(
+                UserSpec.ByUsername(username),
                 cancellationToken
             );
 
@@ -36,8 +37,8 @@ namespace Infrastructure.Services
 
             var email = dto.Email.Trim().ToLowerInvariant();
 
-            var emailExists = await _unitOfWork.UserRepository.ExistsByEmailAsync(
-                email,
+            var emailExists = await _unitOfWork.UserRepository.ExistsAsync(
+                UserSpec.ByEmail(email),
                 cancellationToken
             );
 
@@ -49,8 +50,8 @@ namespace Infrastructure.Services
             if (!string.IsNullOrWhiteSpace(dto.IdentificationNumber))
             {
                 var identificationNumberExists = await _unitOfWork
-                    .UserRepository.ExistsByIdentificationNumberAsync(
-                        dto.IdentificationNumber,
+                    .UserRepository.ExistsAsync(
+                        UserSpec.ByIdentificationNumber(dto.IdentificationNumber),
                         cancellationToken);
 
                 if (identificationNumberExists)
@@ -59,8 +60,8 @@ namespace Infrastructure.Services
                 }
             }
 
-            var phoneNumberExists = await _unitOfWork.UserRepository.ExistsByPhoneNumberAsync(
-                dto.PhoneNumber,
+            var phoneNumberExists = await _unitOfWork.UserRepository.ExistsAsync(
+                UserSpec.ByPhoneNumber(dto.PhoneNumber),
                 cancellationToken
             );
 

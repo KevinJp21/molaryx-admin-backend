@@ -4,6 +4,7 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Specifications;
 
 namespace Application.Features.Auth.Command.Login
 {
@@ -16,7 +17,9 @@ namespace Application.Features.Auth.Command.Login
 
         public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var user = await _unitOfWork.UserRepository.GetByEmailAsync(request.Email, cancellationToken)
+            var user = await _unitOfWork.UserRepository.GetFirstAsync(
+                    UserSpec.ByEmail(request.Email),
+                    cancellationToken)
                 ?? throw new InvalidCredentialsException("Usuario o contraseña invalida.");
 
 

@@ -2,6 +2,7 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Exceptions;
+using Domain.Specifications;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
 
@@ -98,8 +99,8 @@ namespace Infrastructure.Services
                 _tokenService.HashToken(refreshToken);
 
             var session = await _unitOfWork.UserSessionRepository
-                .GetByRefreshTokenHashAsync(
-                    refreshTokenHash,
+                .GetFirstAsync(
+                    UserSessionsSpec.ByRefreshTokenHash(refreshTokenHash),
                     cancellationToken
                 );
 
@@ -251,7 +252,9 @@ namespace Infrastructure.Services
 
         public async Task RevokeAllSessionAsync(long idUser, CancellationToken cancellationToken)
         {
-            var sessions = await _unitOfWork.UserSessionRepository.GetActiveSessionsByUserIdAsync(idUser, cancellationToken);
+            var sessions = await _unitOfWork.UserSessionRepository.GetAll(
+                UserSessionsSpec.ActiveByUser(idUser),
+                cancellationToken) ?? [];
 
             if (!sessions.Any())
                 return;
