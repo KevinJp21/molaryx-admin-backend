@@ -29,6 +29,13 @@ public static class PatientsPermissionSeed
             IdModule = (short)ModuleEnum.PATIENTS,
             Code = PermissionCodes.UPDATE_PATIENT,
             CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.DELETE_PATIENT,
+            IdModule = (short)ModuleEnum.PATIENTS,
+            Code = PermissionCodes.DELETE_PATIENT,
+            CreatedAt = SeedConstants.SeedDate
         }
     ];
 }

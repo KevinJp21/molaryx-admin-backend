@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.Patients.Command.CreatePatient;
+using Application.Features.Patients.Command.DeletePatient;
 using Application.Features.Patients.Command.UpdatePatient;
 using Application.Features.Patients.Query;
 using Domain.Constants;
@@ -53,6 +54,20 @@ namespace Presentation.Controllers
                 new ApiResponse<bool>(
                     "Paciente actualizado de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.DELETE_PATIENT)]
+        [HttpDelete]
+        public async Task<ActionResult<ApiResponse<bool>>> DeletePatient(
+            [FromQuery] DeletePatientCommand query,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Paciente eliminado de manera exitosa.",
+                    await _mediator.Send(query, cancellationToken)
                 )
             );
         }

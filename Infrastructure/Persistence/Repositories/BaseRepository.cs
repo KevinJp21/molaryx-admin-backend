@@ -40,19 +40,45 @@ namespace Infrastructure.Persistence.Repositories
             return result.State == EntityState.Added;
         }
 
-        public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity?> GetByIdAsync(
+            TKey id,
+            CancellationToken cancellationToken = default,
+            ISpecification<TEntity>? spec = null
+           )
         {
-            return await DbSet.FindAsync([id], cancellationToken);
+            var keyName = Context.Model
+                .FindEntityType(typeof(TEntity))
+                ?.FindPrimaryKey()
+                ?.Properties[0]
+                .Name
+                ?? throw new InvalidOperationException(
+                    $"No se encontró la clave primaria de {typeof(TEntity).Name}.");
+
+            var query = DbSet.Where(entity => EF.Property<TKey>(entity, keyName).Equals(id));
+
+            query = query.Where(spec?.Criteria ?? (_ => true));
+
+            foreach (var include in spec?.Includes ?? [])
+            {
+                query = query.Include(include);
+            }
+
+            foreach (var includePath in spec?.IncludePaths ?? [])
+            {
+                query = query.Include(includePath);
+            }
+
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public virtual Task UpdateAsync( TEntity entity, CancellationToken cancellationToken = default)
+        public virtual Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
         {
             DbSet.Update(entity);
 
             return Task.CompletedTask;
         }
 
-        public virtual async Task SaveChangesAsync( CancellationToken cancellationToken = default)
+        public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             await Context.SaveChangesAsync(
                 cancellationToken
@@ -70,19 +96,9 @@ namespace Infrastructure.Persistence.Repositories
             ISpecification<TEntity>? spec = null,
             CancellationToken cancellationToken = default)
         {
-            var query = DbSet
-                .AsNoTracking()
-                .Where(spec?.Criteria ?? (_ => true));
-
-            foreach (var include in spec?.Includes ?? [])
-            {
-                query = query.Include(include);
-            }
-
-            foreach (var path in spec?.IncludePaths ?? [])
-            {
-                query = query.Include(path);
-            }
+            var query = ApplyIncludes(
+                ApplyCriteria(DbSet.AsNoTracking(), spec),
+                spec);
 
             var totalItems = await query.CountAsync(cancellationToken);
 
@@ -92,6 +108,44 @@ namespace Infrastructure.Persistence.Repositories
                 .ToListAsync(cancellationToken);
 
             return (totalItems, items);
+        }
+
+        public virtual Task<bool> ExistsAsync(
+            ISpecification<TEntity> spec,
+            CancellationToken cancellationToken = default)
+        {
+            return ApplyCriteria(DbSet, spec).AnyAsync(cancellationToken);
+        }
+
+        public virtual Task<int> CountAsync(
+            ISpecification<TEntity>? spec = null,
+            CancellationToken cancellationToken = default)
+        {
+            return ApplyCriteria(DbSet, spec).CountAsync(cancellationToken);
+        }
+
+        private static IQueryable<TEntity> ApplyCriteria(
+            IQueryable<TEntity> query,
+            ISpecification<TEntity>? spec)
+        {
+            return query.Where(spec?.Criteria ?? (_ => true));
+        }
+
+        private static IQueryable<TEntity> ApplyIncludes(
+            IQueryable<TEntity> query,
+            ISpecification<TEntity>? spec)
+        {
+            foreach (var include in spec?.Includes ?? [])
+            {
+                query = query.Include(include);
+            }
+
+            foreach (var includePath in spec?.IncludePaths ?? [])
+            {
+                query = query.Include(includePath);
+            }
+
+            return query;
         }
     }
 }

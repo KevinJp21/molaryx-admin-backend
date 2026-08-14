@@ -6,6 +6,7 @@ using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -35,7 +36,7 @@ namespace Infrastructure.Services
                 ?? throw new NotFoundException("El consultorio no tiene una suscripción activa.");
 
             var patientCount = await _unitOfWork.PatientsRepository
-                .CountPatientsByIdTenantAsync(idTenant, cancellationToken);
+                .CountAsync(PatientsSpec.ForTenantCount(idTenant), cancellationToken);
 
             if (tenantSubscription.MaxPatients is int maxPatients && patientCount >= maxPatients)
             {
@@ -43,9 +44,8 @@ namespace Infrastructure.Services
             }
 
             var identificationExists = await _unitOfWork.PatientsRepository
-                .ExistsByIdentificationNumberAsync(
-                    idTenant,
-                    request.IdentificationNumber,
+                .ExistsAsync(
+                    PatientsSpec.ByIdentificationNumber(idTenant, request.IdentificationNumber),
                     cancellationToken
                 );
 
@@ -57,7 +57,7 @@ namespace Infrastructure.Services
             var email = request.Email.Trim().ToLowerInvariant();
 
             var emailExists = await _unitOfWork.PatientsRepository
-                .ExistsByEmailAsync(idTenant, email, cancellationToken);
+                .ExistsAsync(PatientsSpec.ByEmail(idTenant, email), cancellationToken);
 
             if (emailExists)
             {
@@ -65,7 +65,10 @@ namespace Infrastructure.Services
             }
 
             var phoneExists = await _unitOfWork.PatientsRepository
-                .ExistsByPhoneNumberAsync(idTenant, request.PhoneNumber, cancellationToken);
+                .ExistsAsync(
+                    PatientsSpec.ByPhoneNumber(idTenant, request.PhoneNumber),
+                    cancellationToken
+                );
 
             if (phoneExists)
             {
@@ -98,6 +101,8 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken
         )
         {
+            //todo: Cuando se implemente logica de eliminación agregar campo deletedAt y valdiar maximo de pacientes por fecha de eliminacion y no por estado.
+
             var idTenant = _currentUser.IdTenant
                 ?? throw new InvalidOperationException("El usuario no pertenece a un consultorio.");
 
@@ -109,7 +114,10 @@ namespace Infrastructure.Services
                 throw new InvalidOperationException("El consultorio no está activo.");
             }
 
-            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(request.IdPatient, cancellationToken)
+            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(
+                    request.IdPatient,
+                    cancellationToken,
+                    PatientsSpec.ById(request.IdPatient))
                 ?? throw new NotFoundException("El paciente no existe.");
 
             if (patient.IdTenant != idTenant)
@@ -121,17 +129,42 @@ namespace Infrastructure.Services
             if (request.IdentificationNumber is not null)
             {
                 var identificationExists = await _unitOfWork.PatientsRepository
-                    .ExistsByIdentificationNumberAsync(
-                        idTenant,
-                        request.IdentificationNumber,
+                    .ExistsAsync(
+                        PatientsSpec.ByIdentificationNumber(idTenant, request.IdentificationNumber),
                         cancellationToken
                     );
 
-                if (identificationExists)
+                if (identificationExists && request.IdentificationNumber != patient.IdentificationNumber)
                 {
                     throw new InvalidOperationException("Ya existe un paciente con ese número de identificación.");
                 }
             }
+
+            if (request.PhoneNumber is not null)
+            {
+                var phoneExists = await _unitOfWork.PatientsRepository.ExistsAsync(
+                    PatientsSpec.ByPhoneNumber(idTenant, request.PhoneNumber),
+                    cancellationToken);
+
+                if (phoneExists && request.PhoneNumber != patient.PhoneNumber)
+                {
+                    throw new InvalidOperationException("Ya existe un paciente con ese número de celular.");
+                }
+            }
+
+
+            if (request.Email is not null)
+            {
+                var emailExists = await _unitOfWork.PatientsRepository.ExistsAsync(
+                    PatientsSpec.ByEmail(idTenant, request.Email),
+                    cancellationToken);
+
+                if (emailExists && request.Email != patient.Email)
+                {
+                    throw new InvalidOperationException("Ya existe un paciente con ese correo electrónico.");
+                }
+            }
+
 
             patient.IdIdentificationType = request.IdIdentificationType ?? patient.IdIdentificationType;
             patient.IdentificationNumber = request.IdentificationNumber ?? patient.IdentificationNumber;
@@ -143,6 +176,31 @@ namespace Infrastructure.Services
             patient.PhoneNumber = request.PhoneNumber ?? patient.PhoneNumber;
             patient.Email = request.Email ?? patient.Email;
             patient.IsActive = request.IsActive ?? patient.IsActive;
+            patient.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.PatientsRepository.UpdateAsync(patient, cancellationToken);
+
+            await _unitOfWork.PatientsRepository.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> DeletePatientAsync(
+            long idPatient,
+            CancellationToken cancellationToken
+        )
+        {
+            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(idPatient, cancellationToken)
+                ?? throw new NotFoundException("El paciente no existe.");
+
+            if (patient.IdTenant != _currentUser.IdTenant)
+            {
+                throw new InvalidOperationException("El paciente no pertenece a este consultorio.");
+            }
+
+
+            patient.DeletedAt = DateTime.UtcNow;
+
 
             await _unitOfWork.PatientsRepository.UpdateAsync(patient, cancellationToken);
 

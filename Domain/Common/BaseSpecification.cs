@@ -15,12 +15,8 @@ Su objetivo es mantener el repositorio genérico y encapsular la lógica de:
 
 El mismo repositorio puede ejecutar distintas consultas simplemente recibiendo una Specification diferente.
 
-No crear Specifications para consultas simples como:
-- GetByIdAsync
-- ExistsAsync
-- GetByEmailAsync
-
-En esos casos es preferible un método directo en el repositorio.
+Métodos específicos en el repositorio solo cuando la consulta no cabe en filtro + include
+(proyecciones, SelectMany, joins especiales).
 */
     public abstract class BaseSpecification<T> : ISpecification<T>
     {

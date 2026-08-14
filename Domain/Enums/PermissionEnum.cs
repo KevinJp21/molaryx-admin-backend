@@ -11,5 +11,6 @@ namespace Domain.Enums
         GET_PATIENTS = 4,
         CREATE_PATIENT = 5,
         UPDATE_PATIENT = 6,
+        DELETE_PATIENT = 7,
     }
 }

@@ -23,6 +23,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(p => p.PhoneNumber).IsRequired();
             builder.Property(p => p.Email).IsRequired();
             builder.Property(p => p.IsActive).IsRequired();
+            builder.Property(p => p.DeletedAt);
 
             builder.HasOne(p => p.Tenant)
                 .WithMany(t => t.Patients)

@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Context;
 using Domain.Contracts;
+using Domain.Specifications;
 
 namespace Application.Features.Auth.Query.GetUser
 {
@@ -12,7 +13,10 @@ namespace Application.Features.Auth.Query.GetUser
 
         public async Task<GetUserQueryResponse> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync((long)_currentUser.IdUser!, cancellationToken)
+
+            var spec = new UserSpec((long)_currentUser.IdUser!);
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync((long)_currentUser.IdUser!, cancellationToken, spec)
                 ?? throw new Exception("Usuario no encontrado.");
 
             var permissions = await _unitOfWork.UserRepository.GetPermissionsByUserIdAsync((long)_currentUser.IdUser!, cancellationToken);

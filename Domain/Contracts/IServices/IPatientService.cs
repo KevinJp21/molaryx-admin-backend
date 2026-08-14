@@ -14,5 +14,10 @@ namespace Domain.Contracts.IServices
             UpdatePatientCommand request,
             CancellationToken cancellationToken
         );
+
+        Task<bool> DeletePatientAsync(
+            long idPatient,
+            CancellationToken cancellationToken
+        );
     }
 }
