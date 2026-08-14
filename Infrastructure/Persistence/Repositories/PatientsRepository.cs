@@ -41,10 +41,10 @@ namespace Infrastructure.Persistence.Repositories
             return (totalItems, patients);
         }
 
-        public async Task<int> CountActivePatientsByIdTenantAsync(long idTenant, CancellationToken cancellationToken)
+        public async Task<int> CountPatientsByIdTenantAsync(long idTenant, CancellationToken cancellationToken)
         {
             return await DbSet
-                .Where(p => p.IdTenant == idTenant && p.IsActive)
+                .Where(p => p.IdTenant == idTenant)
                 .CountAsync(cancellationToken);
         }
 

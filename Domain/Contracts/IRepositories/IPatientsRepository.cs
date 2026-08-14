@@ -13,7 +13,7 @@ namespace Domain.Contracts.IRepositories
             CancellationToken cancellationToken = default
         );
 
-        Task<int> CountActivePatientsByIdTenantAsync(long idTenant, CancellationToken cancellationToken);
+        Task<int> CountPatientsByIdTenantAsync(long idTenant, CancellationToken cancellationToken);
 
         Task<bool> ExistsByEmailAsync(
             long idTenant,

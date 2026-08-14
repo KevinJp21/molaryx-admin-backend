@@ -1,5 +1,6 @@
 using Application.Context;
 using Application.Features.Patients.Command.CreatePatient;
+using Application.Features.Patients.Command.UpdatePatient;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -34,7 +35,7 @@ namespace Infrastructure.Services
                 ?? throw new NotFoundException("El consultorio no tiene una suscripción activa.");
 
             var patientCount = await _unitOfWork.PatientsRepository
-                .CountActivePatientsByIdTenantAsync(idTenant, cancellationToken);
+                .CountPatientsByIdTenantAsync(idTenant, cancellationToken);
 
             if (tenantSubscription.MaxPatients is int maxPatients && patientCount >= maxPatients)
             {
@@ -87,6 +88,64 @@ namespace Infrastructure.Services
             };
 
             await _unitOfWork.PatientsRepository.AddAsync(patient, cancellationToken);
+            await _unitOfWork.PatientsRepository.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+
+        public async Task<bool> UpdatePatientAsync(
+            UpdatePatientCommand request,
+            CancellationToken cancellationToken
+        )
+        {
+            var idTenant = _currentUser.IdTenant
+                ?? throw new InvalidOperationException("El usuario no pertenece a un consultorio.");
+
+            var tenant = await _unitOfWork.TenantRepository.GetByIdAsync(idTenant, cancellationToken)
+                ?? throw new NotFoundException("El consultorio no existe.");
+
+            if (tenant.IdTenantStatus != (short)TenantStatusEnum.ACTIVE)
+            {
+                throw new InvalidOperationException("El consultorio no está activo.");
+            }
+
+            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(request.IdPatient, cancellationToken)
+                ?? throw new NotFoundException("El paciente no existe.");
+
+            if (patient.IdTenant != idTenant)
+            {
+                throw new InvalidOperationException("El paciente no pertenece a este consultorio.");
+            }
+
+
+            if (request.IdentificationNumber is not null)
+            {
+                var identificationExists = await _unitOfWork.PatientsRepository
+                    .ExistsByIdentificationNumberAsync(
+                        idTenant,
+                        request.IdentificationNumber,
+                        cancellationToken
+                    );
+
+                if (identificationExists)
+                {
+                    throw new InvalidOperationException("Ya existe un paciente con ese número de identificación.");
+                }
+            }
+
+            patient.IdIdentificationType = request.IdIdentificationType ?? patient.IdIdentificationType;
+            patient.IdentificationNumber = request.IdentificationNumber ?? patient.IdentificationNumber;
+            patient.FirstName = request.FirstName ?? patient.FirstName;
+            patient.SecondName = request.SecondName ?? patient.SecondName;
+            patient.FirstSurname = request.FirstSurname ?? patient.FirstSurname;
+            patient.SecondSurname = request.SecondSurname ?? patient.SecondSurname;
+            patient.BirthDate = request.BirthDate ?? patient.BirthDate;
+            patient.PhoneNumber = request.PhoneNumber ?? patient.PhoneNumber;
+            patient.Email = request.Email ?? patient.Email;
+            patient.IsActive = request.IsActive ?? patient.IsActive;
+
+            await _unitOfWork.PatientsRepository.UpdateAsync(patient, cancellationToken);
+
             await _unitOfWork.PatientsRepository.SaveChangesAsync(cancellationToken);
 
             return true;

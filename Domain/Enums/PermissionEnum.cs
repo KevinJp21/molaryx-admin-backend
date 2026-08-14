@@ -10,5 +10,6 @@ namespace Domain.Enums
         /* Patients */
         GET_PATIENTS = 4,
         CREATE_PATIENT = 5,
+        UPDATE_PATIENT = 6,
     }
 }
