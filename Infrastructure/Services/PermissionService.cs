@@ -1,5 +1,6 @@
 using Domain.Contracts;
 using Domain.Contracts.IServices;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -13,9 +14,8 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken = default
         )
         {
-            return await _unitOfWork.RolePermissionRepository.RoleHasPermissionAsync(
-                idUserRole,
-                permissionCode,
+            return await _unitOfWork.RolePermissionRepository.ExistsAsync(
+                RolePermissionSpec.ByRoleAndCode(idUserRole, permissionCode),
                 cancellationToken
             );
         }

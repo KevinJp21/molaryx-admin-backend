@@ -32,7 +32,9 @@ namespace Infrastructure.Services
             }
 
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepository
-                .GetActiveSubscriptionAsync(idTenant, cancellationToken)
+                .GetFirstAsync(
+                    TenantSubscriptionSpec.ActiveByTenant(idTenant),
+                    cancellationToken)
                 ?? throw new NotFoundException("El consultorio no tiene una suscripción activa.");
 
             var patientCount = await _unitOfWork.PatientsRepository

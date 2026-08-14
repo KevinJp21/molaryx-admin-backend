@@ -26,10 +26,10 @@ namespace Application.Features.Auth.Query.GetSessions
                 request.Active
             );
 
-            var (totalItems, sessions) = await _unitOfWork.UserSessionRepository.GetAllSessionsByUserIdAsync(
-                spec,
+            var (totalItems, sessions) = await _unitOfWork.UserSessionRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),
                 PaginationHelper.GetEffectivePageSize(request.Size),
+                spec,
                 cancellationToken
             );
 

@@ -26,6 +26,10 @@ Métodos específicos en el repositorio solo cuando la consulta no cabe en filtr
 
         public List<string> IncludePaths { get; } = [];
 
+        public Expression<Func<T, object>>? OrderBy { get; protected set; }
+
+        public Expression<Func<T, object>>? OrderByDescending { get; protected set; }
+
         protected Expression<Func<T, bool>> And(Expression<Func<T, bool>> other)
             => Combine(Criteria, other, Expression.AndAlso);
 

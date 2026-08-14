@@ -17,20 +17,7 @@ namespace Infrastructure.Persistence.Repositories
             ISpecification<TEntity>? spec = null,
             CancellationToken cancellationToken = default)
         {
-            IQueryable<TEntity> query = DbSet;
-
-            query = query.Where(spec?.Criteria ?? (_ => true));
-
-            foreach (var include in spec?.Includes ?? [])
-            {
-                query = query.Include(include);
-            }
-
-            foreach (var includePath in spec?.IncludePaths ?? [])
-            {
-                query = query.Include(includePath);
-            }
-
+            var query = ApplyIncludes(ApplyCriteria(DbSet, spec), spec);
             return await query.ToArrayAsync(cancellationToken);
         }
 
@@ -100,6 +87,15 @@ namespace Infrastructure.Persistence.Repositories
                 ApplyCriteria(DbSet.AsNoTracking(), spec),
                 spec);
 
+            if (spec?.OrderByDescending is not null)
+            {
+                query = query.OrderByDescending(spec.OrderByDescending);
+            }
+            else if (spec?.OrderBy is not null)
+            {
+                query = query.OrderBy(spec.OrderBy);
+            }
+
             var totalItems = await query.CountAsync(cancellationToken);
 
             var items = await query
@@ -108,6 +104,14 @@ namespace Infrastructure.Persistence.Repositories
                 .ToListAsync(cancellationToken);
 
             return (totalItems, items);
+        }
+
+        public virtual Task<TEntity?> GetFirstAsync(
+            ISpecification<TEntity> spec,
+            CancellationToken cancellationToken = default)
+        {
+            return ApplyIncludes(ApplyCriteria(DbSet, spec), spec)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public virtual Task<bool> ExistsAsync(

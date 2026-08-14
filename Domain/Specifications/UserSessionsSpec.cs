@@ -8,6 +8,7 @@ namespace Domain.Specifications
         public UserSessionsSpec(long idUser, bool? active)
         {
             Criteria = us => us.IdUser == idUser;
+            OrderByDescending = us => us.CreatedAt;
 
             if (active == true)
             {
@@ -21,6 +22,24 @@ namespace Domain.Specifications
                     us.RevokedAt != null ||
                     us.ExpiresAt <= DateTime.UtcNow);
             }
+        }
+
+        public static UserSessionsSpec ByRefreshTokenHash(string refreshTokenHash)
+        {
+            var spec = new UserSessionsSpec
+            {
+                Criteria = us => us.RefreshTokenHash == refreshTokenHash
+            };
+            return spec;
+        }
+
+        public static UserSessionsSpec ActiveByUser(long idUser)
+        {
+            return new UserSessionsSpec(idUser, active: true);
+        }
+
+        private UserSessionsSpec()
+        {
         }
     }
 }
