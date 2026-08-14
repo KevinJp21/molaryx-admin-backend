@@ -9,6 +9,7 @@ namespace Domain.Specifications
         {
             Criteria = p => p.IdTenant == idTenant && p.DeletedAt == null;
             AddInclude(p => p.IdentificationType);
+            OrderByDescending = p => p.CreatedAt;
         }
 
         public static PatientsSpec ById(long idPatient)
