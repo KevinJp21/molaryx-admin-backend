@@ -103,8 +103,6 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken
         )
         {
-            //todo: Cuando se implemente logica de eliminación agregar campo deletedAt y valdiar maximo de pacientes por fecha de eliminacion y no por estado.
-
             var idTenant = _currentUser.IdTenant
                 ?? throw new InvalidOperationException("El usuario no pertenece a un consultorio.");
 
