@@ -46,11 +46,7 @@ namespace Infrastructure.Services
                 IdUser = idUser,
                 RefreshTokenHash = refreshTokenHash,
                 ExpiresAt = currentDate.AddDays(7),
-                Device = httpContext?
-                    .Request
-                    .Headers
-                    .UserAgent
-                    .ToString(),
+                Device = httpContext?.GetClientDevice(),
                 IpConnection = httpContext?.GetClientIpAddress(),
                 LastLogin = currentDate
             };
@@ -146,13 +142,8 @@ namespace Infrastructure.Services
                 IdUser = user.IdUser,
                 RefreshTokenHash = newRefreshTokenHash,
                 ExpiresAt = currentDate.AddDays(7),
-                Device = httpContext?
-                    .Request
-                    .Headers
-                    .UserAgent
-                    .ToString(),
-                IpConnection = httpContext?
-                    .GetClientIpAddress()
+                Device = httpContext?.GetClientDevice(),
+                IpConnection = httpContext?.GetClientIpAddress()
             };
 
             await using var transaction =
