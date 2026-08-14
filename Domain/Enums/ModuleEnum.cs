@@ -4,6 +4,7 @@ namespace Domain.Enums
     {
         TENANTS = 1,
         USERS = 2,
-        PATIENTS = 3
+        PATIENTS = 3,
+        SERVICES = 4
     }
 }

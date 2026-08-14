@@ -26,6 +26,12 @@ public static class ModuleSeed
             IdModule = (short)ModuleEnum.PATIENTS,
             Code = ModuleCodes.PATIENTS,
             CreatedAt = SeedConstants.SeedDate
+        },
+        new Module
+        {
+            IdModule = (short)ModuleEnum.SERVICES,
+            Code = ModuleCodes.SERVICES,
+            CreatedAt = SeedConstants.SeedDate
         }
     ];
 }
