@@ -12,5 +12,6 @@ namespace Domain.Constants
         public const string GET_PATIENTS = "GET_PATIENTS";
         public const string CREATE_PATIENT = "CREATE_PATIENT";
         public const string UPDATE_PATIENT = "UPDATE_PATIENT";
+        public const string DELETE_PATIENT = "DELETE_PATIENT";
     }
 }

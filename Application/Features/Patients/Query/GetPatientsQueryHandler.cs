@@ -18,10 +18,9 @@ namespace Application.Features.Patients.Query
                     "El usuario no pertenece a un consultorio."
                 );
 
-            var spec = new PatientsSpec();
+            var spec = new PatientsSpec(idTenant);
 
-            var (totalItems, patients) = await _unitOfWork.PatientsRepository.GetAllPatientsByIdTenantAsync(
-                idTenant,
+            var (totalItems, patients) = await _unitOfWork.PatientsRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),
                 PaginationHelper.GetEffectivePageSize(request.Size),
                 spec,

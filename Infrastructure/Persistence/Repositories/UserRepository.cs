@@ -1,3 +1,4 @@
+using Domain.Common;
 using Domain.Contracts.IRepositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -13,18 +14,6 @@ namespace Infrastructure.Persistence.Repositories
                 .Include(u => u.UserStatus)
                 .Include(u => u.Tenant)
                 .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
-        }
-
-        public override async Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
-        {
-            return await DbSet
-                .Include(u => u.UserRole)
-                .Include(u => u.UserStatus)
-                .Include(u => u.Tenant)
-                .FirstOrDefaultAsync(
-                    u => u.IdUser == id,
-                    cancellationToken
-            );
         }
 
         public async Task<bool> ExistsByUsernameAsync(string username, CancellationToken cancellationToken = default)

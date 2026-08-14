@@ -41,6 +41,8 @@ namespace Domain.Entities
         [Column("is_active")]
         public bool IsActive { get; set; }
 
+        public DateTime? DeletedAt { get; set; }
+
         public Tenant Tenant { get; set; } = null!;
 
         public IdentificationType IdentificationType { get; set; } = null!;
