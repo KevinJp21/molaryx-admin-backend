@@ -14,11 +14,8 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(s => s.IdTenant).IsRequired();
             builder.Property(s => s.Name).IsRequired();
             builder.Property(s => s.Description);
-            builder.Property(s => s.Price)
-                .HasPrecision(18, 2)
-                .IsRequired();
-            builder.Property(s => s.DurationMinutes).IsRequired();
             builder.Property(s => s.IsActive).IsRequired();
+            builder.Property(s => s.DeletedAt);
 
             builder.HasOne(s => s.Tenant)
                 .WithMany(t => t.Services)

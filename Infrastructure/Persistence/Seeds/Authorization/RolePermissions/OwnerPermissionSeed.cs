@@ -6,6 +6,7 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
     public static class OwnerPermissionSeed
     {
         public static RolePermission[] Data => [
+            // Patients
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
                 IdPermission = (short)PermissionEnum.GET_PATIENTS
@@ -21,6 +22,23 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
                 IdPermission = (short)PermissionEnum.DELETE_PATIENT
+            },
+            // Services
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.GET_SERVICES
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.CREATE_SERVICE
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.UPDATE_SERVICE
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.DELETE_SERVICE
             }
         ];
     }

@@ -1,10 +1,8 @@
-using Application.Context;
 using Application.Features.Patients.Command.CreatePatient;
 using Application.Features.Patients.Command.UpdatePatient;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Specifications;
 
@@ -12,7 +10,7 @@ namespace Infrastructure.Services
 {
     public class PatientService(
         IUnitOfWork _unitOfWork,
-        ICurrentUser _currentUser
+        ITenantAccessService _tenantAccessService
     ) : IPatientService
     {
         public async Task<bool> CreatePatientAsync(
@@ -20,27 +18,13 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken
         )
         {
-            var idTenant = _currentUser.IdTenant
-                ?? throw new InvalidOperationException("El usuario no pertenece a un consultorio.");
-
-            var tenant = await _unitOfWork.TenantRepository.GetByIdAsync(idTenant, cancellationToken)
-                ?? throw new NotFoundException("El consultorio no existe.");
-
-            if (tenant.IdTenantStatus != (short)TenantStatusEnum.ACTIVE)
-            {
-                throw new InvalidOperationException("El consultorio no está activo.");
-            }
-
-            var tenantSubscription = await _unitOfWork.TenantSubscriptionRepository
-                .GetFirstAsync(
-                    TenantSubscriptionSpec.ActiveByTenant(idTenant),
-                    cancellationToken)
-                ?? throw new NotFoundException("El consultorio no tiene una suscripción activa.");
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+            var idTenant = access.IdTenant;
 
             var patientCount = await _unitOfWork.PatientsRepository
                 .CountAsync(PatientsSpec.ForTenantCount(idTenant), cancellationToken);
 
-            if (tenantSubscription.MaxPatients is int maxPatients && patientCount >= maxPatients)
+            if (access.Subscription.MaxPatients is int maxPatients && patientCount >= maxPatients)
             {
                 throw new InvalidOperationException("El consultorio ha alcanzado el número máximo de pacientes.");
             }
@@ -103,16 +87,8 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken
         )
         {
-            var idTenant = _currentUser.IdTenant
-                ?? throw new InvalidOperationException("El usuario no pertenece a un consultorio.");
-
-            var tenant = await _unitOfWork.TenantRepository.GetByIdAsync(idTenant, cancellationToken)
-                ?? throw new NotFoundException("El consultorio no existe.");
-
-            if (tenant.IdTenantStatus != (short)TenantStatusEnum.ACTIVE)
-            {
-                throw new InvalidOperationException("El consultorio no está activo.");
-            }
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+            var idTenant = access.IdTenant;
 
             var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(
                     request.IdPatient,
@@ -190,16 +166,18 @@ namespace Infrastructure.Services
             CancellationToken cancellationToken
         )
         {
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+
             var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(idPatient, cancellationToken)
                 ?? throw new NotFoundException("El paciente no existe.");
 
-            if (patient.IdTenant != _currentUser.IdTenant)
+            if (patient.IdTenant != access.IdTenant)
             {
                 throw new InvalidOperationException("El paciente no pertenece a este consultorio.");
             }
 
-
             patient.DeletedAt = DateTime.UtcNow;
+            patient.IsActive = false;
 
 
             await _unitOfWork.PatientsRepository.UpdateAsync(patient, cancellationToken);

@@ -109,6 +109,8 @@ public static class ServiceRegistration
         services.AddScoped<IEmailNotificationService, EmailNotificationService>();
         services.AddScoped<IPasswordResetTokenService, PasswordResetTokenService>();
         services.AddScoped<IPatientService, PatientService>();
+        services.AddScoped<IServiceService, ServiceService>();
+        services.AddScoped<ITenantAccessService, TenantAccessService>();
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
