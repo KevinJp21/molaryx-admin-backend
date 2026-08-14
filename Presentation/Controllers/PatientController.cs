@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.Patients.Command.CreatePatient;
+using Application.Features.Patients.Command.UpdatePatient;
 using Application.Features.Patients.Query;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +38,20 @@ namespace Presentation.Controllers
             return Ok(
                 new ApiResponse<bool>(
                     "Paciente creado de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.UPDATE_PATIENT)]
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdatePatient(
+            [FromBody] UpdatePatientCommand body,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Paciente actualizado de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
                 )
             );
