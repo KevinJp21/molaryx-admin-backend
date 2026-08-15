@@ -18,5 +18,8 @@ namespace Domain.Enums
         CREATE_SERVICE = 9,
         UPDATE_SERVICE = 10,
         DELETE_SERVICE = 11,
+
+        // Appointments
+        CREATE_APPOINTMENT = 12,
     }
 }

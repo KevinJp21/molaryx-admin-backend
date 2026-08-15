@@ -32,6 +32,10 @@ namespace Domain.Contracts
 
         public IServiceRepository ServiceRepository { get; }
 
+        public IRepositories.IAppointmentRepository AppointmentRepository { get; }
+
+        public IProfessionalRepository ProfessionalRepository { get; }
+
         Task<int> SaveChangeAsync(CancellationToken? cancellationToken);
 
         Task BeginTransactionAsync(CancellationToken? cancellationToken = null);

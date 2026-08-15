@@ -110,6 +110,7 @@ public static class ServiceRegistration
         services.AddScoped<IPasswordResetTokenService, PasswordResetTokenService>();
         services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<IServiceService, ServiceService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<ITenantAccessService, TenantAccessService>();
         services.AddRateLimiter(options =>
         {
