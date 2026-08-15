@@ -26,7 +26,6 @@ namespace Infrastructure.Persistence
         public DbSet<Appointment> Appointments { get; set; } = null!;
         public DbSet<AppointmentStatus> AppointmentStatuses { get; set; } = null!;
         public DbSet<Professional> Professionals { get; set; } = null!;
-        public DbSet<ProfessionalSchedule> ProfessionalSchedules { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

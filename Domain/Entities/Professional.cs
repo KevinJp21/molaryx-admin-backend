@@ -20,7 +20,6 @@ namespace Domain.Entities
         // Navigation properties
         public Tenant Tenant { get; set; } = null!;
         public User User { get; set; } = null!;
-        public ICollection<ProfessionalSchedule> ProfessionalSchedules { get; set; } = [];
         public ICollection<Appointment> Appointments { get; set; } = [];
     }
 }
