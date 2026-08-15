@@ -13,13 +13,7 @@ namespace Application.Features.Service.Command.UpdateService
                     .NotEmpty()
                     .WithMessage("El nombre es obligatorio.")
                     .MaximumLength(100)
-                    .WithMessage("El nombre ingresado es demasiado largo.")
-                    .Matches(RegexCatalog.NAME)
-                    .When(
-                        x => !string.IsNullOrWhiteSpace(x.Name),
-                        ApplyConditionTo.CurrentValidator
-                    )
-                    .WithMessage("Ingrese un nombre válido.");
+                    .WithMessage("El nombre ingresado es demasiado largo.");
             });
 
             When(x => x.Description is not null, () =>
