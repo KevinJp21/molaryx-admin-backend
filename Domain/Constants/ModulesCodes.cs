@@ -13,5 +13,8 @@ namespace Domain.Constants
 
         // Servicios
         public const string SERVICES = "SERVICES";
+
+        // Citas
+        public const string APPOINTMENTS = "APPOINTMENTS";
     }
 }

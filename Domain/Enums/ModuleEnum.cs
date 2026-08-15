@@ -5,6 +5,7 @@ namespace Domain.Enums
         TENANTS = 1,
         USERS = 2,
         PATIENTS = 3,
-        SERVICES = 4
+        SERVICES = 4,
+        APPOINTMENTS = 5
     }
 }
