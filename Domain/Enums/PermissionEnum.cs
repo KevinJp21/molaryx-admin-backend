@@ -20,6 +20,7 @@ namespace Domain.Enums
         DELETE_SERVICE = 11,
 
         // Appointments
-        CREATE_APPOINTMENT = 12,
+        GET_APPOINTMENTS = 12,
+        CREATE_APPOINTMENT = 13,
     }
 }
