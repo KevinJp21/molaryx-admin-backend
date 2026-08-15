@@ -11,6 +11,13 @@ public static class AppointmentPermissionSeed
     [
         new Permission
         {
+            IdPermission = (short)PermissionEnum.GET_APPOINTMENTS,
+            IdModule = (short)ModuleEnum.APPOINTMENTS,
+            Code = PermissionCodes.GET_APPOINTMENTS,
+            CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
             IdPermission = (short)PermissionEnum.CREATE_APPOINTMENT,
             IdModule = (short)ModuleEnum.APPOINTMENTS,
             Code = PermissionCodes.CREATE_APPOINTMENT,

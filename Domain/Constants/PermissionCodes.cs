@@ -21,6 +21,7 @@ namespace Domain.Constants
         public const string DELETE_SERVICE = "DELETE_SERVICE";
 
         // Appointments
+        public const string GET_APPOINTMENTS = "GET_APPOINTMENTS";
         public const string CREATE_APPOINTMENT = "CREATE_APPOINTMENT";
 
     }

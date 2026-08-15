@@ -1,5 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Features.Appointment.Command;
+using Application.Features.Appointment.Query;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,20 @@ namespace Presentation.Controllers
     [ApiController]
     public class AppointmentController(IMediator _mediator) : ControllerBase
     {
+
+        [Authorize(Policy = PermissionCodes.GET_APPOINTMENTS)]
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<GetAppointmentsResponse[]>>> GetAppointments(
+            [FromQuery] GetAppointmentsQuery query,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<GetAppointmentsResponse[]>(
+                    "Citas obtenidas de manera exitosa.",
+                    await _mediator.Send(query, cancellationToken)
+                )
+            );
+        }
 
         [Authorize(Policy = PermissionCodes.CREATE_APPOINTMENT)]
         [HttpPost]

@@ -17,7 +17,9 @@ namespace Infrastructure.Persistence.Repositories
             ISpecification<TEntity>? spec = null,
             CancellationToken cancellationToken = default)
         {
-            var query = ApplyIncludes(ApplyCriteria(DbSet, spec), spec);
+            var query = ApplyOrder(
+                ApplyIncludes(ApplyCriteria(DbSet, spec), spec),
+                spec);
             return await query.ToArrayAsync(cancellationToken);
         }
 
@@ -83,18 +85,11 @@ namespace Infrastructure.Persistence.Repositories
             ISpecification<TEntity>? spec = null,
             CancellationToken cancellationToken = default)
         {
-            var query = ApplyIncludes(
-                ApplyCriteria(DbSet.AsNoTracking(), spec),
+            var query = ApplyOrder(
+                ApplyIncludes(
+                    ApplyCriteria(DbSet.AsNoTracking(), spec),
+                    spec),
                 spec);
-
-            if (spec?.OrderByDescending is not null)
-            {
-                query = query.OrderByDescending(spec.OrderByDescending);
-            }
-            else if (spec?.OrderBy is not null)
-            {
-                query = query.OrderBy(spec.OrderBy);
-            }
 
             var totalItems = await query.CountAsync(cancellationToken);
 
@@ -147,6 +142,23 @@ namespace Infrastructure.Persistence.Repositories
             foreach (var includePath in spec?.IncludePaths ?? [])
             {
                 query = query.Include(includePath);
+            }
+
+            return query;
+        }
+
+        private static IQueryable<TEntity> ApplyOrder(
+            IQueryable<TEntity> query,
+            ISpecification<TEntity>? spec)
+        {
+            if (spec?.OrderByDescending is not null)
+            {
+                return query.OrderByDescending(spec.OrderByDescending);
+            }
+
+            if (spec?.OrderBy is not null)
+            {
+                return query.OrderBy(spec.OrderBy);
             }
 
             return query;

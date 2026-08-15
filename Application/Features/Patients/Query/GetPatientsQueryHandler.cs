@@ -1,24 +1,21 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
-using Application.Context;
 using Domain.Contracts;
+using Domain.Contracts.IServices;
 using Domain.Specifications;
 
 namespace Application.Features.Patients.Query
 {
     public class GetPatientsQueryHandler(
         IUnitOfWork _unitOfWork,
-        ICurrentUser _currentUser
+        ITenantAccessService _tenantAccessService
     ) : IRequestHandler<GetPatientsQuery, PagedResult<GetPatientsResponse>>
     {
         public async Task<PagedResult<GetPatientsResponse>> Handle(GetPatientsQuery request, CancellationToken cancellationToken = default)
         {
-            var idTenant = _currentUser.IdTenant
-                ?? throw new InvalidOperationException(
-                    "El usuario no pertenece a un consultorio."
-                );
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var spec = new PatientsSpec(idTenant);
+            var spec = new PatientsSpec(access.IdTenant);
 
             var (totalItems, patients) = await _unitOfWork.PatientsRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),
