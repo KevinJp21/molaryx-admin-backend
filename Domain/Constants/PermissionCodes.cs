@@ -24,5 +24,8 @@ namespace Domain.Constants
         public const string GET_APPOINTMENTS = "GET_APPOINTMENTS";
         public const string CREATE_APPOINTMENT = "CREATE_APPOINTMENT";
 
+        // Users
+        public const string GET_PROFESSIONALS = "GET_PROFESSIONALS";
+
     }
 }

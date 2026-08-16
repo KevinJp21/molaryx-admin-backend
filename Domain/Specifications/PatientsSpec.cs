@@ -5,11 +5,20 @@ namespace Domain.Specifications
 {
     public class PatientsSpec : BaseSpecification<Patient>
     {
-        public PatientsSpec(long idTenant)
+        public PatientsSpec(long idTenant, bool? isActive)
         {
             Criteria = p => p.IdTenant == idTenant && p.DeletedAt == null;
             AddInclude(p => p.IdentificationType);
             OrderByDescending = p => p.CreatedAt;
+
+            if (isActive == true)
+            {
+                Criteria = And(p => p.IsActive == true);
+            }
+            else if (isActive == false)
+            {
+                Criteria = And(p => p.IsActive == false);
+            }
         }
 
         public static PatientsSpec ById(long idPatient)

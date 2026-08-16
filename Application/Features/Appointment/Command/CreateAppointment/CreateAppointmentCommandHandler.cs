@@ -1,8 +1,7 @@
 using Application.Common.Mediator.Interfaces;
-using Application.Features.Appointment.Command;
 using Domain.Contracts.IServices;
 
-namespace Application.Features.Appointment.Command
+namespace Application.Features.Appointment.Command.CreateAppointment
 {
     public class CreateAppointmentCommandHandler(
         IAppointmentService appointmentService

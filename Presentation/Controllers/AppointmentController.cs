@@ -1,5 +1,5 @@
 using Application.Common.Mediator.Interfaces;
-using Application.Features.Appointment.Command;
+using Application.Features.Appointment.Command.CreateAppointment;
 using Application.Features.Appointment.Query;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;

@@ -15,7 +15,7 @@ namespace Application.Features.Patients.Query
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var spec = new PatientsSpec(access.IdTenant);
+            var spec = new PatientsSpec(access.IdTenant, request.IsActive);
 
             var (totalItems, patients) = await _unitOfWork.PatientsRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),

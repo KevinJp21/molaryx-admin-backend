@@ -12,7 +12,6 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasKey(p => p.IdProfessional);
             builder.Property(p => p.IdTenant).IsRequired();
             builder.Property(p => p.IdUser).IsRequired();
-            builder.Property(p => p.IsActive).IsRequired();
             builder.Property(p => p.CreatedAt).IsRequired();
             builder.Property(p => p.UpdatedAt);
 
