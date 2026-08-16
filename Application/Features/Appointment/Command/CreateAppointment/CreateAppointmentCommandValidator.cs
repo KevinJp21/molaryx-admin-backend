@@ -1,7 +1,7 @@
 using Domain.Enums;
 using FluentValidation;
 
-namespace Application.Features.Appointment.Command
+namespace Application.Features.Appointment.Command.CreateAppointment
 {
     public class CreateAppointmentCommandValidator : AbstractValidator<CreateAppointmentCommand>
     {

@@ -14,9 +14,6 @@ namespace Domain.Entities
         [Column("id_user")]
         public long IdUser { get; set; }
 
-        [Column("is_active")]
-        public bool IsActive { get; set; }
-
         // Navigation properties
         public Tenant Tenant { get; set; } = null!;
         public User User { get; set; } = null!;

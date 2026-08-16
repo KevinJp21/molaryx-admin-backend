@@ -9,6 +9,12 @@ public static class UserPermissionSeed
 {
     public static Permission[] Data =>
     [
-
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.GET_PROFESSIONALS,
+            IdModule = (short)ModuleEnum.USERS,
+            Code = PermissionCodes.GET_PROFESSIONALS,
+            CreatedAt = SeedConstants.SeedDate
+        }
     ];
 }

@@ -6,6 +6,6 @@ namespace Domain.Enums
         USERS = 2,
         PATIENTS = 3,
         SERVICES = 4,
-        APPOINTMENTS = 5
+        APPOINTMENTS = 5,
     }
 }

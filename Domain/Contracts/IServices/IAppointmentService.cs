@@ -1,4 +1,4 @@
-using Application.Features.Appointment.Command;
+using Application.Features.Appointment.Command.CreateAppointment;
 
 namespace Domain.Contracts.IServices
 {

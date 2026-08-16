@@ -18,7 +18,7 @@ namespace Application.Features.Service.Query
                     "El usuario no pertenece a un consultorio."
                 );
 
-            var spec = new ServicesSpec(idTenant);
+            var spec = new ServicesSpec(idTenant, request.IsActive);
 
             var (totalItems, services) = await _unitOfWork.ServiceRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),

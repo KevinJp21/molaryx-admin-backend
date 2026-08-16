@@ -1,4 +1,4 @@
-using Application.Features.Appointment.Command;
+using Application.Features.Appointment.Command.CreateAppointment;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -59,11 +59,6 @@ namespace Infrastructure.Services
                 ProfessionalSpec.ByUser(idTenant, user.IdUser),
                 cancellationToken);
 
-            if (professional is not null && !professional.IsActive)
-            {
-                throw new InvalidOperationException("El profesional no está activo.");
-            }
-
             if (professional is null && user.IdUserRole != (short)UserRoleEnum.OWNER)
             {
                 throw new InvalidOperationException(
@@ -79,8 +74,7 @@ namespace Infrastructure.Services
                     professional = new Professional
                     {
                         IdTenant = idTenant,
-                        IdUser = user.IdUser,
-                        IsActive = true
+                        IdUser = user.IdUser
                     };
 
                     await _unitOfWork.ProfessionalRepository.AddAsync(professional, cancellationToken);

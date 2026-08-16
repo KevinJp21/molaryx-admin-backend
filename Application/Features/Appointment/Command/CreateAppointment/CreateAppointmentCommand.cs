@@ -1,6 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 
-namespace Application.Features.Appointment.Command
+namespace Application.Features.Appointment.Command.CreateAppointment
 {
     public class CreateAppointmentCommand : IRequest<bool>
     {

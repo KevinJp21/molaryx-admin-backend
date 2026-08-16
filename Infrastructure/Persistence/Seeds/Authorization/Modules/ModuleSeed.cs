@@ -38,6 +38,6 @@ public static class ModuleSeed
             IdModule = (short)ModuleEnum.APPOINTMENTS,
             Code = ModuleCodes.APPOINTMENTS,
             CreatedAt = SeedConstants.SeedDate
-        }
+        },
     ];
 }
