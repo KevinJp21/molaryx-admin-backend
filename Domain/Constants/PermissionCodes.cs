@@ -38,5 +38,8 @@ namespace Domain.Constants
         public const string CREATE_PATIENT_TREATMENT = "CREATE_PATIENT_TREATMENT";
         public const string GET_PATIENT_TREATMENTS = "GET_PATIENT_TREATMENTS";
         public const string UPDATE_PATIENT_TREATMENT = "UPDATE_PATIENT_TREATMENT";
+
+        // Payments
+        public const string CREATE_PAYMENT = "CREATE_PAYMENT";
     }
 }

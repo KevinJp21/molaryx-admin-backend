@@ -51,6 +51,14 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static AppointmentSpec ById(long idAppointment)
+        {
+            return new AppointmentSpec
+            {
+                Criteria = a => a.IdAppointment == idAppointment
+            };
+        }
+
         private AppointmentSpec()
         {
         }
