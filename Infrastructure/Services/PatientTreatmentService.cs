@@ -82,9 +82,9 @@ namespace Infrastructure.Services
 
             TreatmentStatusRules.EnsureCanEdit(patientTreatment.IdTreatmentStatus);
 
-            var agreedPrice = request.AgreedPrice ?? patientTreatment.AgreedPrice;
-            var idPaymentFrequency = request.IdPaymentFrequency ?? patientTreatment.IdPaymentFrequency;
-            var periodicAmount = request.PeriodicAmount ?? patientTreatment.PeriodicAmount;
+            var agreedPrice = request.AgreedPrice;
+            var idPaymentFrequency = request.IdPaymentFrequency;
+            var periodicAmount = request.PeriodicAmount;
             var startAt = request.StartAt ?? patientTreatment.StartAt;
             var idTreatmentStatus = request.IdTreatmentStatus ?? patientTreatment.IdTreatmentStatus;
             var notes = request.Notes is null
@@ -92,6 +92,12 @@ namespace Infrastructure.Services
                 : string.IsNullOrWhiteSpace(request.Notes)
                     ? null
                     : request.Notes.Trim();
+
+            if (!idPaymentFrequency.HasValue
+                || idPaymentFrequency.Value == (short)PaymentFrequencyEnum.ONE_TIME)
+            {
+                periodicAmount = null;
+            }
 
             if (request.IdTreatmentStatus.HasValue)
             {
