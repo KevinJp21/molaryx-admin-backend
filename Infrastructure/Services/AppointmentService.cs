@@ -1,5 +1,6 @@
 using Application.Features.Appointment.Command.CreateAppointment;
 using Application.Features.Appointment.Command.UpdateAppointment;
+using Domain.Common;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -84,6 +85,8 @@ namespace Infrastructure.Services
                 throw new InvalidOperationException("La cita no pertenece a este consultorio.");
             }
 
+            AppointmentStatusRules.EnsureCanEdit(appointment.IdAppointmentStatus);
+
             var idPatient = request.IdPatient ?? appointment.IdPatient;
             var idService = request.IdService ?? appointment.IdService;
             var startAt = request.StartAt ?? appointment.StartAt;
@@ -106,10 +109,11 @@ namespace Infrastructure.Services
                 await EnsureServiceAsync(idTenant, idService, cancellationToken);
             }
 
-            if (request.IdAppointmentStatus.HasValue
-                && !Enum.IsDefined(typeof(AppointmentStatusEnum), request.IdAppointmentStatus.Value))
+            if (request.IdAppointmentStatus.HasValue)
             {
-                throw new InvalidOperationException("El estado de la cita no es válido.");
+                AppointmentStatusRules.EnsureCanTransition(
+                    appointment.IdAppointmentStatus,
+                    request.IdAppointmentStatus.Value);
             }
 
             try
