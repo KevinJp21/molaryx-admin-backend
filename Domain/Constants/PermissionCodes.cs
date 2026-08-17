@@ -29,7 +29,9 @@ namespace Domain.Constants
         public const string GET_PROFESSIONALS = "GET_PROFESSIONALS";
 
         // Treatments
+        public const string GET_TREATMENTS = "GET_TREATMENTS";
         public const string CREATE_TREATMENT = "CREATE_TREATMENT";
-
+        public const string UPDATE_TREATMENT = "UPDATE_TREATMENT";
+        public const string DELETE_TREATMENT = "DELETE_TREATMENT";
     }
 }

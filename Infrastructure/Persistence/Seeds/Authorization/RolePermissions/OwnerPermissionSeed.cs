@@ -61,7 +61,19 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
             // Treatments
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.GET_TREATMENTS
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
                 IdPermission = (short)PermissionEnum.CREATE_TREATMENT
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.UPDATE_TREATMENT
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.DELETE_TREATMENT
             }
         ];
     }

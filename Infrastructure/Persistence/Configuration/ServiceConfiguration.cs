@@ -23,6 +23,9 @@ namespace Infrastructure.Persistence.Configuration
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(s => new { s.IdTenant, s.IdService }).IsUnique();
+            builder.HasIndex(s => new { s.IdTenant, s.Name })
+                .IsUnique()
+                .HasFilter("deleted_at IS NULL");
         }
     }
 }

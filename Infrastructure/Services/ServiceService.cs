@@ -23,7 +23,7 @@ namespace Infrastructure.Services
             var service = new Service
             {
                 IdTenant = access.IdTenant,
-                Name = request.Name,
+                Name = request.Name.Trim(),
                 Description = request.Description,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
@@ -47,6 +47,18 @@ namespace Infrastructure.Services
                 cancellationToken,
                 ServicesSpec.ById(request.IdService)
             ) ?? throw new NotFoundException("El servicio no existe.");
+
+            if (request.Name is not null && request.Name.Trim() != service.Name)
+            {
+                var nameExists = await _unitOfWork.ServiceRepository.ExistsAsync(
+                    ServicesSpec.ByName(access.IdTenant, request.Name.Trim()),
+                    cancellationToken);
+
+                if (nameExists)
+                {
+                    throw new InvalidOperationException("Ya existe un servicio con ese nombre.");
+                }
+            }
 
             if (service.IdTenant != access.IdTenant)
             {
