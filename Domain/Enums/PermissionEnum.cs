@@ -22,6 +22,7 @@ namespace Domain.Enums
         // Appointments
         GET_APPOINTMENTS = 12,
         CREATE_APPOINTMENT = 13,
+        UPDATE_APPOINTMENT = 15,
 
         // Users
         GET_PROFESSIONALS = 14,

@@ -23,6 +23,7 @@ namespace Domain.Constants
         // Appointments
         public const string GET_APPOINTMENTS = "GET_APPOINTMENTS";
         public const string CREATE_APPOINTMENT = "CREATE_APPOINTMENT";
+        public const string UPDATE_APPOINTMENT = "UPDATE_APPOINTMENT";
 
         // Users
         public const string GET_PROFESSIONALS = "GET_PROFESSIONALS";

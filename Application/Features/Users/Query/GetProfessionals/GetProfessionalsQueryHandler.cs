@@ -17,9 +17,12 @@ namespace Application.Features.Users.Query.GetProfessionals
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var spec = new ProfessionalSpec(access.IdTenant, request.IdUserStatus);
+            var spec = UserSpec.ForProfessionals(
+                access.IdTenant,
+                request.IdUserStatus,
+                request.Search);
 
-            var (totalItems, professionals) = await _unitOfWork.ProfessionalRepository.GetPagedAsync(
+            var (totalItems, users) = await _unitOfWork.UserRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),
                 PaginationHelper.GetEffectivePageSize(request.Size),
                 spec,
@@ -28,21 +31,22 @@ namespace Application.Features.Users.Query.GetProfessionals
 
             return new PagedResult<GetProfessionalsResponse>
             {
-                Items = [.. professionals.Select(professional => new GetProfessionalsResponse
+                Items = [.. users.Select(user => new GetProfessionalsResponse
                 {
-                    IdProfessional = professional.IdProfessional,
-                    IdUserStatus = professional.User.IdUserStatus,
-                    StatusName = professional.User.UserStatus.Name,
-                    Username = professional.User.Username,
-                    FirstName = professional.User.FirstName,
-                    SecondName = professional.User.SecondName,
-                    FirstSurname = professional.User.FirstSurname,
-                    SecondSurname = professional.User.SecondSurname,
-                    IdentificationType = professional.User.IdentificationType.Name,
-                    IdentificationNumber = professional.User.IdentificationNumber,
-                    BirthDate = professional.User.BirthDate.ToString(),
-                    PhoneNumber = professional.User.PhoneNumber,
-                    Email = professional.User.Email
+                    IdProfessional = user.Professional?.IdProfessional,
+                    IdUser = user.IdUser,
+                    IdUserStatus = user.IdUserStatus,
+                    StatusName = user.UserStatus.Name,
+                    Username = user.Username,
+                    FirstName = user.FirstName,
+                    SecondName = user.SecondName,
+                    FirstSurname = user.FirstSurname,
+                    SecondSurname = user.SecondSurname,
+                    IdentificationType = user.IdentificationType.Name,
+                    IdentificationNumber = user.IdentificationNumber,
+                    BirthDate = user.BirthDate.ToString(),
+                    PhoneNumber = user.PhoneNumber,
+                    Email = user.Email
                 })],
                 Page = PaginationHelper.GetEffectivePage(request.Page),
                 Size = PaginationHelper.GetEffectivePageSize(request.Size),

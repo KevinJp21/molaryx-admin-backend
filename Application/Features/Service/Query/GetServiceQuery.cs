@@ -6,5 +6,6 @@ namespace Application.Features.Service.Query
     public class GetServicesQuery : PageFilter, IRequest<PagedResult<GetServicesResponse>>
     {
         public bool? IsActive { get; set; }
+        public string? Search { get; set; }
     }
 }

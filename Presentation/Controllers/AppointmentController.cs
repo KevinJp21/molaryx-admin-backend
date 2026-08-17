@@ -1,5 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Features.Appointment.Command.CreateAppointment;
+using Application.Features.Appointment.Command.UpdateAppointment;
 using Application.Features.Appointment.Query;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +38,20 @@ namespace Presentation.Controllers
             return Ok(
                 new ApiResponse<bool>(
                     "Cita creada de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.UPDATE_APPOINTMENT)]
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateAppointment(
+            [FromBody] UpdateAppointmentCommand body,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Cita actualizada de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
                 )
             );

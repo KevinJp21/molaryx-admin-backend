@@ -5,7 +5,7 @@ namespace Domain.Specifications
 {
     public class PatientsSpec : BaseSpecification<Patient>
     {
-        public PatientsSpec(long idTenant, bool? isActive)
+        public PatientsSpec(long idTenant, bool? isActive, string? search = null)
         {
             Criteria = p => p.IdTenant == idTenant && p.DeletedAt == null;
             AddInclude(p => p.IdentificationType);
@@ -18,6 +18,21 @@ namespace Domain.Specifications
             else if (isActive == false)
             {
                 Criteria = And(p => p.IsActive == false);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                foreach (var token in SearchText.Tokens(search))
+                {
+                    Criteria = And(p =>
+                        p.FirstName.ToLower().Contains(token) ||
+                        (p.SecondName != null && p.SecondName.ToLower().Contains(token)) ||
+                        p.FirstSurname.ToLower().Contains(token) ||
+                        (p.SecondSurname != null && p.SecondSurname.ToLower().Contains(token)) ||
+                        p.IdentificationNumber.ToLower().Contains(token) ||
+                        p.Email.ToLower().Contains(token) ||
+                        p.PhoneNumber.ToLower().Contains(token));
+                }
             }
         }
 

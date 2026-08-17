@@ -5,14 +5,21 @@ namespace Domain.Specifications
 {
     public class AppointmentSpec : BaseSpecification<Appointment>
     {
-        public static AppointmentSpec BySchedule(long idTenant, long idProfessional, DateTime startAt, DateTime endAt)
+        public static AppointmentSpec BySchedule(
+            long idTenant,
+            long idProfessional,
+            DateTime startAt,
+            DateTime endAt,
+            long? excludeIdAppointment = null)
         {
             var spec = new AppointmentSpec
             {
-                Criteria = a => a.IdTenant == idTenant && 
-                a.IdProfessional == idProfessional && 
-                a.StartAt < endAt && 
-                a.EndAt > startAt
+                Criteria = a =>
+                    a.IdTenant == idTenant &&
+                    a.IdProfessional == idProfessional &&
+                    a.StartAt < endAt &&
+                    a.EndAt > startAt &&
+                    (!excludeIdAppointment.HasValue || a.IdAppointment != excludeIdAppointment.Value)
             };
             return spec;
         }
@@ -35,7 +42,6 @@ namespace Domain.Specifications
             spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
             return spec;
         }
-
         private AppointmentSpec()
         {
         }

@@ -22,6 +22,8 @@ namespace Application.Features.Appointment.Command.CreateAppointment
             RuleFor(x => x.StartAt)
                 .NotEmpty()
                 .WithMessage("La fecha y hora de inicio son obligatorias.")
+                .GreaterThan(DateTime.Now)
+                .WithMessage("La fecha y hora de inicio debe ser mayor a la fecha y hora actual.")
                 .Must(startAt => startAt != default)
                 .WithMessage("Ingrese una fecha y hora de inicio válida.");
 

@@ -6,5 +6,6 @@ namespace Application.Features.Patients.Query
     public class GetPatientsQuery : PageFilter, IRequest<PagedResult<GetPatientsResponse>>
     {
         public bool? IsActive { get; set; } = null;
+        public string? Search { get; set; }
     }
 }
