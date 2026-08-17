@@ -6,10 +6,38 @@ namespace Domain.Specifications
 {
     public class PatientTreatmentsSpec : BaseSpecification<PatientTreatment>
     {
+        public static PatientTreatmentsSpec ForPatient(
+            long idTenant,
+            long idPatient,
+            short? idTreatmentStatus = null)
+        {
+            var spec = new PatientTreatmentsSpec
+            {
+                Criteria = pt =>
+                    pt.IdTenant == idTenant
+                    && pt.IdPatient == idPatient
+                    && (!idTreatmentStatus.HasValue || pt.IdTreatmentStatus == idTreatmentStatus.Value),
+                OrderByDescending = pt => pt.StartAt
+            };
+            spec.AddInclude(pt => pt.Treatment);
+            spec.AddInclude(pt => pt.TreatmentStatus);
+            spec.AddInclude(pt => pt.PaymentFrequency!);
+            return spec;
+        }
+
+        public static PatientTreatmentsSpec ById(long idPatientTreatment)
+        {
+            return new PatientTreatmentsSpec
+            {
+                Criteria = pt => pt.IdPatientTreatment == idPatientTreatment
+            };
+        }
+
         public static PatientTreatmentsSpec ActiveByPatientAndTreatment(
             long idTenant,
             long idPatient,
-            long idTreatment)
+            long idTreatment,
+            long? excludeIdPatientTreatment = null)
         {
             return new PatientTreatmentsSpec
             {
@@ -19,6 +47,8 @@ namespace Domain.Specifications
                     && pt.IdTreatment == idTreatment
                     && (pt.IdTreatmentStatus == (short)TreatmentStatusEnum.ACTIVE
                         || pt.IdTreatmentStatus == (short)TreatmentStatusEnum.PAUSED)
+                    && (!excludeIdPatientTreatment.HasValue
+                        || pt.IdPatientTreatment != excludeIdPatientTreatment.Value)
             };
         }
 

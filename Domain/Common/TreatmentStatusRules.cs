@@ -62,7 +62,7 @@ namespace Domain.Common
             if (IsFinal(status))
             {
                 throw new InvalidOperationException(
-                    $"No se puede editar una tratamiento en estado {GetDisplayName(status)}.");
+                    $"No se puede editar un tratamiento en estado {GetDisplayName(status)}.");
             }
         }
 
