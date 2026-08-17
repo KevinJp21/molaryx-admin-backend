@@ -22,7 +22,8 @@ namespace Infrastructure.Persistence
         IServiceRepository serviceRepository,
         IAppointmentRepository appointmentRepository,
         IProfessionalRepository professionalRepository,
-        ITreatmentRepository treatmentRepository
+        ITreatmentRepository treatmentRepository,
+        IPatientTreatmentRepository patientTreatmentRepository
         ) : IUnitOfWork
     {
         private readonly AppDbContext _context = context;
@@ -59,6 +60,8 @@ namespace Infrastructure.Persistence
         public IProfessionalRepository ProfessionalRepository { get; } = professionalRepository;
 
         public ITreatmentRepository TreatmentRepository { get; } = treatmentRepository;
+
+        public IPatientTreatmentRepository PatientTreatmentRepository { get; } = patientTreatmentRepository;
 
         private IDbContextTransaction? _currentTransaction;
 

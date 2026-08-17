@@ -32,5 +32,8 @@ namespace Domain.Enums
         CREATE_TREATMENT = 17,
         UPDATE_TREATMENT = 18,
         DELETE_TREATMENT = 19,
+
+        // Patient treatments
+        CREATE_PATIENT_TREATMENT = 20,
     }
 }

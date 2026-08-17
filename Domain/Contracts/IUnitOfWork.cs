@@ -32,11 +32,13 @@ namespace Domain.Contracts
 
         public IServiceRepository ServiceRepository { get; }
 
-        public IRepositories.IAppointmentRepository AppointmentRepository { get; }
+        public IAppointmentRepository AppointmentRepository { get; }
 
         public IProfessionalRepository ProfessionalRepository { get; }
 
         public ITreatmentRepository TreatmentRepository { get; }
+
+        public IPatientTreatmentRepository PatientTreatmentRepository { get; }
 
         Task<int> SaveChangeAsync(CancellationToken? cancellationToken);
 

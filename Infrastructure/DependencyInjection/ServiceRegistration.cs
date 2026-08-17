@@ -112,6 +112,7 @@ public static class ServiceRegistration
         services.AddScoped<IServiceService, ServiceService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<ITreatmentService, TreatmentService>();
+        services.AddScoped<IPatientTreatmentService, PatientTreatmentService>();
         services.AddScoped<ITenantAccessService, TenantAccessService>();
         services.AddRateLimiter(options =>
         {
