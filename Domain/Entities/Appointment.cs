@@ -20,6 +20,9 @@ namespace Domain.Entities
         [Column("id_service")]
         public long IdService { get; set; }
 
+        [Column("id_patient_treatment")]
+        public long? IdPatientTreatment { get; set; }
+
         [Column("id_appointment_status")]
         public short IdAppointmentStatus { get; set; }
 
@@ -40,6 +43,10 @@ namespace Domain.Entities
 
         public Service Service { get; set; } = null!;
 
+        public PatientTreatment? PatientTreatment { get; set; }
+
         public AppointmentStatus AppointmentStatus { get; set; } = null!;
+
+        public ICollection<Payment> Payments { get; set; } = [];
     }
 }

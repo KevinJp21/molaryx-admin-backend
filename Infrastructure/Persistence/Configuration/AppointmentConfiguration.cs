@@ -18,6 +18,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(a => a.IdPatient).IsRequired();
             builder.Property(a => a.IdProfessional).IsRequired();
             builder.Property(a => a.IdService).IsRequired();
+            builder.Property(a => a.IdPatientTreatment);
             builder.Property(a => a.IdAppointmentStatus).IsRequired();
             builder.Property(a => a.StartAt).IsRequired();
             builder.Property(a => a.EndAt).IsRequired();
@@ -50,6 +51,15 @@ namespace Infrastructure.Persistence.Configuration
                 .WithMany()
                 .HasForeignKey(a => a.IdAppointmentStatus)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(a => a.PatientTreatment)
+                .WithMany(pt => pt.Appointments)
+                .HasForeignKey(a => new { a.IdTenant, a.IdPatientTreatment })
+                .HasPrincipalKey(pt => new { pt.IdTenant, pt.IdPatientTreatment })
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
+
+            builder.HasIndex(a => new { a.IdTenant, a.IdAppointment }).IsUnique();
         }
     }
 }
