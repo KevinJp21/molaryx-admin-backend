@@ -2,7 +2,8 @@ namespace Application.Features.Users.Query.GetProfessionals
 {
     public class GetProfessionalsResponse
     {
-        public long IdProfessional { get; set; }
+        public long? IdProfessional { get; set; }
+        public long IdUser { get; set; }
         public short IdUserStatus { get; set; }
         public string StatusName { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;

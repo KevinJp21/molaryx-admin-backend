@@ -1,5 +1,6 @@
 using Domain.Common;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Domain.Specifications
 {
@@ -9,6 +10,43 @@ namespace Domain.Specifications
         {
             Criteria = u => u.IdUser == idUser;
             AddProfileIncludes();
+        }
+
+        public static UserSpec ForProfessionals(
+            long idTenant,
+            short? idUserStatus = null,
+            string? search = null)
+        {
+            var spec = new UserSpec
+            {
+                Criteria = u =>
+                    u.IdTenant == idTenant &&
+                    (u.IdUserRole == (short)UserRoleEnum.OWNER || u.Professional != null),
+                OrderBy = u => u.FirstName
+            };
+            spec.AddInclude(u => u.UserStatus);
+            spec.AddInclude(u => u.IdentificationType);
+            spec.AddInclude(u => u.Professional!);
+
+            if (idUserStatus != null)
+            {
+                spec.Criteria = spec.And(u => u.IdUserStatus == idUserStatus);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                foreach (var token in SearchText.Tokens(search))
+                {
+                    spec.Criteria = spec.And(u =>
+                        u.Username.ToLower().Contains(token) ||
+                        u.FirstName.ToLower().Contains(token) ||
+                        (u.SecondName != null && u.SecondName.ToLower().Contains(token)) ||
+                        u.FirstSurname.ToLower().Contains(token) ||
+                        (u.SecondSurname != null && u.SecondSurname.ToLower().Contains(token)));
+                }
+            }
+
+            return spec;
         }
 
         public static UserSpec ByEmail(string email)

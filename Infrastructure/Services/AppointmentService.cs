@@ -1,4 +1,5 @@
 using Application.Features.Appointment.Command.CreateAppointment;
+using Application.Features.Appointment.Command.UpdateAppointment;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -20,79 +21,23 @@ namespace Infrastructure.Services
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idTenant = access.IdTenant;
 
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(request.IdUser, cancellationToken)
-                ?? throw new NotFoundException("El usuario no existe.");
-
-            if (user.IdTenant != idTenant)
-            {
-                throw new InvalidOperationException("El usuario no pertenece a este consultorio.");
-            }
-
-            if (user.IdUserStatus != (short)UserStatusEnum.ACTIVE)
-            {
-                throw new InvalidOperationException("El usuario no está activo.");
-            }
-
-            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(
-                    request.IdPatient,
-                    cancellationToken,
-                    PatientsSpec.ById(request.IdPatient))
-                ?? throw new NotFoundException("El paciente no existe.");
-
-            if (patient.IdTenant != idTenant)
-            {
-                throw new InvalidOperationException("El paciente no pertenece a este consultorio.");
-            }
-
-            var service = await _unitOfWork.ServiceRepository.GetByIdAsync(
-                    request.IdService,
-                    cancellationToken,
-                    ServicesSpec.ById(request.IdService))
-                ?? throw new NotFoundException("El servicio no existe.");
-
-            if (service.IdTenant != idTenant || !service.IsActive)
-            {
-                throw new InvalidOperationException("El servicio no está disponible en este consultorio.");
-            }
-
-            var professional = await _unitOfWork.ProfessionalRepository.GetFirstAsync(
-                ProfessionalSpec.ByUser(idTenant, user.IdUser),
-                cancellationToken);
-
-            if (professional is null && user.IdUserRole != (short)UserRoleEnum.OWNER)
-            {
-                throw new InvalidOperationException(
-                    "El usuario seleccionado no es un profesional de este consultorio.");
-            }
+            await EnsurePatientAsync(idTenant, request.IdPatient, cancellationToken);
+            await EnsureServiceAsync(idTenant, request.IdService, cancellationToken);
 
             try
             {
-                if (professional is null)
-                {
-                    await _unitOfWork.BeginTransactionAsync(cancellationToken);
-
-                    professional = new Professional
-                    {
-                        IdTenant = idTenant,
-                        IdUser = user.IdUser
-                    };
-
-                    await _unitOfWork.ProfessionalRepository.AddAsync(professional, cancellationToken);
-                    await _unitOfWork.ProfessionalRepository.SaveChangesAsync(cancellationToken);
-                }
-
-                var hasOverlap = await _unitOfWork.AppointmentRepository.GetFirstAsync(
-                    AppointmentSpec.BySchedule(
-                        idTenant,
-                        professional.IdProfessional,
-                        request.StartAt,
-                        request.EndAt),
+                var professional = await ResolveProfessionalAsync(
+                    idTenant,
+                    request.IdUser,
                     cancellationToken);
 
-                if (hasOverlap is not null)
-                {
-                    throw new InvalidOperationException("El profesional ya tiene una cita en ese horario.");
-                }
+                await EnsureNoOverlapAsync(
+                    idTenant,
+                    professional.IdProfessional,
+                    request.StartAt,
+                    request.EndAt,
+                    excludeIdAppointment: null,
+                    cancellationToken);
 
                 await AddAppointmentAsync(
                     idTenant,
@@ -119,6 +64,220 @@ namespace Infrastructure.Services
                 }
 
                 throw;
+            }
+        }
+
+        public async Task<bool> UpdateAppointment(
+            UpdateAppointmentCommand request,
+            CancellationToken cancellationToken = default)
+        {
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+            var idTenant = access.IdTenant;
+
+            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(
+                    request.IdAppointment,
+                    cancellationToken)
+                ?? throw new NotFoundException("La cita no existe.");
+
+            if (appointment.IdTenant != idTenant)
+            {
+                throw new InvalidOperationException("La cita no pertenece a este consultorio.");
+            }
+
+            var idPatient = request.IdPatient ?? appointment.IdPatient;
+            var idService = request.IdService ?? appointment.IdService;
+            var startAt = request.StartAt ?? appointment.StartAt;
+            var endAt = request.EndAt ?? appointment.EndAt;
+            var idAppointmentStatus = request.IdAppointmentStatus ?? appointment.IdAppointmentStatus;
+            var notes = request.Notes ?? appointment.Notes;
+
+            if (endAt <= startAt)
+            {
+                throw new InvalidOperationException("La hora de fin debe ser posterior a la de inicio.");
+            }
+
+            if (request.IdPatient.HasValue)
+            {
+                await EnsurePatientAsync(idTenant, idPatient, cancellationToken);
+            }
+
+            if (request.IdService.HasValue)
+            {
+                await EnsureServiceAsync(idTenant, idService, cancellationToken);
+            }
+
+            if (request.IdAppointmentStatus.HasValue
+                && !Enum.IsDefined(typeof(AppointmentStatusEnum), request.IdAppointmentStatus.Value))
+            {
+                throw new InvalidOperationException("El estado de la cita no es válido.");
+            }
+
+            try
+            {
+                long idProfessional = appointment.IdProfessional;
+
+                if (request.IdUser.HasValue)
+                {
+                    var professional = await ResolveProfessionalAsync(
+                        idTenant,
+                        request.IdUser.Value,
+                        cancellationToken);
+                    idProfessional = professional.IdProfessional;
+                }
+
+                var scheduleChanged =
+                    idProfessional != appointment.IdProfessional
+                    || startAt != appointment.StartAt
+                    || endAt != appointment.EndAt;
+
+                if (scheduleChanged)
+                {
+                    await EnsureNoOverlapAsync(
+                        idTenant,
+                        idProfessional,
+                        startAt,
+                        endAt,
+                        appointment.IdAppointment,
+                        cancellationToken);
+                }
+
+                appointment.IdPatient = idPatient;
+                appointment.IdProfessional = idProfessional;
+                appointment.IdService = idService;
+                appointment.IdAppointmentStatus = idAppointmentStatus;
+                appointment.StartAt = startAt;
+                appointment.EndAt = endAt;
+                appointment.Notes = notes;
+                appointment.UpdatedAt = DateTime.UtcNow;
+
+                await _unitOfWork.AppointmentRepository.UpdateAsync(appointment, cancellationToken);
+
+                if (_unitOfWork.IsInTransaction)
+                {
+                    await _unitOfWork.CommitTransactionAsync(cancellationToken);
+                }
+                else
+                {
+                    await _unitOfWork.AppointmentRepository.SaveChangesAsync(cancellationToken);
+                }
+
+                return true;
+            }
+            catch
+            {
+                if (_unitOfWork.IsInTransaction)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                }
+
+                throw;
+            }
+        }
+
+        private async Task EnsurePatientAsync(
+            long idTenant,
+            long idPatient,
+            CancellationToken cancellationToken)
+        {
+            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(
+                    idPatient,
+                    cancellationToken,
+                    PatientsSpec.ById(idPatient))
+                ?? throw new NotFoundException("El paciente no existe.");
+
+            if (patient.IdTenant != idTenant)
+            {
+                throw new InvalidOperationException("El paciente no pertenece a este consultorio.");
+            }
+        }
+
+        private async Task EnsureServiceAsync(
+            long idTenant,
+            long idService,
+            CancellationToken cancellationToken)
+        {
+            var service = await _unitOfWork.ServiceRepository.GetByIdAsync(
+                    idService,
+                    cancellationToken,
+                    ServicesSpec.ById(idService))
+                ?? throw new NotFoundException("El servicio no existe.");
+
+            if (service.IdTenant != idTenant || !service.IsActive)
+            {
+                throw new InvalidOperationException("El servicio no está disponible en este consultorio.");
+            }
+        }
+
+        private async Task<Professional> ResolveProfessionalAsync(
+            long idTenant,
+            long idUser,
+            CancellationToken cancellationToken)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(idUser, cancellationToken)
+                ?? throw new NotFoundException("El usuario no existe.");
+
+            if (user.IdTenant != idTenant)
+            {
+                throw new InvalidOperationException("El usuario no pertenece a este consultorio.");
+            }
+
+            if (user.IdUserStatus != (short)UserStatusEnum.ACTIVE)
+            {
+                throw new InvalidOperationException("El usuario no está activo.");
+            }
+
+            var professional = await _unitOfWork.ProfessionalRepository.GetFirstAsync(
+                ProfessionalSpec.ByUser(idTenant, user.IdUser),
+                cancellationToken);
+
+            if (professional is not null)
+            {
+                return professional;
+            }
+
+            if (user.IdUserRole != (short)UserRoleEnum.OWNER)
+            {
+                throw new InvalidOperationException(
+                    "El usuario seleccionado no es un profesional de este consultorio.");
+            }
+
+            if (!_unitOfWork.IsInTransaction)
+            {
+                await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            }
+
+            professional = new Professional
+            {
+                IdTenant = idTenant,
+                IdUser = user.IdUser
+            };
+
+            await _unitOfWork.ProfessionalRepository.AddAsync(professional, cancellationToken);
+            await _unitOfWork.ProfessionalRepository.SaveChangesAsync(cancellationToken);
+
+            return professional;
+        }
+
+        private async Task EnsureNoOverlapAsync(
+            long idTenant,
+            long idProfessional,
+            DateTime startAt,
+            DateTime endAt,
+            long? excludeIdAppointment,
+            CancellationToken cancellationToken)
+        {
+            var hasOverlap = await _unitOfWork.AppointmentRepository.GetFirstAsync(
+                AppointmentSpec.BySchedule(
+                    idTenant,
+                    idProfessional,
+                    startAt,
+                    endAt,
+                    excludeIdAppointment),
+                cancellationToken);
+
+            if (hasOverlap is not null)
+            {
+                throw new InvalidOperationException("El profesional ya tiene una cita en ese horario.");
             }
         }
 

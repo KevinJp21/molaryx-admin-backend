@@ -22,6 +22,13 @@ public static class AppointmentPermissionSeed
             IdModule = (short)ModuleEnum.APPOINTMENTS,
             Code = PermissionCodes.CREATE_APPOINTMENT,
             CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.UPDATE_APPOINTMENT,
+            IdModule = (short)ModuleEnum.APPOINTMENTS,
+            Code = PermissionCodes.UPDATE_APPOINTMENT,
+            CreatedAt = SeedConstants.SeedDate
         }
     ];
 }
