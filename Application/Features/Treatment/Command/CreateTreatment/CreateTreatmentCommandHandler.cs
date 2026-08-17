@@ -7,9 +7,9 @@ namespace Application.Features.Treatment.Command.CreateTreatment
         ITreatmentService _treatmentService
     ) : IRequestHandler<CreateTreatmentCommand, bool>
     {
-        public Task<bool> Handle(CreateTreatmentCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CreateTreatmentCommand request, CancellationToken cancellationToken)
         {
-            return _treatmentService.CreateTreatmentAsync(request, cancellationToken);
+            return await _treatmentService.CreateTreatmentAsync(request, cancellationToken);
         }
     }
 }

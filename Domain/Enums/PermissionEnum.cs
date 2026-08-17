@@ -22,12 +22,15 @@ namespace Domain.Enums
         // Appointments
         GET_APPOINTMENTS = 12,
         CREATE_APPOINTMENT = 13,
-        UPDATE_APPOINTMENT = 15,
+        UPDATE_APPOINTMENT = 14,
 
         // Users
-        GET_PROFESSIONALS = 14,
+        GET_PROFESSIONALS = 15,
 
         // Treatments
-        CREATE_TREATMENT = 16,
+        GET_TREATMENTS = 16,
+        CREATE_TREATMENT = 17,
+        UPDATE_TREATMENT = 18,
+        DELETE_TREATMENT = 19,
     }
 }

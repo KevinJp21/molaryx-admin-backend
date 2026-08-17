@@ -39,6 +39,17 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static ServicesSpec ByName(long idTenant, string name)
+        {
+            var spec = new ServicesSpec
+            {
+                Criteria = p => p.IdTenant == idTenant && 
+                p.DeletedAt == null && 
+                p.Name.ToLower() == name.ToLower()
+            };
+            return spec;
+        }
+
         private ServicesSpec()
         {
         }

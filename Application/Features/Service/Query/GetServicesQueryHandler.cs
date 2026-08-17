@@ -1,6 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
-using Application.Context;
+using Domain.Contracts.IServices;
 using Domain.Contracts;
 using Domain.Specifications;
 
@@ -8,17 +8,14 @@ namespace Application.Features.Service.Query
 {
     public class GetServicesQueryHandler(
         IUnitOfWork _unitOfWork,
-        ICurrentUser _currentUser
+        ITenantAccessService _tenantAccessService
     ) : IRequestHandler<GetServicesQuery, PagedResult<GetServicesResponse>>
     {
         public async Task<PagedResult<GetServicesResponse>> Handle(GetServicesQuery request, CancellationToken cancellationToken = default)
         {
-            var idTenant = _currentUser.IdTenant
-                ?? throw new InvalidOperationException(
-                    "El usuario no pertenece a un consultorio."
-                );
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var spec = new ServicesSpec(idTenant, request.IsActive, request.Search);
+            var spec = new ServicesSpec(access.IdTenant, request.IsActive, request.Search);
 
             var (totalItems, services) = await _unitOfWork.ServiceRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),

@@ -1,23 +1,20 @@
 using FluentValidation;
 
-namespace Application.Features.Service.Command.UpdateService
+namespace Application.Features.Treatment.Command.UpdateTreatment
 {
-    public class UpdateServiceCommandValidator : AbstractValidator<UpdateServiceCommand>
+    public class UpdateTreatmentCommandValidator : AbstractValidator<UpdateTreatmentCommand>
     {
-        public UpdateServiceCommandValidator()
+        public UpdateTreatmentCommandValidator()
         {
-
-            RuleFor(x => x.IdService)
-                        .GreaterThan(0)
-                        .WithMessage("El servicio es obligatorio.");
+            RuleFor(x => x.IdTreatment)
+                .GreaterThan(0)
+                .WithMessage("El tratamiento es obligatorio.");
 
             When(x => x.Name is not null, () =>
             {
                 RuleFor(x => x.Name)
                     .NotEmpty()
-                    .WithMessage("El nombre es obligatorio.")
-                    .MaximumLength(100)
-                    .WithMessage("El nombre ingresado es demasiado largo.");
+                    .WithMessage("El nombre es obligatorio.");
             });
 
             When(x => x.Description is not null, () =>

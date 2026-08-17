@@ -5,6 +5,23 @@ namespace Domain.Specifications
 {
     public class TreatmentsSpec : BaseSpecification<Treatment>
     {
+
+        public TreatmentsSpec(
+            long idTenant, 
+            bool? isActive)
+        {
+            Criteria = t => t.IdTenant == idTenant && t.DeletedAt == null;
+            OrderByDescending = t => t.CreatedAt;
+
+            if (isActive == true)
+            {
+                Criteria = And(t => t.IsActive == true);
+            }
+            else if (isActive == false)
+            {
+                Criteria = And(t => t.IsActive == false);
+            }
+        }
         public static TreatmentsSpec ById(long idTreatment)
         {
             var spec = new TreatmentsSpec
