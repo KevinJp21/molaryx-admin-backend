@@ -19,5 +19,8 @@ namespace Domain.Constants
 
         // Tratamientos
         public const string TREATMENTS = "TREATMENTS";
+
+        // Planes de tratamiento del paciente
+        public const string PATIENT_TREATMENTS = "PATIENT_TREATMENTS";
     }
 }
