@@ -27,7 +27,10 @@ namespace Infrastructure.Persistence.Configuration
                 .HasForeignKey(t => t.IdTenant)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(t => new { t.IdTenant, t.Name }).IsUnique();
+            builder.HasIndex(t => new { t.IdTenant, t.IdTreatment }).IsUnique();
+            builder.HasIndex(t => new { t.IdTenant, t.Name })
+                .IsUnique()
+                .HasFilter("deleted_at IS NULL");
         }
     }
 }

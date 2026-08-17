@@ -28,5 +28,8 @@ namespace Domain.Constants
         // Users
         public const string GET_PROFESSIONALS = "GET_PROFESSIONALS";
 
+        // Treatments
+        public const string CREATE_TREATMENT = "CREATE_TREATMENT";
+
     }
 }

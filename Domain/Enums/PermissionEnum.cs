@@ -26,5 +26,8 @@ namespace Domain.Enums
 
         // Users
         GET_PROFESSIONALS = 14,
+
+        // Treatments
+        CREATE_TREATMENT = 16,
     }
 }

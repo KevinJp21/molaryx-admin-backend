@@ -16,5 +16,8 @@ namespace Domain.Constants
 
         // Citas
         public const string APPOINTMENTS = "APPOINTMENTS";
+
+        // Tratamientos
+        public const string TREATMENTS = "TREATMENTS";
     }
 }
