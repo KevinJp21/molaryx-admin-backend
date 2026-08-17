@@ -26,6 +26,12 @@ namespace Infrastructure.Persistence
         public DbSet<Appointment> Appointments { get; set; } = null!;
         public DbSet<AppointmentStatus> AppointmentStatuses { get; set; } = null!;
         public DbSet<Professional> Professionals { get; set; } = null!;
+        public DbSet<Treatment> Treatments { get; set; } = null!;
+        public DbSet<TreatmentStatus> TreatmentStatuses { get; set; } = null!;
+        public DbSet<PatientTreatment> PatientTreatments { get; set; } = null!;
+        public DbSet<Payment> Payments { get; set; } = null!;
+        public DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
+        public DbSet<PaymentFrequency> PaymentFrequencies { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
