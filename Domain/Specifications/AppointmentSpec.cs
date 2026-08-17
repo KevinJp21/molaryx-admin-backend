@@ -1,5 +1,6 @@
 using Domain.Common;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Domain.Specifications
 {
@@ -12,6 +13,10 @@ namespace Domain.Specifications
             DateTime endAt,
             long? excludeIdAppointment = null)
         {
+            var pending = (short)AppointmentStatusEnum.PENDING;
+            var confirmed = (short)AppointmentStatusEnum.CONFIRMED;
+            var inProgress = (short)AppointmentStatusEnum.IN_PROGRESS;
+
             var spec = new AppointmentSpec
             {
                 Criteria = a =>
@@ -19,6 +24,9 @@ namespace Domain.Specifications
                     a.IdProfessional == idProfessional &&
                     a.StartAt < endAt &&
                     a.EndAt > startAt &&
+                    (a.IdAppointmentStatus == pending
+                        || a.IdAppointmentStatus == confirmed
+                        || a.IdAppointmentStatus == inProgress) &&
                     (!excludeIdAppointment.HasValue || a.IdAppointment != excludeIdAppointment.Value)
             };
             return spec;
@@ -42,6 +50,7 @@ namespace Domain.Specifications
             spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
             return spec;
         }
+
         private AppointmentSpec()
         {
         }
