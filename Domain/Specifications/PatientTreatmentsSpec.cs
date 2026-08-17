@@ -27,10 +27,19 @@ namespace Domain.Specifications
 
         public static PatientTreatmentsSpec ById(long idPatientTreatment)
         {
-            return new PatientTreatmentsSpec
+            return ForDetail(idPatientTreatment);
+        }
+
+        public static PatientTreatmentsSpec ForDetail(long idPatientTreatment)
+        {
+            var spec = new PatientTreatmentsSpec
             {
                 Criteria = pt => pt.IdPatientTreatment == idPatientTreatment
             };
+            spec.AddInclude(pt => pt.Treatment);
+            spec.AddInclude(pt => pt.TreatmentStatus);
+            spec.AddInclude(pt => pt.PaymentFrequency!);
+            return spec;
         }
 
         public static PatientTreatmentsSpec ActiveByPatientAndTreatment(

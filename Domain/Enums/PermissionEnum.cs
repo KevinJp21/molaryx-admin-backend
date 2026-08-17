@@ -40,5 +40,6 @@ namespace Domain.Enums
 
         // Payments
         CREATE_PAYMENT = 23,
+        GET_PAYMENTS = 24,
     }
 }
