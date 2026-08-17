@@ -15,6 +15,13 @@ public static class PaymentPermissionSeed
             IdModule = (short)ModuleEnum.PAYMENTS,
             Code = PermissionCodes.CREATE_PAYMENT,
             CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.GET_PAYMENTS,
+            IdModule = (short)ModuleEnum.PAYMENTS,
+            Code = PermissionCodes.GET_PAYMENTS,
+            CreatedAt = SeedConstants.SeedDate
         }
     ];
 }
