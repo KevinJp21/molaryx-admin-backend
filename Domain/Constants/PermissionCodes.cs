@@ -33,5 +33,8 @@ namespace Domain.Constants
         public const string CREATE_TREATMENT = "CREATE_TREATMENT";
         public const string UPDATE_TREATMENT = "UPDATE_TREATMENT";
         public const string DELETE_TREATMENT = "DELETE_TREATMENT";
+
+        // Patient treatments
+        public const string CREATE_PATIENT_TREATMENT = "CREATE_PATIENT_TREATMENT";
     }
 }
