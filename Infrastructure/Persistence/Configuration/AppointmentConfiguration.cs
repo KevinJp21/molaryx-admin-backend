@@ -54,8 +54,7 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasOne(a => a.PatientTreatment)
                 .WithMany(pt => pt.Appointments)
-                .HasForeignKey(a => new { a.IdTenant, a.IdPatientTreatment })
-                .HasPrincipalKey(pt => new { pt.IdTenant, pt.IdPatientTreatment })
+                .HasForeignKey(a => a.IdPatientTreatment)
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 

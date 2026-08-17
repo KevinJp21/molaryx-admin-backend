@@ -65,8 +65,7 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasOne(p => p.PatientTreatment)
                 .WithMany(pt => pt.Payments)
-                .HasForeignKey(p => new { p.IdTenant, p.IdPatientTreatment })
-                .HasPrincipalKey(pt => new { pt.IdTenant, pt.IdPatientTreatment })
+                .HasForeignKey(p => p.IdPatientTreatment)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(p => p.PaymentMethod)
