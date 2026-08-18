@@ -75,6 +75,29 @@ namespace Domain.Common
             }
         }
 
+        public static bool CanReceivePayment(short idAppointmentStatus)
+            => CanReceivePayment((AppointmentStatusEnum)idAppointmentStatus);
+
+        public static bool CanReceivePayment(AppointmentStatusEnum status)
+            => status is not (AppointmentStatusEnum.CANCELLED or AppointmentStatusEnum.NO_SHOW);
+
+        public static void EnsureCanReceivePayment(short idAppointmentStatus)
+            => EnsureCanReceivePayment((AppointmentStatusEnum)idAppointmentStatus);
+
+        public static void EnsureCanReceivePayment(AppointmentStatusEnum status)
+        {
+            if (!Enum.IsDefined(status))
+            {
+                throw new InvalidOperationException("El estado de la cita no es válido.");
+            }
+
+            if (!CanReceivePayment(status))
+            {
+                throw new InvalidOperationException(
+                    $"No se puede registrar un pago en una cita en estado {GetDisplayName(status)}.");
+            }
+        }
+
         public static void EnsureCanTransition(short fromStatus, short toStatus)
             => EnsureCanTransition(
                 (AppointmentStatusEnum)fromStatus,
