@@ -2,6 +2,7 @@ using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.Payment.Command.CreatePayment;
 using Application.Features.Payment.Query.GetPayments;
+using Application.Features.Payment.Query.GetPaymentsSummaryByConcept;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,20 @@ namespace Presentation.Controllers
             return Ok(
                 new ApiResponse<PagedResult<GetPaymentsResponse>>(
                     "Pagos obtenidos de manera exitosa.",
+                    await _mediator.Send(query, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.GET_PAYMENTS_SUMMARY_BY_CONCEPT)]
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<GetPaymentsSummaryByConceptResponse>>> GetPaymentsSummaryByConcept(
+            [FromQuery] GetPaymentsSummaryByConceptQuery query,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<GetPaymentsSummaryByConceptResponse>(
+                    "Resumen de pagos obtenido de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
                 )
             );

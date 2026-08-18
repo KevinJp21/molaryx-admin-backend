@@ -38,5 +38,32 @@ namespace Domain.Specifications
                 Criteria = And(p => p.IdPatientTreatment == idPatientTreatment);
             }
         }
+
+        public static PaymentsSpec ForConcept(
+            long idTenant,
+            long? idAppointment = null,
+            long? idPatientTreatment = null)
+        {
+            var spec = new PaymentsSpec
+            {
+                Criteria = p => p.IdTenant == idTenant
+            };
+
+            if (idAppointment.GetValueOrDefault() > 0)
+            {
+                spec.Criteria = spec.And(p => p.IdAppointment == idAppointment);
+            }
+
+            if (idPatientTreatment.GetValueOrDefault() > 0)
+            {
+                spec.Criteria = spec.And(p => p.IdPatientTreatment == idPatientTreatment);
+            }
+
+            return spec;
+        }
+
+        private PaymentsSpec()
+        {
+        }
     }
 }
