@@ -46,13 +46,23 @@ namespace Application.Features.Payment.Query.GetPaymentsSummaryByConcept
 
             var totalPaid = payments.Sum(payment => payment.Amount);
             var billed = price ?? agreedPrice;
+            decimal? remaining = null;
+            decimal? credit = null;
+
+            if (billed is not null)
+            {
+                var difference = billed.Value - totalPaid;
+                remaining = difference > 0 ? difference : 0;
+                credit = difference < 0 ? -difference : 0;
+            }
 
             return new GetPaymentsSummaryByConceptResponse
             {
                 Price = price,
                 AgreedPrice = agreedPrice,
                 TotalPaid = totalPaid,
-                Remaining = billed is null ? null : billed.Value - totalPaid,
+                Remaining = remaining,
+                Credit = credit,
                 PaymentCount = payments.Length
             };
         }
