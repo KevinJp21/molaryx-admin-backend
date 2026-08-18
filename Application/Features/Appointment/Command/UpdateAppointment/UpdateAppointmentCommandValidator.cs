@@ -32,6 +32,13 @@ namespace Application.Features.Appointment.Command.UpdateAppointment
                     .WithMessage("El servicio no es válido.");
             });
 
+            When(x => x.IdPatientTreatment.GetValueOrDefault() != 0, () =>
+            {
+                RuleFor(x => x.IdPatientTreatment)
+                    .GreaterThan(0)
+                    .WithMessage("El tratamiento del paciente no es válido.");
+            });
+
             When(x => x.IdAppointmentStatus.HasValue, () =>
             {
                 RuleFor(x => x.IdAppointmentStatus)

@@ -48,6 +48,7 @@ namespace Domain.Specifications
             spec.AddInclude(a => a.AppointmentStatus);
             spec.AddInclude(a => a.Professional);
             spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
+            spec.AddInclude($"{nameof(Appointment.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
             return spec;
         }
 
@@ -71,6 +72,7 @@ namespace Domain.Specifications
             spec.AddInclude(a => a.AppointmentStatus);
             spec.AddInclude(a => a.Professional);
             spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
+            spec.AddInclude($"{nameof(Appointment.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
             return spec;
         }
 
