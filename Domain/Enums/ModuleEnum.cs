@@ -10,5 +10,6 @@ namespace Domain.Enums
         TREATMENTS = 6,
         PATIENT_TREATMENTS = 7,
         PAYMENTS = 8,
+        CLINICAL_RECORDS = 9,
     }
 }

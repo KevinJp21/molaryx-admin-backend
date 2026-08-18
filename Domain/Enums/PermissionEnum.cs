@@ -41,5 +41,8 @@ namespace Domain.Enums
         // Payments
         CREATE_PAYMENT = 23,
         GET_PAYMENTS = 24,
+
+        // Clinical records
+        CREATE_CLINICAL_RECORD = 25,
     }
 }

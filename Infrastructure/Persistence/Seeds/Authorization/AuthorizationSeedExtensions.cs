@@ -37,6 +37,8 @@ namespace Infrastructure.Persistence.Seeds.Authorization
             modelBuilder.Entity<Permission>()
                 .HasData(PaymentPermissionSeed.Data);
 
+            modelBuilder.Entity<Permission>()
+                .HasData(ClinicalRecordPermissionSeed.Data);
 
             // Agregar permissos de cada rol
             modelBuilder.Entity<RolePermission>()

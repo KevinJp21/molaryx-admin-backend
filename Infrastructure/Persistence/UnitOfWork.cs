@@ -25,7 +25,8 @@ namespace Infrastructure.Persistence
         ITreatmentRepository treatmentRepository,
         IPatientTreatmentRepository patientTreatmentRepository,
         IPaymentRepository paymentRepository,
-        IPaymentMethodRepository paymentMethodRepository
+        IPaymentMethodRepository paymentMethodRepository,
+        IClinicalRecordRepository clinicalRecordRepository
         ) : IUnitOfWork
     {
         private readonly AppDbContext _context = context;
@@ -68,6 +69,8 @@ namespace Infrastructure.Persistence
         public IPaymentRepository PaymentRepository { get; } = paymentRepository;
 
         public IPaymentMethodRepository PaymentMethodRepository { get; } = paymentMethodRepository;
+
+        public IClinicalRecordRepository ClinicalRecordRepository { get; } = clinicalRecordRepository;
 
         private IDbContextTransaction? _currentTransaction;
 

@@ -5,14 +5,14 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
-using Domain.Exceptions;
 using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
     public class PatientTreatmentService(
         IUnitOfWork _unitOfWork,
-        ITenantAccessService _tenantAccessService
+        ITenantAccessService _tenantAccessService,
+        ITenantResourceService _tenantResourceService
     ) : IPatientTreatmentService
     {
         public async Task<bool> CreatePatientTreatmentAsync(
@@ -22,8 +22,8 @@ namespace Infrastructure.Services
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idTenant = access.IdTenant;
 
-            await EnsurePatientAsync(idTenant, request.IdPatient, cancellationToken);
-            await EnsureTreatmentAsync(idTenant, request.IdTreatment, cancellationToken);
+            await _tenantResourceService.RequirePatientAsync(idTenant, request.IdPatient, cancellationToken);
+            await _tenantResourceService.RequireTreatmentAsync(idTenant, request.IdTreatment, cancellationToken);
 
             var alreadyAssigned = await _unitOfWork.PatientTreatmentRepository.ExistsAsync(
                 PatientTreatmentsSpec.ActiveByPatientAndTreatment(
@@ -68,17 +68,10 @@ namespace Infrastructure.Services
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idTenant = access.IdTenant;
 
-            var patientTreatment = await _unitOfWork.PatientTreatmentRepository.GetByIdAsync(
-                    request.IdPatientTreatment,
-                    cancellationToken,
-                    PatientTreatmentsSpec.ById(request.IdPatientTreatment))
-                ?? throw new NotFoundException("El tratamiento del paciente no existe.");
-
-            if (patientTreatment.IdTenant != idTenant)
-            {
-                throw new InvalidOperationException(
-                    "El tratamiento del paciente no pertenece a este consultorio.");
-            }
+            var patientTreatment = await _tenantResourceService.RequirePatientTreatmentAsync(
+                idTenant,
+                request.IdPatientTreatment,
+                cancellationToken);
 
             TreatmentStatusRules.EnsureCanEdit(patientTreatment.IdTreatmentStatus);
 
@@ -132,41 +125,6 @@ namespace Infrastructure.Services
             await _unitOfWork.PatientTreatmentRepository.SaveChangesAsync(cancellationToken);
 
             return true;
-        }
-
-        private async Task EnsurePatientAsync(
-            long idTenant,
-            long idPatient,
-            CancellationToken cancellationToken)
-        {
-            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(
-                    idPatient,
-                    cancellationToken,
-                    PatientsSpec.ById(idPatient))
-                ?? throw new NotFoundException("El paciente no existe.");
-
-            if (patient.IdTenant != idTenant)
-            {
-                throw new InvalidOperationException("El paciente no pertenece a este consultorio.");
-            }
-        }
-
-        private async Task EnsureTreatmentAsync(
-            long idTenant,
-            long idTreatment,
-            CancellationToken cancellationToken)
-        {
-            var treatment = await _unitOfWork.TreatmentRepository.GetByIdAsync(
-                    idTreatment,
-                    cancellationToken,
-                    TreatmentsSpec.ById(idTreatment))
-                ?? throw new NotFoundException("El tratamiento no existe.");
-
-            if (treatment.IdTenant != idTenant || !treatment.IsActive)
-            {
-                throw new InvalidOperationException(
-                    "El tratamiento no está disponible en este consultorio.");
-            }
         }
     }
 }
