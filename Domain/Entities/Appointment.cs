@@ -48,5 +48,6 @@ namespace Domain.Entities
         public AppointmentStatus AppointmentStatus { get; set; } = null!;
 
         public ICollection<Payment> Payments { get; set; } = [];
+        public ICollection<ClinicalRecord> ClinicalRecords { get; set; } = [];
     }
 }

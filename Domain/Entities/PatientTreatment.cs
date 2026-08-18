@@ -52,5 +52,6 @@ namespace Domain.Entities
         public ICollection<Appointment> Appointments { get; set; } = [];
 
         public ICollection<Payment> Payments { get; set; } = [];
+        public ICollection<ClinicalRecord> ClinicalRecords { get; set; } = [];
     }
 }
