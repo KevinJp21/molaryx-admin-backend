@@ -39,6 +39,20 @@ namespace Application.Features.Appointment.Command.UpdateAppointment
                     .WithMessage("El tratamiento del paciente no es válido.");
             });
 
+            RuleFor(x => x)
+                .Must(x => !(x.IdPatientTreatment.GetValueOrDefault() > 0
+                    && x.Price.GetValueOrDefault() > 0))
+                .WithMessage("La cita no puede tener plan de tratamiento y precio a la vez.");
+
+            When(x => x.Price.GetValueOrDefault() != 0, () =>
+            {
+                RuleFor(x => x.Price)
+                    .GreaterThan(0)
+                    .WithMessage("El precio debe ser mayor a 0.")
+                    .Must(price => price == Math.Round(price!.Value, 2))
+                    .WithMessage("El precio solo admite hasta 2 decimales.");
+            });
+
             When(x => x.IdAppointmentStatus.HasValue, () =>
             {
                 RuleFor(x => x.IdAppointmentStatus)

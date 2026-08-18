@@ -14,6 +14,7 @@ namespace Application.Features.Appointment.Query.GetAppointments
         public string ServiceName { get; set; } = string.Empty;
         public long? IdPatientTreatment { get; set; }
         public string? PatientTreatmentName { get; set; }
+        public decimal? Price { get; set; }
         public short IdAppointmentStatus { get; set; }
         public string AppointmentStatus { get; set; } = string.Empty;
         public DateTime StartAt { get; set; }
