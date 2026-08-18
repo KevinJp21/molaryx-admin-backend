@@ -32,13 +32,17 @@ namespace Application.Features.Payment.Command.CreatePayment
 
             RuleFor(x => x.Amount)
                 .GreaterThan(0)
-                .WithMessage("El monto debe ser mayor a 0.");
+                .WithMessage("El monto debe ser mayor a 0.")
+                .Must(amount => amount == Math.Round(amount, 2))
+                .WithMessage("El monto solo admite hasta 2 decimales.");
 
             RuleFor(x => x.PaidAt)
                 .NotEmpty()
                 .WithMessage("La fecha de pago es obligatoria.")
                 .Must(paidAt => paidAt != default)
-                .WithMessage("Ingrese una fecha de pago válida.");
+                .WithMessage("Ingrese una fecha de pago válida.")
+                .Must(paidAt => paidAt <= DateTime.UtcNow.AddMinutes(5))
+                .WithMessage("La fecha de pago no puede ser futura.");
 
             RuleFor(x => x.IdPaymentMethod)
                 .Must(method => Enum.IsDefined((PaymentMethodEnum)method))

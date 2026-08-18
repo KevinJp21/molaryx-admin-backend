@@ -1,4 +1,5 @@
 using Application.Features.Payment.Command.CreatePayment;
+using Domain.Common;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
@@ -12,6 +13,8 @@ namespace Infrastructure.Services
         ITenantAccessService _tenantAccessService
     ) : IPaymentService
     {
+        private static readonly TimeSpan PaidAtTolerance = TimeSpan.FromMinutes(5);
+
         public async Task<bool> CreatePaymentAsync(
             CreatePaymentCommand request,
             CancellationToken cancellationToken)
@@ -28,6 +31,14 @@ namespace Infrastructure.Services
                     "El pago debe asociarse exactamente a una cita o a un tratamiento del paciente.");
             }
 
+            if (request.Amount <= 0)
+            {
+                throw new InvalidOperationException("El monto del pago debe ser mayor a 0.");
+            }
+
+            EnsurePaidAt(request.PaidAt);
+
+            await EnsurePaymentMethodAsync(request.IdPaymentMethod, cancellationToken);
             await EnsurePatientAsync(idTenant, request.IdPatient, cancellationToken);
 
             if (hasAppointment)
@@ -68,6 +79,35 @@ namespace Infrastructure.Services
             return true;
         }
 
+        private static void EnsurePaidAt(DateTime paidAt)
+        {
+            if (paidAt == default)
+            {
+                throw new InvalidOperationException("La fecha de pago no es válida.");
+            }
+
+            if (paidAt > DateTime.UtcNow.Add(PaidAtTolerance))
+            {
+                throw new InvalidOperationException("La fecha de pago no puede ser futura.");
+            }
+        }
+
+        private async Task EnsurePaymentMethodAsync(
+            short idPaymentMethod,
+            CancellationToken cancellationToken)
+        {
+            var paymentMethod = await _unitOfWork.PaymentMethodRepository.GetByIdAsync(
+                    idPaymentMethod,
+                    cancellationToken)
+                ?? throw new NotFoundException("El método de pago no existe.");
+
+            if (!paymentMethod.IsActive)
+            {
+                throw new InvalidOperationException(
+                    $"El método de pago {paymentMethod.Name} no está disponible.");
+            }
+        }
+
         private async Task EnsurePatientAsync(
             long idTenant,
             long idPatient,
@@ -106,6 +146,8 @@ namespace Infrastructure.Services
             {
                 throw new InvalidOperationException("La cita no pertenece a este paciente.");
             }
+
+            AppointmentStatusRules.EnsureCanReceivePayment(appointment.IdAppointmentStatus);
         }
 
         private async Task EnsurePatientTreatmentAsync(
@@ -131,6 +173,8 @@ namespace Infrastructure.Services
                 throw new InvalidOperationException(
                     "El tratamiento no pertenece a este paciente.");
             }
+
+            TreatmentStatusRules.EnsureCanReceivePayment(patientTreatment.IdTreatmentStatus);
         }
     }
 }

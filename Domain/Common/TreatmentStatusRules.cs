@@ -66,6 +66,29 @@ namespace Domain.Common
             }
         }
 
+        public static bool CanReceivePayment(short idTreatmentStatus)
+            => CanReceivePayment((TreatmentStatusEnum)idTreatmentStatus);
+
+        public static bool CanReceivePayment(TreatmentStatusEnum status)
+            => status is not TreatmentStatusEnum.CANCELLED;
+
+        public static void EnsureCanReceivePayment(short idTreatmentStatus)
+            => EnsureCanReceivePayment((TreatmentStatusEnum)idTreatmentStatus);
+
+        public static void EnsureCanReceivePayment(TreatmentStatusEnum status)
+        {
+            if (!Enum.IsDefined(status))
+            {
+                throw new InvalidOperationException("El estado del tratamiento no es válido.");
+            }
+
+            if (!CanReceivePayment(status))
+            {
+                throw new InvalidOperationException(
+                    $"No se puede registrar un pago en un tratamiento en estado {GetDisplayName(status)}.");
+            }
+        }
+
         public static void EnsureCanTransition(short fromStatus, short toStatus)
             => EnsureCanTransition(
                 (TreatmentStatusEnum)fromStatus,
