@@ -26,5 +26,6 @@ namespace Domain.Entities
         public Tenant Tenant { get; set; } = null!;
 
         public ICollection<Appointment> Appointments { get; set; } = [];
+        public ICollection<ClinicalRecord> ClinicalRecords { get; set; } = [];
     }
 }

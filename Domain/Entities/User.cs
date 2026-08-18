@@ -46,5 +46,6 @@ namespace Domain.Entities
         public ICollection<UserSession> UserSessions { get; set; } = [];
         public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = [];
         public Professional? Professional { get; set; }
+        public ICollection<ClinicalRecord> ClinicalRecords { get; set; } = [];
     }
 }

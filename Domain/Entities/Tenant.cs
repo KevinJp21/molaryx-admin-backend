@@ -45,5 +45,6 @@ namespace Domain.Entities
         public ICollection<Treatment> Treatments { get; set; } = [];
         public ICollection<PatientTreatment> PatientTreatments { get; set; } = [];
         public ICollection<Payment> Payments { get; set; } = [];
+        public ICollection<ClinicalRecord> ClinicalRecords { get; set; } = [];
     }
 }
