@@ -57,5 +57,11 @@ public static class ModuleSeed
             Code = ModuleCodes.PAYMENTS,
             CreatedAt = SeedConstants.SeedDate
         },
+        new Module
+        {
+            IdModule = (short)ModuleEnum.CLINICAL_RECORDS,
+            Code = ModuleCodes.CLINICAL_RECORDS,
+            CreatedAt = SeedConstants.SeedDate
+        },
     ];
 }

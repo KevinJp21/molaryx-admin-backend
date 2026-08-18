@@ -12,7 +12,8 @@ namespace Infrastructure.Services
 {
     public class AppointmentService(
         IUnitOfWork _unitOfWork,
-        ITenantAccessService _tenantAccessService
+        ITenantAccessService _tenantAccessService,
+        ITenantResourceService _tenantResourceService
     ) : IAppointmentService
     {
         public async Task<bool> CreateAppointment(
@@ -22,8 +23,8 @@ namespace Infrastructure.Services
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idTenant = access.IdTenant;
 
-            await EnsurePatientAsync(idTenant, request.IdPatient, cancellationToken);
-            await EnsureServiceAsync(idTenant, request.IdService, cancellationToken);
+            await _tenantResourceService.RequirePatientAsync(idTenant, request.IdPatient, cancellationToken);
+            await _tenantResourceService.RequireServiceAsync(idTenant, request.IdService, cancellationToken);
 
             try
             {
@@ -75,15 +76,10 @@ namespace Infrastructure.Services
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idTenant = access.IdTenant;
 
-            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(
-                    request.IdAppointment,
-                    cancellationToken)
-                ?? throw new NotFoundException("La cita no existe.");
-
-            if (appointment.IdTenant != idTenant)
-            {
-                throw new InvalidOperationException("La cita no pertenece a este consultorio.");
-            }
+            var appointment = await _tenantResourceService.RequireAppointmentAsync(
+                idTenant,
+                request.IdAppointment,
+                cancellationToken);
 
             AppointmentStatusRules.EnsureCanEdit(appointment.IdAppointmentStatus);
 
@@ -101,12 +97,12 @@ namespace Infrastructure.Services
 
             if (request.IdPatient.HasValue)
             {
-                await EnsurePatientAsync(idTenant, idPatient, cancellationToken);
+                await _tenantResourceService.RequirePatientAsync(idTenant, idPatient, cancellationToken);
             }
 
             if (request.IdService.HasValue)
             {
-                await EnsureServiceAsync(idTenant, idService, cancellationToken);
+                await _tenantResourceService.RequireServiceAsync(idTenant, idService, cancellationToken);
             }
 
             if (request.IdAppointmentStatus.HasValue)
@@ -178,52 +174,12 @@ namespace Infrastructure.Services
             }
         }
 
-        private async Task EnsurePatientAsync(
-            long idTenant,
-            long idPatient,
-            CancellationToken cancellationToken)
-        {
-            var patient = await _unitOfWork.PatientsRepository.GetByIdAsync(
-                    idPatient,
-                    cancellationToken,
-                    PatientsSpec.ById(idPatient))
-                ?? throw new NotFoundException("El paciente no existe.");
-
-            if (patient.IdTenant != idTenant)
-            {
-                throw new InvalidOperationException("El paciente no pertenece a este consultorio.");
-            }
-        }
-
-        private async Task EnsureServiceAsync(
-            long idTenant,
-            long idService,
-            CancellationToken cancellationToken)
-        {
-            var service = await _unitOfWork.ServiceRepository.GetByIdAsync(
-                    idService,
-                    cancellationToken,
-                    ServicesSpec.ById(idService))
-                ?? throw new NotFoundException("El servicio no existe.");
-
-            if (service.IdTenant != idTenant || !service.IsActive)
-            {
-                throw new InvalidOperationException("El servicio no está disponible en este consultorio.");
-            }
-        }
-
         private async Task<Professional> ResolveProfessionalAsync(
             long idTenant,
             long idUser,
             CancellationToken cancellationToken)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(idUser, cancellationToken)
-                ?? throw new NotFoundException("El usuario no existe.");
-
-            if (user.IdTenant != idTenant)
-            {
-                throw new InvalidOperationException("El usuario no pertenece a este consultorio.");
-            }
+            var user = await _tenantResourceService.RequireUserAsync(idTenant, idUser, cancellationToken);
 
             if (user.IdUserStatus != (short)UserStatusEnum.ACTIVE)
             {

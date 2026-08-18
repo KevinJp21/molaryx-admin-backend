@@ -25,5 +25,8 @@ namespace Domain.Constants
 
         // Pagos
         public const string PAYMENTS = "PAYMENTS";
+
+        // Registros clínicos
+        public const string CLINICAL_RECORDS = "CLINICAL_RECORDS";
     }
 }
