@@ -51,6 +51,29 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static AppointmentSpec ForList(
+            long idTenant,
+            long? idPatient = null,
+            long? idProfessional = null,
+            short? idAppointmentStatus = null)
+        {
+            var spec = new AppointmentSpec
+            {
+                Criteria = a =>
+                    a.IdTenant == idTenant
+                    && (idPatient.GetValueOrDefault() <= 0 || a.IdPatient == idPatient)
+                    && (idProfessional.GetValueOrDefault() <= 0 || a.IdProfessional == idProfessional)
+                    && (!idAppointmentStatus.HasValue || a.IdAppointmentStatus == idAppointmentStatus),
+                OrderByDescending = a => a.StartAt
+            };
+            spec.AddInclude(a => a.Patient);
+            spec.AddInclude(a => a.Service);
+            spec.AddInclude(a => a.AppointmentStatus);
+            spec.AddInclude(a => a.Professional);
+            spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
+            return spec;
+        }
+
         public static AppointmentSpec ById(long idAppointment)
         {
             return new AppointmentSpec
