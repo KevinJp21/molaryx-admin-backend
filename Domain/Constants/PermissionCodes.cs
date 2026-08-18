@@ -42,6 +42,7 @@ namespace Domain.Constants
         // Payments
         public const string CREATE_PAYMENT = "CREATE_PAYMENT";
         public const string GET_PAYMENTS = "GET_PAYMENTS";
+        public const string GET_PAYMENTS_SUMMARY_BY_CONCEPT = "GET_PAYMENTS_SUMMARY_BY_CONCEPT";
 
         // Clinical records
         public const string CREATE_CLINICAL_RECORD = "CREATE_CLINICAL_RECORD";

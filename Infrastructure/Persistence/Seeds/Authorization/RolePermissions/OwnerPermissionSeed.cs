@@ -97,6 +97,10 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
                 IdUserRole = (short)UserRoleEnum.OWNER,
                 IdPermission = (short)PermissionEnum.GET_PAYMENTS
             },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.GET_PAYMENTS_SUMMARY_BY_CONCEPT
+            },
             // Clinical records
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
