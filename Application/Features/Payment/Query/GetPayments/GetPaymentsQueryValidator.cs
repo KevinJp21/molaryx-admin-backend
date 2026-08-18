@@ -13,9 +13,9 @@ namespace Application.Features.Payment.Query.GetPayments
                     if (x.IdPatient.GetValueOrDefault() > 0) filters++;
                     if (x.IdAppointment.GetValueOrDefault() > 0) filters++;
                     if (x.IdPatientTreatment.GetValueOrDefault() > 0) filters++;
-                    return filters == 1;
+                    return filters <= 1;
                 })
-                .WithMessage("Indique solo un filtro: paciente, cita o tratamiento del paciente.");
+                .WithMessage("Indique como máximo un filtro: paciente, cita o tratamiento del paciente.");
 
             When(x => x.IdPatient.HasValue, () =>
             {

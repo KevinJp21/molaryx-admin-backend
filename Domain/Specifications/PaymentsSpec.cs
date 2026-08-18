@@ -14,6 +14,14 @@ namespace Domain.Specifications
             Criteria = p => p.IdTenant == idTenant;
             OrderByDescending = p => p.PaidAt;
             AddInclude(p => p.PaymentMethod);
+            AddInclude(p => p.Appointment!);
+            AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Service)}");
+            AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.AppointmentStatus)}");
+            AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Professional)}");
+            AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
+            AddInclude(p => p.PatientTreatment!);
+            AddInclude($"{nameof(Payment.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
+            AddInclude($"{nameof(Payment.PatientTreatment)}.{nameof(PatientTreatment.TreatmentStatus)}");
 
             if (idPatient.GetValueOrDefault() > 0)
             {
