@@ -44,6 +44,8 @@ namespace Application.Features.Appointment.Query.GetAppointmentsList
                     ProfessionalSurname = $"{appointment.Professional.User.FirstSurname}{(!string.IsNullOrEmpty(appointment.Professional.User.SecondSurname) ? $" {appointment.Professional.User.SecondSurname}" : string.Empty)}",
                     IdService = appointment.IdService,
                     ServiceName = appointment.Service.Name,
+                    IdPatientTreatment = appointment.IdPatientTreatment,
+                    PatientTreatmentName = appointment.PatientTreatment?.Treatment?.Name,
                     IdAppointmentStatus = appointment.IdAppointmentStatus,
                     AppointmentStatus = appointment.AppointmentStatus.Name,
                     StartAt = appointment.StartAt,

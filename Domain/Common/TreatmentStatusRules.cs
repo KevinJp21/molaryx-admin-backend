@@ -89,6 +89,29 @@ namespace Domain.Common
             }
         }
 
+        public static bool CanLinkAppointment(short idTreatmentStatus)
+            => CanLinkAppointment((TreatmentStatusEnum)idTreatmentStatus);
+
+        public static bool CanLinkAppointment(TreatmentStatusEnum status)
+            => status is TreatmentStatusEnum.ACTIVE;
+
+        public static void EnsureCanLinkAppointment(short idTreatmentStatus)
+            => EnsureCanLinkAppointment((TreatmentStatusEnum)idTreatmentStatus);
+
+        public static void EnsureCanLinkAppointment(TreatmentStatusEnum status)
+        {
+            if (!Enum.IsDefined(status))
+            {
+                throw new InvalidOperationException("El estado del tratamiento no es válido.");
+            }
+
+            if (!CanLinkAppointment(status))
+            {
+                throw new InvalidOperationException(
+                    $"No se puede asociar una cita a un tratamiento en estado {GetDisplayName(status)}.");
+            }
+        }
+
         public static void EnsureCanTransition(short fromStatus, short toStatus)
             => EnsureCanTransition(
                 (TreatmentStatusEnum)fromStatus,

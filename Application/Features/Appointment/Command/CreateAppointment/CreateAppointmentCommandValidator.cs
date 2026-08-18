@@ -19,6 +19,13 @@ namespace Application.Features.Appointment.Command.CreateAppointment
                 .GreaterThan(0)
                 .WithMessage("El servicio es obligatorio.");
 
+            When(x => x.IdPatientTreatment.GetValueOrDefault() != 0, () =>
+            {
+                RuleFor(x => x.IdPatientTreatment)
+                    .GreaterThan(0)
+                    .WithMessage("El tratamiento del paciente no es válido.");
+            });
+
             RuleFor(x => x.StartAt)
                 .NotEmpty()
                 .WithMessage("La fecha y hora de inicio son obligatorias.")

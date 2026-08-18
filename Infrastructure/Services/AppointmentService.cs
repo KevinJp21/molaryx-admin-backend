@@ -26,6 +26,11 @@ namespace Infrastructure.Services
             await _tenantResourceService.RequirePatientAsync(idTenant, request.IdPatient, cancellationToken);
             await _tenantResourceService.RequireServiceAsync(idTenant, request.IdService, cancellationToken);
 
+            if (request.IdPatientTreatment is > 0)
+            {
+                await EnsurePatientTreatmentAsync(idTenant, request.IdPatient, request.IdPatientTreatment.Value, cancellationToken);
+            }
+
             try
             {
                 var professional = await ResolveProfessionalAsync(
@@ -85,6 +90,13 @@ namespace Infrastructure.Services
 
             var idPatient = request.IdPatient ?? appointment.IdPatient;
             var idService = request.IdService ?? appointment.IdService;
+            long? idPatientTreatment = appointment.IdPatientTreatment;
+            if (request.IdPatientTreatment.HasValue)
+            {
+                idPatientTreatment = request.IdPatientTreatment.Value <= 0
+                    ? null
+                    : request.IdPatientTreatment;
+            }
             var startAt = request.StartAt ?? appointment.StartAt;
             var endAt = request.EndAt ?? appointment.EndAt;
             var idAppointmentStatus = request.IdAppointmentStatus ?? appointment.IdAppointmentStatus;
@@ -103,6 +115,15 @@ namespace Infrastructure.Services
             if (request.IdService.HasValue)
             {
                 await _tenantResourceService.RequireServiceAsync(idTenant, idService, cancellationToken);
+            }
+
+            if (idPatientTreatment is not null)
+            {
+                await EnsurePatientTreatmentAsync(
+                    idTenant,
+                    idPatient,
+                    idPatientTreatment.Value,
+                    cancellationToken);
             }
 
             if (request.IdAppointmentStatus.HasValue)
@@ -144,6 +165,7 @@ namespace Infrastructure.Services
                 appointment.IdPatient = idPatient;
                 appointment.IdProfessional = idProfessional;
                 appointment.IdService = idService;
+                appointment.IdPatientTreatment = idPatientTreatment;
                 appointment.IdAppointmentStatus = idAppointmentStatus;
                 appointment.StartAt = startAt;
                 appointment.EndAt = endAt;
@@ -172,6 +194,25 @@ namespace Infrastructure.Services
 
                 throw;
             }
+        }
+
+        private async Task EnsurePatientTreatmentAsync(
+            long idTenant,
+            long idPatient,
+            long idPatientTreatment,
+            CancellationToken cancellationToken)
+        {
+            var patientTreatment = await _tenantResourceService.RequirePatientTreatmentAsync(
+                idTenant,
+                idPatientTreatment,
+                cancellationToken);
+
+            if (patientTreatment.IdPatient != idPatient)
+            {
+                throw new InvalidOperationException("El tratamiento no pertenece a este paciente.");
+            }
+
+            TreatmentStatusRules.EnsureCanLinkAppointment(patientTreatment.IdTreatmentStatus);
         }
 
         private async Task<Professional> ResolveProfessionalAsync(
@@ -253,6 +294,9 @@ namespace Infrastructure.Services
                 IdPatient = request.IdPatient,
                 IdProfessional = idProfessional,
                 IdService = request.IdService,
+                IdPatientTreatment = request.IdPatientTreatment is > 0
+                    ? request.IdPatientTreatment
+                    : null,
                 IdAppointmentStatus = (short)AppointmentStatusEnum.PENDING,
                 StartAt = request.StartAt,
                 EndAt = request.EndAt,
