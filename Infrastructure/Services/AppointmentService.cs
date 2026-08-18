@@ -97,6 +97,16 @@ namespace Infrastructure.Services
                     ? null
                     : request.IdPatientTreatment;
             }
+
+            decimal? price = appointment.Price;
+            if (idPatientTreatment is not null)
+            {
+                price = null;
+            }
+            else if (request.Price.HasValue)
+            {
+                price = request.Price.Value <= 0 ? null : request.Price;
+            }
             var startAt = request.StartAt ?? appointment.StartAt;
             var endAt = request.EndAt ?? appointment.EndAt;
             var idAppointmentStatus = request.IdAppointmentStatus ?? appointment.IdAppointmentStatus;
@@ -166,6 +176,7 @@ namespace Infrastructure.Services
                 appointment.IdProfessional = idProfessional;
                 appointment.IdService = idService;
                 appointment.IdPatientTreatment = idPatientTreatment;
+                appointment.Price = price;
                 appointment.IdAppointmentStatus = idAppointmentStatus;
                 appointment.StartAt = startAt;
                 appointment.EndAt = endAt;
@@ -297,6 +308,9 @@ namespace Infrastructure.Services
                 IdPatientTreatment = request.IdPatientTreatment is > 0
                     ? request.IdPatientTreatment
                     : null,
+                Price = request.IdPatientTreatment is > 0
+                    ? null
+                    : request.Price is > 0 ? request.Price : null,
                 IdAppointmentStatus = (short)AppointmentStatusEnum.PENDING,
                 StartAt = request.StartAt,
                 EndAt = request.EndAt,

@@ -46,6 +46,7 @@ namespace Application.Features.Appointment.Query.GetAppointmentsList
                     ServiceName = appointment.Service.Name,
                     IdPatientTreatment = appointment.IdPatientTreatment,
                     PatientTreatmentName = appointment.PatientTreatment?.Treatment?.Name,
+                    Price = appointment.Price,
                     IdAppointmentStatus = appointment.IdAppointmentStatus,
                     AppointmentStatus = appointment.AppointmentStatus.Name,
                     StartAt = appointment.StartAt,

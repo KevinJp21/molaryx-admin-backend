@@ -8,6 +8,7 @@ namespace Application.Features.Appointment.Command.CreateAppointment
         public long IdUser { get; set; }
         public long IdService { get; set; }
         public long? IdPatientTreatment { get; set; }
+        public decimal? Price { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
         public string? Notes { get; set; }

@@ -23,6 +23,9 @@ namespace Domain.Entities
         [Column("id_patient_treatment")]
         public long? IdPatientTreatment { get; set; }
 
+        [Column("price")]
+        public decimal? Price { get; set; }
+
         [Column("id_appointment_status")]
         public short IdAppointmentStatus { get; set; }
 

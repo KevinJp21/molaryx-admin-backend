@@ -9,7 +9,17 @@ namespace Infrastructure.Persistence.Configuration
     {
         public void Configure(EntityTypeBuilder<Appointment> builder)
         {
-            builder.ToTable("appointments");
+            builder.ToTable("appointments", table =>
+            {
+                table.HasCheckConstraint(
+                    "ck_appointments_treatment_or_price",
+                    """
+                    (
+                        id_patient_treatment IS NULL
+                        OR price IS NULL
+                    )
+                    """);
+            });
 
             builder.HasKey(a => a.IdAppointment);
 
@@ -19,6 +29,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(a => a.IdProfessional).IsRequired();
             builder.Property(a => a.IdService).IsRequired();
             builder.Property(a => a.IdPatientTreatment);
+            builder.Property(a => a.Price).HasPrecision(12, 2);
             builder.Property(a => a.IdAppointmentStatus).IsRequired();
             builder.Property(a => a.StartAt).IsRequired();
             builder.Property(a => a.EndAt).IsRequired();
