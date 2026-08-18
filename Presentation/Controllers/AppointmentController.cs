@@ -1,7 +1,9 @@
 using Application.Common.Mediator.Interfaces;
+using Application.Common.Pagination;
 using Application.Features.Appointment.Command.CreateAppointment;
 using Application.Features.Appointment.Command.UpdateAppointment;
-using Application.Features.Appointment.Query;
+using Application.Features.Appointment.Query.GetAppointments;
+using Application.Features.Appointment.Query.GetAppointmentsList;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +25,20 @@ namespace Presentation.Controllers
         {
             return Ok(
                 new ApiResponse<GetAppointmentsResponse[]>(
+                    "Citas obtenidas de manera exitosa.",
+                    await _mediator.Send(query, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.GET_APPOINTMENTS)]
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<PagedResult<GetAppointmentsListResponse>>>> GetAppointmentsList(
+            [FromQuery] GetAppointmentsListQuery query,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<PagedResult<GetAppointmentsListResponse>>(
                     "Citas obtenidas de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
                 )

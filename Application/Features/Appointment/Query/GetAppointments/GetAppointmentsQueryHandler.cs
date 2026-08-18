@@ -3,7 +3,7 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Specifications;
 
-namespace Application.Features.Appointment.Query
+namespace Application.Features.Appointment.Query.GetAppointments
 {
     public class GetAppointmentsQueryHandler(
         IUnitOfWork _unitOfWork,
@@ -22,18 +22,12 @@ namespace Application.Features.Appointment.Query
             {
                 IdAppointment = appointment.IdAppointment,
                 IdPatient = appointment.IdPatient,
-                
                 PatientName = $"{appointment.Patient.FirstName}{(!string.IsNullOrEmpty(appointment.Patient.SecondName) ? $" {appointment.Patient.SecondName}" : string.Empty)}",
-
                 PatientSurname = $"{appointment.Patient.FirstSurname}{(!string.IsNullOrEmpty(appointment.Patient.SecondSurname) ? $" {appointment.Patient.SecondSurname}" : string.Empty)}",
-
                 IdProfessional = appointment.IdProfessional,
                 IdUser = appointment.Professional.IdUser,
-
                 ProfessionalName = $"{appointment.Professional.User.FirstName}{(!string.IsNullOrEmpty(appointment.Professional.User.SecondName) ? $" {appointment.Professional.User.SecondName}" : string.Empty)}",
-
                 ProfessionalSurname = $"{appointment.Professional.User.FirstSurname}{(!string.IsNullOrEmpty(appointment.Professional.User.SecondSurname) ? $" {appointment.Professional.User.SecondSurname}" : string.Empty)}",
-
                 IdService = appointment.IdService,
                 ServiceName = appointment.Service.Name,
                 IdAppointmentStatus = appointment.IdAppointmentStatus,

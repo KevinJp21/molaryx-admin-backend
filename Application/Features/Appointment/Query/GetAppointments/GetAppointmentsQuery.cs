@@ -1,6 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 
-namespace Application.Features.Appointment.Query
+namespace Application.Features.Appointment.Query.GetAppointments
 {
     public class GetAppointmentsQuery : IRequest<GetAppointmentsResponse[]>
     {

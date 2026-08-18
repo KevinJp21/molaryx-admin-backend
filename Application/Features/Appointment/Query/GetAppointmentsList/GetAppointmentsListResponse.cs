@@ -1,6 +1,6 @@
-namespace Application.Features.Appointment.Query
+namespace Application.Features.Appointment.Query.GetAppointmentsList
 {
-    public class GetAppointmentsResponse
+    public class GetAppointmentsListResponse
     {
         public long IdAppointment { get; set; }
         public long IdPatient { get; set; }
