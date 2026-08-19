@@ -45,5 +45,6 @@ namespace Domain.Enums
 
         // Clinical records
         CREATE_CLINICAL_RECORD = 26,
+        GET_CLINICAL_RECORDS = 27,
     }
 }

@@ -46,5 +46,6 @@ namespace Domain.Constants
 
         // Clinical records
         public const string CREATE_CLINICAL_RECORD = "CREATE_CLINICAL_RECORD";
+        public const string GET_CLINICAL_RECORDS = "GET_CLINICAL_RECORDS";
     }
 }

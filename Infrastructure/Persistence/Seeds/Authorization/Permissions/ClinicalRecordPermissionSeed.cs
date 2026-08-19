@@ -15,6 +15,13 @@ namespace Infrastructure.Persistence.Seeds.Authorization.Permissions
                 IdModule = (short)ModuleEnum.CLINICAL_RECORDS,
                 Code = PermissionCodes.CREATE_CLINICAL_RECORD,
                 CreatedAt = SeedConstants.SeedDate
+            },
+            new Permission
+            {
+                IdPermission = (short)PermissionEnum.GET_CLINICAL_RECORDS,
+                IdModule = (short)ModuleEnum.CLINICAL_RECORDS,
+                Code = PermissionCodes.GET_CLINICAL_RECORDS,
+                CreatedAt = SeedConstants.SeedDate
             }
         ];
     }
