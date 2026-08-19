@@ -3,7 +3,6 @@ namespace Application.Features.Payment.Query.GetPayments
     public class GetPaymentsResponse
     {
         public long IdPayment { get; set; }
-        public long IdPatient { get; set; }
         public long? IdAppointment { get; set; }
         public long? IdPatientTreatment { get; set; }
         public decimal Amount { get; set; }
@@ -11,8 +10,20 @@ namespace Application.Features.Payment.Query.GetPayments
         public short IdPaymentMethod { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public string? Notes { get; set; }
+        public Patient Patient { get; set; } = null!;
         public PaymentAppointment? Appointment { get; set; }
         public PaymentPatientTreatment? PatientTreatment { get; set; }
+    }
+
+    public class Patient
+    {
+        public long IdPatient { get; set; }
+        public string IdentificationType { get; set; } = string.Empty;
+        public string IdentificationNumber { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
     }
 
     public class PaymentAppointment

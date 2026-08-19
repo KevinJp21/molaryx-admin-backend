@@ -13,6 +13,8 @@ namespace Domain.Specifications
         {
             Criteria = p => p.IdTenant == idTenant;
             OrderByDescending = p => p.PaidAt;
+            AddInclude(p => p.Patient);
+            AddInclude(p => p.Patient.IdentificationType);
             AddInclude(p => p.PaymentMethod);
             AddInclude(p => p.Appointment!);
             AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Service)}");
