@@ -6,9 +6,23 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
     {
         public GetClinicalRecordsQueryValidator()
         {
-            RuleFor(x => x.IdPatient)
-                .GreaterThan(0)
-                .WithMessage("El paciente es obligatorio.");
+            RuleFor(x => x)
+                .Must(x =>
+                {
+                    var filters = 0;
+                    if (x.IdPatient.GetValueOrDefault() > 0) filters++;
+                    if (x.IdAppointment.GetValueOrDefault() > 0) filters++;
+                    if (x.IdPatientTreatment.GetValueOrDefault() > 0) filters++;
+                    return filters <= 1;
+                })
+                .WithMessage("Indique como máximo un filtro: paciente, cita o tratamiento del paciente.");
+
+            When(x => x.IdPatient.HasValue, () =>
+            {
+                RuleFor(x => x.IdPatient)
+                    .GreaterThan(0)
+                    .WithMessage("El paciente no es válido.");
+            });
 
             When(x => x.IdAppointment.HasValue, () =>
             {

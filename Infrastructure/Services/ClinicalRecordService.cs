@@ -5,7 +5,6 @@ using Domain.Contracts.IServices;
 using Domain.Entities;
 
 namespace Infrastructure.Services
-
 {
     public class ClinicalRecordService(
         IUnitOfWork _unitOfWork,
@@ -13,24 +12,27 @@ namespace Infrastructure.Services
         ITenantAccessService _tenantAccessService,
         ITenantResourceService _tenantResourceService
     ) : IClinicalRecordService
-
     {
-        public async Task<bool> CreateClinicalRecordAsync(CreateClinicalRecordCommand request, CancellationToken cancellationToken = default)
-
+        public async Task<bool> CreateClinicalRecordAsync(
+            CreateClinicalRecordCommand request,
+            CancellationToken cancellationToken = default)
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
+            await _tenantResourceService.RequirePatientAsync(
+                access.IdTenant,
+                request.IdPatient,
+                cancellationToken);
+
             if (request.IdAppointment is not null)
             {
-                await EnsureAppointmentAsync
-                (
+                await EnsureAppointmentAsync(
                     access.IdTenant,
                     request.IdPatient,
                     request.IdAppointment.Value,
                     request.IdService,
                     request.IdPatientTreatment,
-                    cancellationToken
-                );
+                    cancellationToken);
             }
 
             if (request.IdPatientTreatment is not null)
@@ -39,8 +41,7 @@ namespace Infrastructure.Services
                     access.IdTenant,
                     request.IdPatient,
                     request.IdPatientTreatment.Value,
-                    cancellationToken
-                );
+                    cancellationToken);
             }
 
             if (request.IdService is not null)
@@ -48,8 +49,7 @@ namespace Infrastructure.Services
                 await _tenantResourceService.RequireServiceAsync(
                     access.IdTenant,
                     request.IdService.Value,
-                    cancellationToken
-                );
+                    cancellationToken);
             }
 
             var clinicalRecord = new ClinicalRecord
@@ -59,12 +59,19 @@ namespace Infrastructure.Services
                 IdAppointment = request.IdAppointment,
                 IdPatientTreatment = request.IdPatientTreatment,
                 IdService = request.IdService,
-                IdCreatedByUser = _currentUser.IdUser ?? throw new InvalidOperationException("El usuario no está autenticado."),
+                IdCreatedByUser = _currentUser.IdUser
+                    ?? throw new InvalidOperationException("El usuario no está autenticado."),
                 RecordedAt = request.RecordedAt,
-                Reason = request.Reason,
-                Diagnosis = request.Diagnosis,
-                Evolution = request.Evolution,
-                Notes = request.Notes,
+                Reason = request.Reason.Trim(),
+                Diagnosis = string.IsNullOrWhiteSpace(request.Diagnosis)
+                    ? null
+                    : request.Diagnosis.Trim(),
+                Evolution = string.IsNullOrWhiteSpace(request.Evolution)
+                    ? null
+                    : request.Evolution.Trim(),
+                Notes = string.IsNullOrWhiteSpace(request.Notes)
+                    ? null
+                    : request.Notes.Trim(),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -92,20 +99,14 @@ namespace Infrastructure.Services
                 throw new InvalidOperationException("La cita no pertenece a este paciente.");
             }
 
-            if (idService is not null)
+            if (idService is not null && appointment.IdService != idService)
             {
-                if (appointment.IdService != idService)
-                {
-                    throw new InvalidOperationException("El servicio no pertenece a esta cita.");
-                }
+                throw new InvalidOperationException("El servicio no pertenece a esta cita.");
             }
 
-            if (idPatientTreatment is not null)
+            if (idPatientTreatment is not null && appointment.IdPatientTreatment != idPatientTreatment)
             {
-                if (appointment.IdPatientTreatment != idPatientTreatment)
-                {
-                    throw new InvalidOperationException("El tratamiento no pertenece a esta cita.");
-                }
+                throw new InvalidOperationException("El tratamiento no pertenece a esta cita.");
             }
         }
 
@@ -126,7 +127,4 @@ namespace Infrastructure.Services
             }
         }
     }
-
 }
-
-

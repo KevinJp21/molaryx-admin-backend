@@ -2,7 +2,6 @@ using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
-using Domain.Entities;
 using Domain.Specifications;
 
 namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
@@ -18,7 +17,7 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var spec = ClinicalRecordSpec.ForList(
+            var spec = new ClinicalRecordSpec(
                 access.IdTenant,
                 request.IdPatient,
                 request.IdAppointment,
@@ -33,23 +32,7 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
 
             return new PagedResult<GetClinicalRecordsResponse>
             {
-                Items = [.. clinicalRecords.Select(clinicalRecord => new GetClinicalRecordsResponse
-                {
-                    IdClinicalRecord = clinicalRecord.IdClinicalRecord,
-                    IdPatient = clinicalRecord.IdPatient,
-                    PatientName = FormatPersonName(clinicalRecord.Patient),
-                    IdAppointment = clinicalRecord.IdAppointment,
-                    IdPatientTreatment = clinicalRecord.IdPatientTreatment,
-                    TreatmentName = clinicalRecord.PatientTreatment?.Treatment.Name,
-                    IdService = clinicalRecord.IdService,
-                    ServiceName = clinicalRecord.Service?.Name,
-                    CreatedByUser = FormatPersonName(clinicalRecord.CreatedByUser),
-                    RecordedAt = clinicalRecord.RecordedAt,
-                    Reason = clinicalRecord.Reason,
-                    Diagnosis = clinicalRecord.Diagnosis,
-                    Evolution = clinicalRecord.Evolution,
-                    Notes = clinicalRecord.Notes
-                })],
+                Items = [.. clinicalRecords.Select(MapClinicalRecord)],
                 Page = PaginationHelper.GetEffectivePage(request.Page),
                 Size = PaginationHelper.GetEffectivePageSize(request.Size),
                 TotalItems = totalItems,
@@ -59,29 +42,91 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
             };
         }
 
-        private static string FormatPersonName(Patient patient)
-            => FormatPersonName(
-                patient.FirstName,
-                patient.SecondName,
-                patient.FirstSurname,
-                patient.SecondSurname);
-
-        private static string FormatPersonName(User user)
-            => FormatPersonName(
-                user.FirstName,
-                user.SecondName,
-                user.FirstSurname,
-                user.SecondSurname);
-
-        private static string FormatPersonName(
-            string firstName,
-            string? secondName,
-            string firstSurname,
-            string? secondSurname)
+        private static GetClinicalRecordsResponse MapClinicalRecord(Domain.Entities.ClinicalRecord clinicalRecord)
         {
-            var given = $"{firstName}{(!string.IsNullOrEmpty(secondName) ? $" {secondName}" : string.Empty)}";
-            var family = $"{firstSurname}{(!string.IsNullOrEmpty(secondSurname) ? $" {secondSurname}" : string.Empty)}";
-            return $"{given} {family}".Trim();
+            return new GetClinicalRecordsResponse
+            {
+                IdClinicalRecord = clinicalRecord.IdClinicalRecord,
+                IdAppointment = clinicalRecord.IdAppointment,
+                IdPatientTreatment = clinicalRecord.IdPatientTreatment,
+                IdService = clinicalRecord.IdService,
+                ServiceName = clinicalRecord.Service?.Name,
+                RecordedAt = clinicalRecord.RecordedAt,
+                Reason = clinicalRecord.Reason,
+                Diagnosis = clinicalRecord.Diagnosis,
+                Evolution = clinicalRecord.Evolution,
+                Notes = clinicalRecord.Notes,
+                Patient = MapPatient(clinicalRecord.Patient),
+                CreatedBy = MapCreatedBy(clinicalRecord.CreatedByUser),
+                Appointment = MapAppointment(clinicalRecord.Appointment),
+                PatientTreatment = MapPatientTreatment(clinicalRecord.PatientTreatment)
+            };
+        }
+
+        private static ClinicalRecordPatient MapPatient(Domain.Entities.Patient patient)
+        {
+            return new ClinicalRecordPatient
+            {
+                IdPatient = patient.IdPatient,
+                IdentificationType = patient.IdentificationType.Name,
+                IdentificationNumber = patient.IdentificationNumber,
+                Name = $"{patient.FirstName}{(!string.IsNullOrEmpty(patient.SecondName) ? $" {patient.SecondName}" : string.Empty)}",
+                Surname = $"{patient.FirstSurname}{(!string.IsNullOrEmpty(patient.SecondSurname) ? $" {patient.SecondSurname}" : string.Empty)}",
+                Email = patient.Email,
+                PhoneNumber = patient.PhoneNumber
+            };
+        }
+
+        private static ClinicalRecordCreatedBy MapCreatedBy(Domain.Entities.User user)
+        {
+            return new ClinicalRecordCreatedBy
+            {
+                IdUser = user.IdUser,
+                Name = $"{user.FirstName}{(!string.IsNullOrEmpty(user.SecondName) ? $" {user.SecondName}" : string.Empty)}",
+                Surname = $"{user.FirstSurname}{(!string.IsNullOrEmpty(user.SecondSurname) ? $" {user.SecondSurname}" : string.Empty)}"
+            };
+        }
+
+        private static ClinicalRecordAppointment? MapAppointment(Domain.Entities.Appointment? appointment)
+        {
+            if (appointment is null)
+            {
+                return null;
+            }
+
+            return new ClinicalRecordAppointment
+            {
+                IdAppointment = appointment.IdAppointment,
+                IdService = appointment.IdService,
+                ServiceName = appointment.Service.Name,
+                IdAppointmentStatus = appointment.IdAppointmentStatus,
+                AppointmentStatus = appointment.AppointmentStatus.Name,
+                StartAt = appointment.StartAt,
+                EndAt = appointment.EndAt,
+                ProfessionalName = $"{appointment.Professional.User.FirstName}{(!string.IsNullOrEmpty(appointment.Professional.User.SecondName) ? $" {appointment.Professional.User.SecondName}" : string.Empty)}",
+                ProfessionalSurname = $"{appointment.Professional.User.FirstSurname}{(!string.IsNullOrEmpty(appointment.Professional.User.SecondSurname) ? $" {appointment.Professional.User.SecondSurname}" : string.Empty)}"
+            };
+        }
+
+        private static ClinicalRecordPatientTreatment? MapPatientTreatment(
+            Domain.Entities.PatientTreatment? patientTreatment)
+        {
+            if (patientTreatment is null)
+            {
+                return null;
+            }
+
+            return new ClinicalRecordPatientTreatment
+            {
+                IdPatientTreatment = patientTreatment.IdPatientTreatment,
+                IdTreatment = patientTreatment.IdTreatment,
+                TreatmentName = patientTreatment.Treatment.Name,
+                AgreedPrice = patientTreatment.AgreedPrice,
+                IdPatientTreatmentStatus = patientTreatment.IdPatientTreatmentStatus,
+                PatientTreatmentStatus = patientTreatment.PatientTreatmentStatus.Name,
+                StartAt = patientTreatment.StartAt,
+                EndAt = patientTreatment.EndAt
+            };
         }
     }
 }

@@ -5,35 +5,49 @@ namespace Domain.Specifications
 {
     public class ClinicalRecordSpec : BaseSpecification<ClinicalRecord>
     {
-        public static ClinicalRecordSpec ForList(
+        public ClinicalRecordSpec(
             long idTenant,
-            long idPatient,
+            long? idPatient = null,
             long? idAppointment = null,
             long? idPatientTreatment = null)
         {
-            var spec = new ClinicalRecordSpec
+            Criteria = c => c.IdTenant == idTenant;
+            OrderByDescending = c => c.RecordedAt;
+            AddInclude(c => c.Patient);
+            AddInclude(c => c.Patient.IdentificationType);
+            AddInclude(c => c.Service!);
+            AddInclude(c => c.CreatedByUser);
+            AddInclude(c => c.Appointment!);
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Service)}");
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.AppointmentStatus)}");
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Professional)}");
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
+            AddInclude(c => c.PatientTreatment!);
+            AddInclude($"{nameof(ClinicalRecord.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
+            AddInclude($"{nameof(ClinicalRecord.PatientTreatment)}.{nameof(PatientTreatment.PatientTreatmentStatus)}");
+
+            if (idPatient.GetValueOrDefault() > 0)
             {
-                Criteria = c =>
-                    c.IdTenant == idTenant
-                    && c.IdPatient == idPatient
-                    && (idAppointment.GetValueOrDefault() <= 0 || c.IdAppointment == idAppointment)
-                    && (idPatientTreatment.GetValueOrDefault() <= 0 || c.IdPatientTreatment == idPatientTreatment),
-                OrderByDescending = c => c.RecordedAt
-            };
-            spec.AddInclude(c => c.Patient);
-            spec.AddInclude(c => c.Service!);
-            spec.AddInclude(c => c.CreatedByUser);
-            spec.AddInclude($"{nameof(ClinicalRecord.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
-            return spec;
+                Criteria = And(c => c.IdPatient == idPatient);
+            }
+
+            if (idAppointment.GetValueOrDefault() > 0)
+            {
+                Criteria = And(c => c.IdAppointment == idAppointment);
+            }
+
+            if (idPatientTreatment.GetValueOrDefault() > 0)
+            {
+                Criteria = And(c => c.IdPatientTreatment == idPatientTreatment);
+            }
         }
 
         public static ClinicalRecordSpec ById(long idClinicalRecord)
         {
-            var spec = new ClinicalRecordSpec
+            return new ClinicalRecordSpec
             {
                 Criteria = c => c.IdClinicalRecord == idClinicalRecord
             };
-            return spec;
         }
 
         private ClinicalRecordSpec()
