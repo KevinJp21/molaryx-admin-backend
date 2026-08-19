@@ -10,18 +10,18 @@ namespace Domain.Specifications
             long idTenant,
             long? idPatient = null,
             string? search = null,
-            short? idTreatmentStatus = null)
+            short? idPatientTreatmentStatus = null)
         {
 
             Criteria = pt =>
                 pt.IdTenant == idTenant
                 && (!idPatient.HasValue || pt.IdPatient == idPatient.Value)
-                && (!idTreatmentStatus.HasValue || pt.IdTreatmentStatus == idTreatmentStatus.Value);
+                && (!idPatientTreatmentStatus.HasValue || pt.IdPatientTreatmentStatus == idPatientTreatmentStatus.Value);
             OrderByDescending = pt => pt.StartAt;
 
             AddInclude(pt => pt.Patient);
             AddInclude(pt => pt.Treatment);
-            AddInclude(pt => pt.TreatmentStatus);
+            AddInclude(pt => pt.PatientTreatmentStatus);
             AddInclude(pt => pt.PaymentFrequency!);
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -53,7 +53,7 @@ namespace Domain.Specifications
                 Criteria = pt => pt.IdPatientTreatment == idPatientTreatment
             };
             spec.AddInclude(pt => pt.Treatment);
-            spec.AddInclude(pt => pt.TreatmentStatus);
+            spec.AddInclude(pt => pt.PatientTreatmentStatus);
             spec.AddInclude(pt => pt.PaymentFrequency!);
             return spec;
         }
@@ -70,8 +70,8 @@ namespace Domain.Specifications
                     pt.IdTenant == idTenant
                     && pt.IdPatient == idPatient
                     && pt.IdTreatment == idTreatment
-                    && (pt.IdTreatmentStatus == (short)TreatmentStatusEnum.ACTIVE
-                        || pt.IdTreatmentStatus == (short)TreatmentStatusEnum.PAUSED)
+                    && (pt.IdPatientTreatmentStatus == (short)PatientTreatmentStatusEnum.ACTIVE
+                        || pt.IdPatientTreatmentStatus == (short)PatientTreatmentStatusEnum.PAUSED)
                     && (!excludeIdPatientTreatment.HasValue
                         || pt.IdPatientTreatment != excludeIdPatientTreatment.Value)
             };

@@ -116,7 +116,7 @@ namespace Infrastructure.Services
                     "El tratamiento no pertenece a este paciente.");
             }
 
-            TreatmentStatusRules.EnsureCanReceivePayment(patientTreatment.IdTreatmentStatus);
+            PatientTreatmentStatusRules.EnsureCanReceivePayment(patientTreatment.IdPatientTreatmentStatus);
         }
     }
 }

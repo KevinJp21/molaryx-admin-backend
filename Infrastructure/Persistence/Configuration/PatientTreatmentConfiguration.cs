@@ -25,7 +25,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(p => p.StartAt).IsRequired();
             builder.Property(p => p.EndAt);
 
-            builder.Property(p => p.IdTreatmentStatus).IsRequired();
+            builder.Property(p => p.IdPatientTreatmentStatus).IsRequired();
 
             builder.Property(p => p.Notes)
                 .HasMaxLength(500);
@@ -52,9 +52,9 @@ namespace Infrastructure.Persistence.Configuration
                 .HasForeignKey(p => p.IdPaymentFrequency)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(p => p.TreatmentStatus)
+            builder.HasOne(p => p.PatientTreatmentStatus)
                 .WithMany(s => s.PatientTreatments)
-                .HasForeignKey(p => p.IdTreatmentStatus)
+                .HasForeignKey(p => p.IdPatientTreatmentStatus)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

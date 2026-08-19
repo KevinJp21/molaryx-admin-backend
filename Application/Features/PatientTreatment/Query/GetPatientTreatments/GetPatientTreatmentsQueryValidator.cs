@@ -14,10 +14,10 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
                     .WithMessage("El paciente no es válido.");
             });
 
-            When(x => x.IdTreatmentStatus.HasValue, () =>
+            When(x => x.IdPatientTreatmentStatus.HasValue, () =>
             {
-                RuleFor(x => x.IdTreatmentStatus)
-                    .Must(status => Enum.IsDefined((TreatmentStatusEnum)status!.Value))
+                RuleFor(x => x.IdPatientTreatmentStatus)
+                    .Must(status => Enum.IsDefined((PatientTreatmentStatusEnum)status!.Value))
                     .WithMessage("El estado del tratamiento no es válido.");
             });
         }

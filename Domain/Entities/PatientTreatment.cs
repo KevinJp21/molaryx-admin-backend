@@ -32,8 +32,8 @@ namespace Domain.Entities
         [Column("end_at")]
         public DateTime? EndAt { get; set; }
 
-        [Column("id_treatment_status")]
-        public short IdTreatmentStatus { get; set; }
+        [Column("id_patient_treatment_status")]
+        public short IdPatientTreatmentStatus { get; set; }
 
         [Column("notes")]
         public string? Notes { get; set; }
@@ -47,7 +47,7 @@ namespace Domain.Entities
 
         public PaymentFrequency? PaymentFrequency { get; set; }
 
-        public TreatmentStatus TreatmentStatus { get; set; } = null!;
+        public PatientTreatmentStatus PatientTreatmentStatus { get; set; } = null!;
 
         public ICollection<Appointment> Appointments { get; set; } = [];
 

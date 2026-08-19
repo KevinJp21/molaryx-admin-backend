@@ -3,10 +3,10 @@ using Domain.Common;
 
 namespace Domain.Entities
 {
-    public class TreatmentStatus : BaseEntity
+    public class PatientTreatmentStatus : BaseEntity
     {
-        [Column("id_treatment_status")]
-        public short IdTreatmentStatus { get; set; }
+        [Column("id_patient_treatment_status")]
+        public short IdPatientTreatmentStatus { get; set; }
         
         [Column("name")]
         public string Name { get; set; } = string.Empty;
