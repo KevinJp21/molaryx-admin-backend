@@ -35,7 +35,6 @@ namespace Application.Features.Payment.Query.GetPayments
                 Items = [.. payments.Select(payment => new GetPaymentsResponse
                 {
                     IdPayment = payment.IdPayment,
-                    IdPatient = payment.IdPatient,
                     IdAppointment = payment.IdAppointment,
                     IdPatientTreatment = payment.IdPatientTreatment,
                     Amount = payment.Amount,
@@ -43,6 +42,7 @@ namespace Application.Features.Payment.Query.GetPayments
                     IdPaymentMethod = payment.IdPaymentMethod,
                     PaymentMethod = payment.PaymentMethod.Name,
                     Notes = payment.Notes,
+                    Patient = MapPatient(payment.Patient),
                     Appointment = MapAppointment(payment.Appointment),
                     PatientTreatment = MapPatientTreatment(payment.PatientTreatment)
                 })],
@@ -52,6 +52,21 @@ namespace Application.Features.Payment.Query.GetPayments
                 TotalPages = (int)Math.Ceiling(
                     totalItems / (double)PaginationHelper.GetEffectivePageSize(request.Size)
                 )
+            };
+        }
+
+        private static Patient MapPatient(
+            Domain.Entities.Patient patient)
+        {
+            return new Patient
+            {
+                IdPatient = patient.IdPatient,
+                IdentificationType = patient.IdentificationType.Name,
+                IdentificationNumber = patient.IdentificationNumber,
+                Name = $"{patient.FirstName}{(!string.IsNullOrEmpty(patient.SecondName) ? $" {patient.SecondName}" : string.Empty)}",
+                Surname = $"{patient.FirstSurname}{(!string.IsNullOrEmpty(patient.SecondSurname) ? $" {patient.SecondSurname}" : string.Empty)}",
+                Email = patient.Email,
+                PhoneNumber = patient.PhoneNumber
             };
         }
 
