@@ -6,6 +6,7 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
     public class GetPatientTreatmentsQuery : PageFilter, IRequest<PagedResult<GetPatientTreatmentsResponse>>
     {
         public long? IdPatient { get; set; }
+        public string? Search { get; set; }
         public short? IdTreatmentStatus { get; set; }
     }
 }

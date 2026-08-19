@@ -17,10 +17,12 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var spec = PatientTreatmentsSpec.ForPatient(
+            var spec = new PatientTreatmentsSpec(
                 access.IdTenant,
                 request.IdPatient,
-                request.IdTreatmentStatus);
+                request.Search,
+                request.IdTreatmentStatus
+            );
 
             var (totalItems, patientTreatments) = await _unitOfWork.PatientTreatmentRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),

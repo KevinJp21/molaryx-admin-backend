@@ -6,24 +6,39 @@ namespace Domain.Specifications
 {
     public class PatientTreatmentsSpec : BaseSpecification<PatientTreatment>
     {
-        public static PatientTreatmentsSpec ForPatient(
+        public PatientTreatmentsSpec(
             long idTenant,
             long? idPatient = null,
+            string? search = null,
             short? idTreatmentStatus = null)
         {
-            var spec = new PatientTreatmentsSpec
+
+            Criteria = pt =>
+                pt.IdTenant == idTenant
+                && (!idPatient.HasValue || pt.IdPatient == idPatient.Value)
+                && (!idTreatmentStatus.HasValue || pt.IdTreatmentStatus == idTreatmentStatus.Value);
+            OrderByDescending = pt => pt.StartAt;
+
+            AddInclude(pt => pt.Patient);
+            AddInclude(pt => pt.Treatment);
+            AddInclude(pt => pt.TreatmentStatus);
+            AddInclude(pt => pt.PaymentFrequency!);
+
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                Criteria = pt =>
-                    pt.IdTenant == idTenant
-                    && (!idPatient.HasValue || pt.IdPatient == idPatient.Value)
-                    && (!idTreatmentStatus.HasValue || pt.IdTreatmentStatus == idTreatmentStatus.Value),
-                OrderByDescending = pt => pt.StartAt
-            };
-            spec.AddInclude(pt => pt.Patient);
-            spec.AddInclude(pt => pt.Treatment);
-            spec.AddInclude(pt => pt.TreatmentStatus);
-            spec.AddInclude(pt => pt.PaymentFrequency!);
-            return spec;
+                foreach (var token in SearchText.Tokens(search))
+                {
+                    Criteria = And(pt =>
+                        pt.Treatment.Name.ToLower().Contains(token) ||
+                        pt.Patient.FirstName.ToLower().Contains(token) ||
+                        (pt.Patient.SecondName != null && pt.Patient.SecondName.ToLower().Contains(token)) ||
+                        pt.Patient.FirstSurname.ToLower().Contains(token) ||
+                        (pt.Patient.SecondSurname != null && pt.Patient.SecondSurname.ToLower().Contains(token)) ||
+                        pt.Patient.IdentificationNumber.ToLower().Contains(token) ||
+                        pt.Patient.Email.ToLower().Contains(token) ||
+                        pt.Patient.PhoneNumber.ToLower().Contains(token));
+                }
+            }
         }
 
         public static PatientTreatmentsSpec ById(long idPatientTreatment)
