@@ -12,7 +12,7 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
         IUnitOfWork _unitOfWork,
         ITenantAccessService _tenantAccessService,
         ITenantResourceService _tenantResourceService,
-        ITemplateBuilderService _templateBuilderService
+        IClinicalHistoryPdfService _clinicalHistoryPdfService
     ) : IRequestHandler<GetClinicalHistoryQuery, ClinicalHistoryFileResult>
     {
         public async Task<ClinicalHistoryFileResult> Handle(
@@ -62,7 +62,7 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
 
             return new ClinicalHistoryFileResult
             {
-                Content = _templateBuilderService.GenerateClinicalHistoryTemplate(templateInformation),
+                Content = _clinicalHistoryPdfService.GenerateClinicalHistoryTemplate(templateInformation),
                 FileName = BuildFileName(patient),
             };
         }
