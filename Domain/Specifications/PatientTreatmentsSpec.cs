@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Common.Patients;
 using Domain.Entities;
 using Domain.Enums;
 
@@ -15,6 +16,7 @@ namespace Domain.Specifications
 
             Criteria = pt =>
                 pt.IdTenant == idTenant
+                && pt.Patient.DeletedAt == null
                 && (!idPatient.HasValue || pt.IdPatient == idPatient.Value)
                 && (!idPatientTreatmentStatus.HasValue || pt.IdPatientTreatmentStatus == idPatientTreatmentStatus.Value);
             OrderByDescending = pt => pt.StartAt;
@@ -26,17 +28,11 @@ namespace Domain.Specifications
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                foreach (var token in SearchText.Tokens(search))
+                var tokens = PatientSearch.GetTokens(search);
+
+                foreach (var token in tokens)
                 {
-                    Criteria = And(pt =>
-                        pt.Treatment.Name.ToLower().Contains(token) ||
-                        pt.Patient.FirstName.ToLower().Contains(token) ||
-                        (pt.Patient.SecondName != null && pt.Patient.SecondName.ToLower().Contains(token)) ||
-                        pt.Patient.FirstSurname.ToLower().Contains(token) ||
-                        (pt.Patient.SecondSurname != null && pt.Patient.SecondSurname.ToLower().Contains(token)) ||
-                        pt.Patient.IdentificationNumber.ToLower().Contains(token) ||
-                        pt.Patient.Email.ToLower().Contains(token) ||
-                        pt.Patient.PhoneNumber.ToLower().Contains(token));
+                    Criteria = And(PatientSearch.MatchesPatientTreatmentToken(token));
                 }
             }
         }
@@ -50,7 +46,9 @@ namespace Domain.Specifications
         {
             var spec = new PatientTreatmentsSpec
             {
-                Criteria = pt => pt.IdPatientTreatment == idPatientTreatment
+                Criteria = pt =>
+                    pt.IdPatientTreatment == idPatientTreatment
+                    && pt.Patient.DeletedAt == null
             };
             spec.AddInclude(pt => pt.Treatment);
             spec.AddInclude(pt => pt.PatientTreatmentStatus);
@@ -69,6 +67,7 @@ namespace Domain.Specifications
                 Criteria = pt =>
                     pt.IdTenant == idTenant
                     && pt.IdPatient == idPatient
+                    && pt.Patient.DeletedAt == null
                     && pt.IdTreatment == idTreatment
                     && (pt.IdPatientTreatmentStatus == (short)PatientTreatmentStatusEnum.ACTIVE
                         || pt.IdPatientTreatmentStatus == (short)PatientTreatmentStatusEnum.PAUSED)

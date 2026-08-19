@@ -1,6 +1,6 @@
 using Application.Features.PatientTreatment.Command.CreatePatientTreatment;
 using Application.Features.PatientTreatment.Command.UpdatePatientTreatment;
-using Domain.Common;
+using Domain.Common.Patients;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;

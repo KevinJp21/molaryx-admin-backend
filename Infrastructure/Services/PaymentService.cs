@@ -1,5 +1,6 @@
 using Application.Features.Payment.Command.CreatePayment;
-using Domain.Common;
+using Domain.Common.Appointments;
+using Domain.Common.Patients;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;

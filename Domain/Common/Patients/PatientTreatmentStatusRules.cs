@@ -1,6 +1,6 @@
 using Domain.Enums;
 
-namespace Domain.Common
+namespace Domain.Common.Patients
 {
     public static class PatientTreatmentStatusRules
     {

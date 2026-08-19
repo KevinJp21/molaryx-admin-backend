@@ -1,6 +1,7 @@
 using Application.Features.Appointment.Command.CreateAppointment;
 using Application.Features.Appointment.Command.UpdateAppointment;
-using Domain.Common;
+using Domain.Common.Appointments;
+using Domain.Common.Patients;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;

@@ -44,6 +44,21 @@ namespace Infrastructure.Persistence.Configuration
             builder.HasIndex(p => new { p.IdTenant, p.Email }).IsUnique();
             builder.HasIndex(p => new { p.IdTenant, p.PhoneNumber }).IsUnique();
             builder.HasIndex(p => new { p.IdTenant, p.IdPatient }).IsUnique();
+
+            builder.HasIndex(p => p.FirstName)
+                .HasDatabaseName("ix_patients_first_name_trgm")
+                .HasMethod("gin")
+                .HasOperators("gin_trgm_ops");
+
+            builder.HasIndex(p => p.FirstSurname)
+                .HasDatabaseName("ix_patients_first_surname_trgm")
+                .HasMethod("gin")
+                .HasOperators("gin_trgm_ops");
+
+            builder.HasIndex(p => p.IdentificationNumber)
+                .HasDatabaseName("ix_patients_identification_number_trgm")
+                .HasMethod("gin")
+                .HasOperators("gin_trgm_ops");
         }
     }
 }
