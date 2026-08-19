@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Common.Patients;
 using Domain.Entities;
 
 namespace Domain.Specifications
@@ -22,16 +23,11 @@ namespace Domain.Specifications
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                foreach (var token in SearchText.Tokens(search))
+                var tokens = PatientSearch.GetTokens(search);
+
+                foreach (var token in tokens)
                 {
-                    Criteria = And(p =>
-                        p.FirstName.ToLower().Contains(token) ||
-                        (p.SecondName != null && p.SecondName.ToLower().Contains(token)) ||
-                        p.FirstSurname.ToLower().Contains(token) ||
-                        (p.SecondSurname != null && p.SecondSurname.ToLower().Contains(token)) ||
-                        p.IdentificationNumber.ToLower().Contains(token) ||
-                        p.Email.ToLower().Contains(token) ||
-                        p.PhoneNumber.ToLower().Contains(token));
+                    Criteria = And(PatientSearch.MatchesToken(token));
                 }
             }
         }

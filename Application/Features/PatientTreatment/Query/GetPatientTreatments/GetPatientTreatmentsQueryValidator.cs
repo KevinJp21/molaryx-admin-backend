@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Domain.Common.Patients;
 using FluentValidation;
 
 namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
@@ -12,6 +13,14 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
                 RuleFor(x => x.IdPatient)
                     .GreaterThan(0)
                     .WithMessage("El paciente no es válido.");
+            });
+
+            When(x => !string.IsNullOrWhiteSpace(x.Search), () =>
+            {
+                RuleFor(x => x.Search)
+                    .Must(PatientSearch.HasValidSearch)
+                    .WithMessage(
+                        $"Ingresa al menos {PatientSearch.MinTokenLength} caracteres para buscar.");
             });
 
             When(x => x.IdPatientTreatmentStatus.HasValue, () =>

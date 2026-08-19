@@ -1,6 +1,6 @@
 using Domain.Enums;
 
-namespace Domain.Common
+namespace Domain.Common.Appointments
 {
     public static class AppointmentStatusRules
     {
