@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.ClinicalRecord.Command.CreateClinicalRecord;
+using Application.Features.ClinicalRecord.Query.GetClinicalHistory;
 using Application.Features.ClinicalRecord.Query.GetClinicalRecords;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +27,18 @@ namespace Presentation.Controllers
                     await _mediator.Send(query, cancellationToken)
                 )
             );
+        }
+
+        [Authorize(Policy = PermissionCodes.GET_CLINICAL_RECORDS)]
+        [HttpGet]
+        [Produces("application/pdf")]
+        public async Task<IActionResult> GetClinicalHistory(
+            [FromQuery] GetClinicalHistoryQuery query,
+            CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return File(result.Content, "application/pdf", result.FileName);
         }
 
         [Authorize(Policy = PermissionCodes.CREATE_CLINICAL_RECORD)]

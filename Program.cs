@@ -12,7 +12,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Infrastructure.Authorization;
 using Infrastructure.BackgroundServices;
+using Infrastructure.Pdf;
 var builder = WebApplication.CreateBuilder(args);
+
+PdfFontBootstrap.Configure();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);

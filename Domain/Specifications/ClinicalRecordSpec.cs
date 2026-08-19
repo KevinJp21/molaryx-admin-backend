@@ -9,10 +9,22 @@ namespace Domain.Specifications
             long idTenant,
             long? idPatient = null,
             long? idAppointment = null,
-            long? idPatientTreatment = null)
+            long? idPatientTreatment = null,
+            DateTime? recordedFrom = null,
+            DateTime? recordedToInclusive = null,
+            bool orderAscending = false)
         {
             Criteria = c => c.IdTenant == idTenant;
-            OrderByDescending = c => c.RecordedAt;
+
+            if (orderAscending)
+            {
+                OrderBy = c => c.RecordedAt;
+            }
+            else
+            {
+                OrderByDescending = c => c.RecordedAt;
+            }
+
             AddInclude(c => c.Patient);
             AddInclude(c => c.Patient.IdentificationType);
             AddInclude(c => c.Service!);
@@ -39,6 +51,16 @@ namespace Domain.Specifications
             if (idPatientTreatment.GetValueOrDefault() > 0)
             {
                 Criteria = And(c => c.IdPatientTreatment == idPatientTreatment);
+            }
+
+            if (recordedFrom.HasValue)
+            {
+                Criteria = And(c => c.RecordedAt >= recordedFrom.Value);
+            }
+
+            if (recordedToInclusive.HasValue)
+            {
+                Criteria = And(c => c.RecordedAt <= recordedToInclusive.Value);
             }
         }
 
