@@ -21,7 +21,7 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
                 access.IdTenant,
                 request.IdPatient,
                 request.Search,
-                request.IdTreatmentStatus
+                request.IdPatientTreatmentStatus
             );
 
             var (totalItems, patientTreatments) = await _unitOfWork.PatientTreatmentRepository.GetPagedAsync(
@@ -47,8 +47,8 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
                     PeriodicAmount = patientTreatment.PeriodicAmount,
                     StartAt = patientTreatment.StartAt,
                     EndAt = patientTreatment.EndAt,
-                    IdTreatmentStatus = patientTreatment.IdTreatmentStatus,
-                    TreatmentStatus = patientTreatment.TreatmentStatus.Name,
+                    IdPatientTreatmentStatus = patientTreatment.IdPatientTreatmentStatus,
+                    PatientTreatmentStatus = patientTreatment.PatientTreatmentStatus.Name,
                     Notes = patientTreatment.Notes
                 })],
                 Page = PaginationHelper.GetEffectivePage(request.Page),

@@ -39,10 +39,10 @@ namespace Application.Features.PatientTreatment.Command.UpdatePatientTreatment
                     .WithMessage("Ingrese una fecha de inicio válida.");
             });
 
-            When(x => x.IdTreatmentStatus.HasValue, () =>
+            When(x => x.IdPatientTreatmentStatus.HasValue, () =>
             {
-                RuleFor(x => x.IdTreatmentStatus)
-                    .Must(status => Enum.IsDefined((TreatmentStatusEnum)status!.Value))
+                RuleFor(x => x.IdPatientTreatmentStatus)
+                    .Must(status => Enum.IsDefined((PatientTreatmentStatusEnum)status!.Value))
                     .WithMessage("El estado del tratamiento no es válido.");
             });
 

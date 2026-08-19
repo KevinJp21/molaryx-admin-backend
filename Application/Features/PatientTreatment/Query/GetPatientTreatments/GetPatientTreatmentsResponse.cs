@@ -14,8 +14,8 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
         public decimal? PeriodicAmount { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime? EndAt { get; set; }
-        public short IdTreatmentStatus { get; set; }
-        public string TreatmentStatus { get; set; } = string.Empty;
+        public short IdPatientTreatmentStatus { get; set; }
+        public string PatientTreatmentStatus { get; set; } = string.Empty;
         public string? Notes { get; set; }
     }
 }

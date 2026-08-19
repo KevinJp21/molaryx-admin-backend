@@ -1,6 +1,6 @@
 namespace Domain.Enums
 {
-    public enum TreatmentStatusEnum
+    public enum PatientTreatmentStatusEnum
     {
         ACTIVE = 1,
         PAUSED = 2,

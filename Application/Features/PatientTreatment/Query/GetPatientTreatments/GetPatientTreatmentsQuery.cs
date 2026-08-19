@@ -7,6 +7,6 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
     {
         public long? IdPatient { get; set; }
         public string? Search { get; set; }
-        public short? IdTreatmentStatus { get; set; }
+        public short? IdPatientTreatmentStatus { get; set; }
     }
 }

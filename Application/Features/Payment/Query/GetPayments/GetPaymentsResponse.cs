@@ -34,8 +34,8 @@ namespace Application.Features.Payment.Query.GetPayments
         public long IdTreatment { get; set; }
         public string TreatmentName { get; set; } = string.Empty;
         public decimal? AgreedPrice { get; set; }
-        public short IdTreatmentStatus { get; set; }
-        public string TreatmentStatus { get; set; } = string.Empty;
+        public short IdPatientTreatmentStatus { get; set; }
+        public string PatientTreatmentStatus { get; set; } = string.Empty;
         public DateTime StartAt { get; set; }
         public DateTime? EndAt { get; set; }
     }

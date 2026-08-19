@@ -6,43 +6,43 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configuration
 {
-    public class TreatmentStatusConfiguration : IEntityTypeConfiguration<TreatmentStatus>
+    public class PatientTreatmentStatusConfiguration : IEntityTypeConfiguration<PatientTreatmentStatus>
     {
-        public void Configure(EntityTypeBuilder<TreatmentStatus> builder)
+        public void Configure(EntityTypeBuilder<PatientTreatmentStatus> builder)
         {
-            builder.ToTable("treatment_statuses");
+            builder.ToTable("patient_treatment_statuses");
 
-            builder.HasKey(t => t.IdTreatmentStatus);
+            builder.HasKey(t => t.IdPatientTreatmentStatus);
 
             builder.Property(t => t.Name).IsRequired().HasMaxLength(50);
 
             builder.Property(t => t.IsActive).IsRequired();
 
             builder.HasData(
-                new TreatmentStatus
+                new PatientTreatmentStatus
                 {
-                    IdTreatmentStatus = (short)TreatmentStatusEnum.ACTIVE,
+                    IdPatientTreatmentStatus = (short)PatientTreatmentStatusEnum.ACTIVE,
                     Name = "Activo",
                     IsActive = true,
                     CreatedAt = SeedConstants.SeedDate
                 },
-                new TreatmentStatus
+                new PatientTreatmentStatus
                 {
-                    IdTreatmentStatus = (short)TreatmentStatusEnum.PAUSED,
+                    IdPatientTreatmentStatus = (short)PatientTreatmentStatusEnum.PAUSED,
                     Name = "Pausado",
                     IsActive = true,
                     CreatedAt = SeedConstants.SeedDate
                 },
-                new TreatmentStatus
+                new PatientTreatmentStatus
                 {
-                    IdTreatmentStatus = (short)TreatmentStatusEnum.COMPLETED,
+                    IdPatientTreatmentStatus = (short)PatientTreatmentStatusEnum.COMPLETED,
                     Name = "Completado",
                     IsActive = true,
                     CreatedAt = SeedConstants.SeedDate
                 },
-                new TreatmentStatus
+                new PatientTreatmentStatus
                 {
-                    IdTreatmentStatus = (short)TreatmentStatusEnum.CANCELLED,
+                    IdPatientTreatmentStatus = (short)PatientTreatmentStatusEnum.CANCELLED,
                     Name = "Cancelado",
                     IsActive = true,
                     CreatedAt = SeedConstants.SeedDate

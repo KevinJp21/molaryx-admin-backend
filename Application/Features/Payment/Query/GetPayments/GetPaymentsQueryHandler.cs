@@ -91,8 +91,8 @@ namespace Application.Features.Payment.Query.GetPayments
                 IdTreatment = patientTreatment.IdTreatment,
                 TreatmentName = patientTreatment.Treatment.Name,
                 AgreedPrice = patientTreatment.AgreedPrice,
-                IdTreatmentStatus = patientTreatment.IdTreatmentStatus,
-                TreatmentStatus = patientTreatment.TreatmentStatus.Name,
+                IdPatientTreatmentStatus = patientTreatment.IdPatientTreatmentStatus,
+                PatientTreatmentStatus = patientTreatment.PatientTreatmentStatus.Name,
                 StartAt = patientTreatment.StartAt,
                 EndAt = patientTreatment.EndAt
             };

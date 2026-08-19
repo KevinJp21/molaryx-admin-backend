@@ -48,7 +48,7 @@ namespace Infrastructure.Services
                 PeriodicAmount = request.PeriodicAmount,
                 StartAt = request.StartAt,
                 EndAt = request.EndAt,
-                IdTreatmentStatus = (short)TreatmentStatusEnum.ACTIVE,
+                IdPatientTreatmentStatus = (short)PatientTreatmentStatusEnum.ACTIVE,
                 Notes = string.IsNullOrWhiteSpace(request.Notes)
                     ? null
                     : request.Notes.Trim(),
@@ -73,13 +73,13 @@ namespace Infrastructure.Services
                 request.IdPatientTreatment,
                 cancellationToken);
 
-            TreatmentStatusRules.EnsureCanEdit(patientTreatment.IdTreatmentStatus);
+            PatientTreatmentStatusRules.EnsureCanEdit(patientTreatment.IdPatientTreatmentStatus);
 
             var agreedPrice = request.AgreedPrice;
             var idPaymentFrequency = request.IdPaymentFrequency;
             var periodicAmount = request.PeriodicAmount;
             var startAt = request.StartAt ?? patientTreatment.StartAt;
-            var idTreatmentStatus = request.IdTreatmentStatus ?? patientTreatment.IdTreatmentStatus;
+            var idPatientTreatmentStatus = request.IdPatientTreatmentStatus ?? patientTreatment.IdPatientTreatmentStatus;
             var notes = request.Notes is null
                 ? patientTreatment.Notes
                 : string.IsNullOrWhiteSpace(request.Notes)
@@ -92,11 +92,11 @@ namespace Infrastructure.Services
                 periodicAmount = null;
             }
 
-            if (request.IdTreatmentStatus.HasValue)
+            if (request.IdPatientTreatmentStatus.HasValue)
             {
-                TreatmentStatusRules.EnsureCanTransition(
-                    patientTreatment.IdTreatmentStatus,
-                    request.IdTreatmentStatus.Value);
+                PatientTreatmentStatusRules.EnsureCanTransition(
+                    patientTreatment.IdPatientTreatmentStatus,
+                    request.IdPatientTreatmentStatus.Value);
             }
 
             if (idPaymentFrequency.HasValue
@@ -107,8 +107,8 @@ namespace Infrastructure.Services
                     "El monto periódico es obligatorio para esta frecuencia de pago.");
             }
 
-            if (TreatmentStatusRules.IsFinal(idTreatmentStatus)
-                && idTreatmentStatus != patientTreatment.IdTreatmentStatus)
+            if (PatientTreatmentStatusRules.IsFinal(idPatientTreatmentStatus)
+                && idPatientTreatmentStatus != patientTreatment.IdPatientTreatmentStatus)
             {
                 patientTreatment.EndAt = DateTime.UtcNow;
             }
@@ -117,7 +117,7 @@ namespace Infrastructure.Services
             patientTreatment.IdPaymentFrequency = idPaymentFrequency;
             patientTreatment.PeriodicAmount = periodicAmount;
             patientTreatment.StartAt = startAt;
-            patientTreatment.IdTreatmentStatus = idTreatmentStatus;
+            patientTreatment.IdPatientTreatmentStatus = idPatientTreatmentStatus;
             patientTreatment.Notes = notes;
             patientTreatment.UpdatedAt = DateTime.UtcNow;
 

@@ -223,7 +223,7 @@ namespace Infrastructure.Services
                 throw new InvalidOperationException("El tratamiento no pertenece a este paciente.");
             }
 
-            TreatmentStatusRules.EnsureCanLinkAppointment(patientTreatment.IdTreatmentStatus);
+            PatientTreatmentStatusRules.EnsureCanLinkAppointment(patientTreatment.IdPatientTreatmentStatus);
         }
 
         private async Task<Professional> ResolveProfessionalAsync(

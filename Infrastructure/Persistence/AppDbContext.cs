@@ -27,7 +27,7 @@ namespace Infrastructure.Persistence
         public DbSet<AppointmentStatus> AppointmentStatuses { get; set; } = null!;
         public DbSet<Professional> Professionals { get; set; } = null!;
         public DbSet<Treatment> Treatments { get; set; } = null!;
-        public DbSet<TreatmentStatus> TreatmentStatuses { get; set; } = null!;
+        public DbSet<PatientTreatmentStatus> PatientTreatmentStatuses { get; set; } = null!;
         public DbSet<PatientTreatment> PatientTreatments { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;

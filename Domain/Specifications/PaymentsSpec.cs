@@ -21,7 +21,7 @@ namespace Domain.Specifications
             AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
             AddInclude(p => p.PatientTreatment!);
             AddInclude($"{nameof(Payment.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
-            AddInclude($"{nameof(Payment.PatientTreatment)}.{nameof(PatientTreatment.TreatmentStatus)}");
+            AddInclude($"{nameof(Payment.PatientTreatment)}.{nameof(PatientTreatment.PatientTreatmentStatus)}");
 
             if (idPatient.GetValueOrDefault() > 0)
             {
