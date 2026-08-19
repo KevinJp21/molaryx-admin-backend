@@ -16,7 +16,6 @@ namespace Presentation.Controllers
     {
         [Authorize(Policy = PermissionCodes.GET_CLINICAL_RECORDS)]
         [HttpGet]
-        [EndpointDescription("Obtiene los registros clínicos de un paciente.")]
         public async Task<ActionResult<ApiResponse<PagedResult<GetClinicalRecordsResponse>>>> GetClinicalRecords(
             [FromQuery] GetClinicalRecordsQuery query,
             CancellationToken cancellationToken)
@@ -31,12 +30,11 @@ namespace Presentation.Controllers
 
         [Authorize(Policy = PermissionCodes.CREATE_CLINICAL_RECORD)]
         [HttpPost]
-        [EndpointDescription("Crea un nuevo registro clínico para un paciente.")]
         public async Task<ActionResult<ApiResponse<bool>>> CreateClinicalRecord([FromBody] CreateClinicalRecordCommand body, CancellationToken cancellationToken)
         {
             return Ok(
                 new ApiResponse<bool>(
-                    "Registro clínico creado exitosamente.",
+                    "Registro clínico creado de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
                 )
             );
