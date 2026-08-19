@@ -2,10 +2,8 @@ using Domain.Models;
 
 namespace Domain.Contracts.IServices
 {
-    public interface ITemplateBuilderService
+    public interface IClinicalHistoryPdfService
     {
-        string SetParametersToTemplate(string template, IDictionary<string, string> templateParameters);
-
         byte[] GenerateClinicalHistoryTemplate(ClinicalHistoryTemplateInformation information);
     }
 }
