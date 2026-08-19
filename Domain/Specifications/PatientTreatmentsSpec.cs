@@ -8,17 +8,18 @@ namespace Domain.Specifications
     {
         public static PatientTreatmentsSpec ForPatient(
             long idTenant,
-            long idPatient,
+            long? idPatient = null,
             short? idTreatmentStatus = null)
         {
             var spec = new PatientTreatmentsSpec
             {
                 Criteria = pt =>
                     pt.IdTenant == idTenant
-                    && pt.IdPatient == idPatient
+                    && (!idPatient.HasValue || pt.IdPatient == idPatient.Value)
                     && (!idTreatmentStatus.HasValue || pt.IdTreatmentStatus == idTreatmentStatus.Value),
                 OrderByDescending = pt => pt.StartAt
             };
+            spec.AddInclude(pt => pt.Patient);
             spec.AddInclude(pt => pt.Treatment);
             spec.AddInclude(pt => pt.TreatmentStatus);
             spec.AddInclude(pt => pt.PaymentFrequency!);

@@ -7,9 +7,12 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
     {
         public GetPatientTreatmentsQueryValidator()
         {
-            RuleFor(x => x.IdPatient)
-                .GreaterThan(0)
-                .WithMessage("El paciente es obligatorio.");
+            When(x => x.IdPatient.HasValue, () =>
+            {
+                RuleFor(x => x.IdPatient)
+                    .GreaterThan(0)
+                    .WithMessage("El paciente no es válido.");
+            });
 
             When(x => x.IdTreatmentStatus.HasValue, () =>
             {
