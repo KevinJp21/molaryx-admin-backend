@@ -35,6 +35,8 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
                 {
                     IdPatientTreatment = patientTreatment.IdPatientTreatment,
                     IdPatient = patientTreatment.IdPatient,
+                    PatientName = $"{patientTreatment.Patient.FirstName}{(!string.IsNullOrEmpty(patientTreatment.Patient.SecondName) ? $" {patientTreatment.Patient.SecondName}" : string.Empty)}",
+                    PatientSurname = $"{patientTreatment.Patient.FirstSurname}{(!string.IsNullOrEmpty(patientTreatment.Patient.SecondSurname) ? $" {patientTreatment.Patient.SecondSurname}" : string.Empty)}",
                     IdTreatment = patientTreatment.IdTreatment,
                     TreatmentName = patientTreatment.Treatment.Name,
                     AgreedPrice = patientTreatment.AgreedPrice,

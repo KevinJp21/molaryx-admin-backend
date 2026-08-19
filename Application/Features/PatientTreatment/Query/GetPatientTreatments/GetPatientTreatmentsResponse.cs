@@ -4,6 +4,8 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
     {
         public long IdPatientTreatment { get; set; }
         public long IdPatient { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public string PatientSurname { get; set; } = string.Empty;
         public long IdTreatment { get; set; }
         public string TreatmentName { get; set; } = string.Empty;
         public decimal? AgreedPrice { get; set; }
