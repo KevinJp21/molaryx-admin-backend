@@ -118,6 +118,7 @@ public static class ServiceRegistration
         services.AddScoped<ITenantResourceService, TenantResourceService>();
         services.AddScoped<IClinicalRecordService, ClinicalRecordService>();
         services.AddScoped<IClinicalHistoryPdfService, ClinicalHistoryPdfService>();
+        services.AddScoped<IPaymentReportService, PaymentReportService>();
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

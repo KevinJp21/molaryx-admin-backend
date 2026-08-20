@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.Payment.Command.CreatePayment;
+using Application.Features.Payment.Query.GetPaymentReport;
 using Application.Features.Payment.Query.GetPayments;
 using Application.Features.Payment.Query.GetPaymentsSummaryByConcept;
 using Domain.Constants;
@@ -27,6 +28,21 @@ namespace Presentation.Controllers
                     await _mediator.Send(query, cancellationToken)
                 )
             );
+        }
+
+        [Authorize(Policy = PermissionCodes.GET_PAYMENTS)]
+        [HttpGet]
+        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+        public async Task<IActionResult> GetPaymentReport(
+            [FromQuery] GetPaymentReportQuery query,
+            CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return File(
+                result.Content,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                result.FileName);
         }
 
         [Authorize(Policy = PermissionCodes.GET_PAYMENTS_SUMMARY_BY_CONCEPT)]
