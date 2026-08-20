@@ -13,9 +13,9 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
         ITenantAccessService _tenantAccessService,
         ITenantResourceService _tenantResourceService,
         IClinicalHistoryPdfService _clinicalHistoryPdfService
-    ) : IRequestHandler<GetClinicalHistoryQuery, ClinicalHistoryFileResult>
+    ) : IRequestHandler<GetClinicalHistoryQuery, (byte[] Content, string FileName)>
     {
-        public async Task<ClinicalHistoryFileResult> Handle(
+        public async Task<(byte[] Content, string FileName)> Handle(
             GetClinicalHistoryQuery request,
             CancellationToken cancellationToken = default)
         {
@@ -60,11 +60,9 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                 request.To,
                 records);
 
-            return new ClinicalHistoryFileResult
-            {
-                Content = _clinicalHistoryPdfService.GenerateClinicalHistoryTemplate(templateInformation),
-                FileName = BuildFileName(patient),
-            };
+            return (
+                _clinicalHistoryPdfService.GenerateClinicalHistoryTemplate(templateInformation),
+                BuildFileName(patient));
         }
 
         private static ClinicalHistoryTemplateInformation BuildTemplateInformation(
@@ -72,8 +70,8 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
             string? tenantIdentificationType,
             Patient patient,
             string patientIdentificationType,
-            DateTime? from,
-            DateTime? to,
+            DateOnly? from,
+            DateOnly? to,
             Domain.Entities.ClinicalRecord[] records)
         {
             return new ClinicalHistoryTemplateInformation
@@ -138,15 +136,17 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
             return $"{first}{(!string.IsNullOrEmpty(second) ? $" {second}" : string.Empty)}";
         }
 
-        private static DateTime? NormalizeFrom(DateTime? from)
+        private static DateTime? NormalizeFrom(DateOnly? from)
         {
-            return from.HasValue ? from.Value.Date : null;
+            return from.HasValue
+                ? from.Value.ToDateTime(TimeOnly.MinValue)
+                : null;
         }
 
-        private static DateTime? NormalizeToInclusive(DateTime? to)
+        private static DateTime? NormalizeToInclusive(DateOnly? to)
         {
             return to.HasValue
-                ? to.Value.Date.AddDays(1).AddTicks(-1)
+                ? to.Value.ToDateTime(TimeOnly.MinValue).AddDays(1).AddTicks(-1)
                 : null;
         }
 

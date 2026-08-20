@@ -17,8 +17,8 @@ namespace Domain.Models
         public string PatientPhoneNumber { get; set; } = string.Empty;
         public DateOnly PatientBirthDate { get; set; }
 
-        public DateTime? From { get; set; }
-        public DateTime? To { get; set; }
+        public DateOnly? From { get; set; }
+        public DateOnly? To { get; set; }
         public DateTime GeneratedAt { get; set; }
 
         public List<ClinicalHistoryRecordInformation> Records { get; set; } = [];

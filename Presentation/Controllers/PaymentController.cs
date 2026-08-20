@@ -37,12 +37,12 @@ namespace Presentation.Controllers
             [FromQuery] GetPaymentReportQuery query,
             CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(query, cancellationToken);
+            var (content, fileName) = await _mediator.Send(query, cancellationToken);
 
             return File(
-                result.Content,
+                content,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                result.FileName);
+                fileName);
         }
 
         [Authorize(Policy = PermissionCodes.GET_PAYMENTS_SUMMARY_BY_CONCEPT)]

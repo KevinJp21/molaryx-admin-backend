@@ -36,9 +36,9 @@ namespace Presentation.Controllers
             [FromQuery] GetClinicalHistoryQuery query,
             CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(query, cancellationToken);
+            var (content, fileName) = await _mediator.Send(query, cancellationToken);
 
-            return File(result.Content, "application/pdf", result.FileName);
+            return File(content, "application/pdf", fileName);
         }
 
         [Authorize(Policy = PermissionCodes.CREATE_CLINICAL_RECORD)]
