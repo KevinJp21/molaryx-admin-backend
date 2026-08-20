@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace Application.Features.Payment.Query.GetPaymentReport
+namespace Application.Features.Payment.Query.GetPaymentsReport
 {
-    public class GetPaymentReportQueryValidator : AbstractValidator<GetPaymentReportQuery>
+    public class GetPaymentsReportQueryValidator : AbstractValidator<GetPaymentsReportQuery>
     {
-        public GetPaymentReportQueryValidator()
+        public GetPaymentsReportQueryValidator()
         {
             When(x => x.From.HasValue, () =>
             {
@@ -25,8 +25,8 @@ namespace Application.Features.Payment.Query.GetPaymentReport
                 .WithMessage("Indique ambas fechas del periodo o ninguna.");
 
             RuleFor(x => x)
-                .Must(x => x.From!.Value < x.To!.Value)
-                .WithMessage("La fecha inicial debe ser anterior a la fecha final.")
+                .Must(x => x.From!.Value <= x.To!.Value)
+                .WithMessage("La fecha inicial no puede ser posterior a la fecha final.")
                 .When(x => x.From.HasValue && x.To.HasValue
                     && x.From != default && x.To != default);
 
