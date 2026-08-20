@@ -1,8 +1,8 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.Payment.Command.CreatePayment;
-using Application.Features.Payment.Query.GetPaymentReport;
 using Application.Features.Payment.Query.GetPayments;
+using Application.Features.Payment.Query.GetPaymentsReport;
 using Application.Features.Payment.Query.GetPaymentsSummaryByConcept;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -33,8 +33,8 @@ namespace Presentation.Controllers
         [Authorize(Policy = PermissionCodes.GET_PAYMENTS)]
         [HttpGet]
         [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
-        public async Task<IActionResult> GetPaymentReport(
-            [FromQuery] GetPaymentReportQuery query,
+        public async Task<IActionResult> GetPaymentsReport(
+            [FromQuery] GetPaymentsReportQuery query,
             CancellationToken cancellationToken)
         {
             var (content, fileName) = await _mediator.Send(query, cancellationToken);

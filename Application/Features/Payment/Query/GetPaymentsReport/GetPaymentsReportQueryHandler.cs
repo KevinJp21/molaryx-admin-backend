@@ -5,27 +5,30 @@ using Domain.Models;
 using Domain.Specifications;
 using Shared.Utils;
 
-namespace Application.Features.Payment.Query.GetPaymentReport
+namespace Application.Features.Payment.Query.GetPaymentsReport
 {
-    public class GetPaymentReportQueryHandler(
+    public class GetPaymentsReportQueryHandler(
         IUnitOfWork _unitOfWork,
         ITenantAccessService _tenantAccessService,
         IPaymentReportService _paymentReportService
-    ) : IRequestHandler<GetPaymentReportQuery, (byte[] Content, string FileName)>
+    ) : IRequestHandler<GetPaymentsReportQuery, (byte[] Content, string FileName)>
     {
         public async Task<(byte[] Content, string FileName)> Handle(
-            GetPaymentReportQuery request,
+            GetPaymentsReportQuery request,
             CancellationToken cancellationToken = default)
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+
+            var paidFrom = NormalizeFrom(request.From);
+            var paidToInclusive = NormalizeToInclusive(request.To);
 
             var spec = new PaymentsSpec(
                 access.IdTenant,
                 request.IdPatient,
                 request.IdAppointment,
                 request.IdPatientTreatment,
-                request.From,
-                request.To);
+                paidFrom,
+                paidToInclusive);
 
             var payments = await _unitOfWork.PaymentRepository.GetAll(spec, cancellationToken)
                 ?? [];
@@ -34,18 +37,28 @@ namespace Application.Features.Payment.Query.GetPaymentReport
             {
                 ConsultoryName = access.Tenant.ConsultoryName,
                 GeneratedAt = DateTimeHelper.ToColombiaTime(DateTime.UtcNow),
-                PeriodFrom = request.From.HasValue
-                    ? DateTimeHelper.ToColombiaTime(request.From.Value)
-                    : null,
-                PeriodTo = request.To.HasValue
-                    ? DateTimeHelper.ToColombiaTime(request.To.Value)
-                    : null,
+                PeriodFrom = request.From,
+                PeriodTo = request.To,
                 Rows = [.. payments.Select(MapRow)],
             };
 
             return (
                 _paymentReportService.GeneratePaymentReport(reportInformation),
                 BuildFileName(access.Tenant.ConsultoryName));
+        }
+
+        private static DateTime? NormalizeFrom(DateOnly? from)
+        {
+            return from.HasValue
+                ? from.Value.ToDateTime(TimeOnly.MinValue)
+                : null;
+        }
+
+        private static DateTime? NormalizeToInclusive(DateOnly? to)
+        {
+            return to.HasValue
+                ? to.Value.ToDateTime(TimeOnly.MinValue).AddDays(1).AddTicks(-1)
+                : null;
         }
 
         private static PaymentReportRowInformation MapRow(Domain.Entities.Payment payment)

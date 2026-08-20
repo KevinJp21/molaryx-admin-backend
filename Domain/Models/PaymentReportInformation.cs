@@ -4,8 +4,8 @@ namespace Domain.Models
     {
         public string ConsultoryName { get; set; } = string.Empty;
         public DateTime GeneratedAt { get; set; }
-        public DateTime? PeriodFrom { get; set; }
-        public DateTime? PeriodTo { get; set; }
+        public DateOnly? PeriodFrom { get; set; }
+        public DateOnly? PeriodTo { get; set; }
         public List<PaymentReportRowInformation> Rows { get; set; } = [];
     }
 
