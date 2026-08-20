@@ -1150,8 +1150,8 @@ namespace Infrastructure.Services
         }
 
         private static string FormatPeriod(
-            DateTime? from,
-            DateTime? to)
+            DateOnly? from,
+            DateOnly? to)
         {
             if (from is null && to is null)
             {

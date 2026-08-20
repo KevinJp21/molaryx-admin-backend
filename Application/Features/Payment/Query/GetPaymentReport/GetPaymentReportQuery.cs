@@ -2,7 +2,7 @@ using Application.Common.Mediator.Interfaces;
 
 namespace Application.Features.Payment.Query.GetPaymentReport
 {
-    public class GetPaymentReportQuery : IRequest<PaymentReportFileResult>
+    public class GetPaymentReportQuery : IRequest<(byte[] Content, string FileName)>
     {
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }

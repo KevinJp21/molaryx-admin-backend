@@ -11,9 +11,9 @@ namespace Application.Features.Payment.Query.GetPaymentReport
         IUnitOfWork _unitOfWork,
         ITenantAccessService _tenantAccessService,
         IPaymentReportService _paymentReportService
-    ) : IRequestHandler<GetPaymentReportQuery, PaymentReportFileResult>
+    ) : IRequestHandler<GetPaymentReportQuery, (byte[] Content, string FileName)>
     {
-        public async Task<PaymentReportFileResult> Handle(
+        public async Task<(byte[] Content, string FileName)> Handle(
             GetPaymentReportQuery request,
             CancellationToken cancellationToken = default)
         {
@@ -43,11 +43,9 @@ namespace Application.Features.Payment.Query.GetPaymentReport
                 Rows = [.. payments.Select(MapRow)],
             };
 
-            return new PaymentReportFileResult
-            {
-                Content = _paymentReportService.GeneratePaymentReport(reportInformation),
-                FileName = BuildFileName(access.Tenant.ConsultoryName),
-            };
+            return (
+                _paymentReportService.GeneratePaymentReport(reportInformation),
+                BuildFileName(access.Tenant.ConsultoryName));
         }
 
         private static PaymentReportRowInformation MapRow(Domain.Entities.Payment payment)
