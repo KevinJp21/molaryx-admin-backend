@@ -9,7 +9,9 @@ namespace Domain.Specifications
             long idTenant,
             long? idPatient = null,
             long? idAppointment = null,
-            long? idPatientTreatment = null)
+            long? idPatientTreatment = null,
+            DateTime? from = null,
+            DateTime? to = null)
         {
             Criteria = p => p.IdTenant == idTenant;
             OrderByDescending = p => p.PaidAt;
@@ -38,6 +40,16 @@ namespace Domain.Specifications
             if (idPatientTreatment.GetValueOrDefault() > 0)
             {
                 Criteria = And(p => p.IdPatientTreatment == idPatientTreatment);
+            }
+
+            if (from.HasValue)
+            {
+                Criteria = And(p => p.PaidAt >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                Criteria = And(p => p.PaidAt <= to.Value);
             }
         }
 
