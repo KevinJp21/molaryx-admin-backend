@@ -76,6 +76,23 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static PaymentsSpec ForDashboardSummary(
+            long idTenant,
+            DateTime from,
+            DateTime to)
+        {
+            var spec = new PaymentsSpec
+            {
+                Criteria = p =>
+                    p.IdTenant == idTenant
+                    && p.PaidAt >= from
+                    && p.PaidAt <= to,
+                OrderByDescending = p => p.PaidAt
+            };
+            spec.AddInclude(p => p.PaymentMethod);
+            return spec;
+        }
+
         private PaymentsSpec()
         {
         }
