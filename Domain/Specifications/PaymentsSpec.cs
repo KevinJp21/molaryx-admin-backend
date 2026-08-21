@@ -76,6 +76,15 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static PaymentsSpec ForDashboardOutstanding(long idTenant)
+        {
+            return new PaymentsSpec
+            {
+                Criteria = p => p.IdTenant == idTenant,
+                OrderByDescending = p => p.PaidAt
+            };
+        }
+
         public static PaymentsSpec ForDashboardSummary(
             long idTenant,
             DateTime from,

@@ -56,6 +56,20 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static PatientTreatmentsSpec ForDashboardOutstanding(long idTenant)
+        {
+            var cancelled = (short)PatientTreatmentStatusEnum.CANCELLED;
+
+            return new PatientTreatmentsSpec
+            {
+                Criteria = pt =>
+                    pt.IdTenant == idTenant
+                    && pt.Patient.DeletedAt == null
+                    && pt.AgreedPrice != null
+                    && pt.IdPatientTreatmentStatus != cancelled
+            };
+        }
+
         public static PatientTreatmentsSpec ActiveByPatientAndTreatment(
             long idTenant,
             long idPatient,
