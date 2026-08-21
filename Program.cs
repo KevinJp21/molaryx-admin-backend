@@ -7,8 +7,6 @@ using Presentation.Behaviors;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
-using Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Infrastructure.Authorization;
 using Infrastructure.BackgroundServices;
@@ -68,14 +66,6 @@ builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, PermissionA
 builder.Services.AddHostedService<ExpiredPromotionBackgroundService>();
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider
-        .GetRequiredService<AppDbContext>();
-
-    await dbContext.Database.MigrateAsync();
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
