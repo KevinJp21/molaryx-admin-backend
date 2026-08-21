@@ -1,0 +1,215 @@
+name: Pipeline
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/molaryx-api
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag belongs to main
+        run: |
+          git fetch origin main
+
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/main"; then
+            echo "ERROR: This tag does not point to a commit in main."
+            exit 1
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    name: Deploy production
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment: production
+
+    concurrency:
+      group: molaryx-production
+      cancel-in-progress: false
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.5
+        env:
+          IMAGE_TAG: ${{ github.ref_name }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: IMAGE_TAG
+          script: |
+            set -e
+
+            cd /opt/molaryx
+
+            echo "========================================"
+            echo "Deploying Molaryx ${IMAGE_TAG}"
+            echo "========================================"
+
+            CURRENT_TAG=$(grep '^IMAGE_TAG=' .env | cut -d '=' -f2-)
+            POSTGRES_USER=$(grep '^POSTGRES_USER=' .env | cut -d '=' -f2-)
+            POSTGRES_DB=$(grep '^POSTGRES_DB=' .env | cut -d '=' -f2-)
+
+            echo "Current version: ${CURRENT_TAG}"
+            echo "New version:     ${IMAGE_TAG}"
+
+            if [ "${CURRENT_TAG}" = "${IMAGE_TAG}" ]; then
+              echo "Already running ${IMAGE_TAG}."
+              exit 0
+            fi
+
+            PREVIOUS_TAG="${CURRENT_TAG}"
+            BACKUP_DIR="/opt/molaryx/backups"
+            BACKUP_FILE="${BACKUP_DIR}/pre-${IMAGE_TAG}-$(date +%Y%m%d%H%M%S).sql"
+
+            mkdir -p "${BACKUP_DIR}"
+
+            echo "Creating database backup..."
+            docker compose exec -T postgres \
+              pg_dump -U "${POSTGRES_USER}" --clean --if-exists "${POSTGRES_DB}" \
+              > "${BACKUP_FILE}"
+
+            echo "${PREVIOUS_TAG}" > "${BACKUP_FILE}.tag"
+
+            echo "Backup saved: ${BACKUP_FILE}"
+            echo "Backup previous tag: ${PREVIOUS_TAG}"
+
+            restore_database() {
+              echo "Restoring database from backup..."
+              docker compose exec -T postgres \
+                psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -v ON_ERROR_STOP=1 \
+                < "${BACKUP_FILE}"
+              echo "Database restored."
+            }
+
+            wait_for_api() {
+              local label="$1"
+              echo "Waiting for API health (${label})..."
+
+              for i in $(seq 1 12); do
+                if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
+                  echo "API is healthy (${label})."
+                  return 0
+                fi
+
+                echo "Health check attempt ${i}/12 failed (${label})."
+
+                if [ "$i" -lt 12 ]; then
+                  sleep 5
+                fi
+              done
+
+              return 1
+            }
+
+            rollback_all() {
+              echo "========================================"
+              echo "Starting full rollback..."
+              echo "Rollback version: ${PREVIOUS_TAG}"
+              echo "========================================"
+
+              if [ -n "${PREVIOUS_TAG}" ]; then
+                sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${PREVIOUS_TAG}/" .env
+                echo "IMAGE_TAG restored:"
+                grep '^IMAGE_TAG=' .env
+
+                docker compose pull api
+                docker compose up -d api
+              else
+                echo "WARNING: No previous IMAGE_TAG available."
+              fi
+
+              restore_database
+
+              if [ -n "${PREVIOUS_TAG}" ]; then
+                if wait_for_api "rollback"; then
+                  echo "Rollback successful. API restored to ${PREVIOUS_TAG}."
+                  docker compose ps
+                  return 0
+                fi
+              fi
+
+              echo "========================================"
+              echo "CRITICAL ERROR"
+              echo "Rollback also failed."
+              echo "Previous version: ${PREVIOUS_TAG}"
+              echo "Backup file: ${BACKUP_FILE}"
+              echo "========================================"
+
+              docker compose ps
+              docker logs molaryx-api --tail 100
+              return 1
+            }
+
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
+
+            echo "IMAGE_TAG updated:"
+            grep '^IMAGE_TAG=' .env
+
+            echo "Pulling ${IMAGE_TAG}..."
+            docker compose pull api
+
+            echo "Applying EF Core migrations..."
+            if ! docker compose run --rm --no-deps api dotnet molaryx-admin.dll --migrate; then
+              echo "ERROR: Migration failed."
+              restore_database
+              if [ -n "${PREVIOUS_TAG}" ]; then
+                sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${PREVIOUS_TAG}/" .env
+              fi
+              exit 1
+            fi
+
+            echo "Starting ${IMAGE_TAG}..."
+            docker compose up -d api
+
+            if wait_for_api "deploy"; then
+              echo "========================================"
+              echo "Deployment successful: ${IMAGE_TAG}"
+              echo "========================================"
+              docker compose ps
+              exit 0
+            fi
+
+            echo "ERROR: API health check failed."
+            rollback_all
+            exit 1

@@ -31,8 +31,12 @@ public static class ServiceRegistration
         var dataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
         services.AddSingleton(dataSource);
 
+        var migrationsAssembly = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name
+            ?? typeof(ServiceRegistration).Assembly.GetName().Name;
+
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(dataSource)
+            options.UseNpgsql(dataSource, npgsql =>
+                npgsql.MigrationsAssembly(migrationsAssembly))
         );
         AddServices(services, configuration);
         AddRepositories(services);

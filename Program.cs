@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Authorization;
 using Infrastructure.Authorization;
 using Infrastructure.BackgroundServices;
 using Infrastructure.Pdf;
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 PdfFontBootstrap.Configure();
@@ -66,6 +69,16 @@ builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, PermissionA
 builder.Services.AddHostedService<ExpiredPromotionBackgroundService>();
 
 var app = builder.Build();
+
+if (args.Contains("--migrate", StringComparer.OrdinalIgnoreCase))
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    Console.WriteLine("Applying EF Core migrations...");
+    await db.Database.MigrateAsync();
+    Console.WriteLine("Migrations applied successfully.");
+    return;
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
