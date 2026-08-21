@@ -84,6 +84,41 @@ namespace Domain.Specifications
             };
         }
 
+        public static AppointmentSpec ForDashboardPeriod(
+            long idTenant,
+            DateTime from,
+            DateTime to)
+        {
+            var spec = new AppointmentSpec
+            {
+                Criteria = a =>
+                    a.IdTenant == idTenant
+                    && a.StartAt >= from
+                    && a.StartAt <= to,
+                OrderBy = a => a.StartAt
+            };
+            spec.AddInclude(a => a.Service);
+            spec.AddInclude(a => a.AppointmentStatus);
+            return spec;
+        }
+
+        public static AppointmentSpec ForDashboardUpcoming(long idTenant, DateTime from)
+        {
+            var spec = new AppointmentSpec
+            {
+                Criteria = a =>
+                    a.IdTenant == idTenant
+                    && a.StartAt >= from,
+                OrderBy = a => a.StartAt
+            };
+            spec.AddInclude(a => a.Patient);
+            spec.AddInclude(a => a.Service);
+            spec.AddInclude(a => a.AppointmentStatus);
+            spec.AddInclude(a => a.Professional);
+            spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
+            return spec;
+        }
+
         private AppointmentSpec()
         {
         }
