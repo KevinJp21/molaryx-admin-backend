@@ -3,6 +3,7 @@ namespace Application.Features.Dashboard.Query.GetPaymentsSummary
     public class GetPaymentsSummaryResponse
     {
         public decimal CurrentMonthRevenue { get; set; }
+        public decimal OutstandingBalance { get; set; }
         public List<RevenueOverTimeItem> RevenueOverTime { get; set; } = [];
         public List<PaymentMethodShare> PaymentMethods { get; set; } = [];
     }

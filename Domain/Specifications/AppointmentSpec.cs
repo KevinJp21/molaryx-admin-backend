@@ -102,6 +102,19 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static AppointmentSpec ForDashboardOutstanding(long idTenant)
+        {
+            var cancelled = (short)AppointmentStatusEnum.CANCELLED;
+
+            return new AppointmentSpec
+            {
+                Criteria = a =>
+                    a.IdTenant == idTenant
+                    && a.Price != null
+                    && a.IdAppointmentStatus != cancelled
+            };
+        }
+
         public static AppointmentSpec ForDashboardUpcoming(long idTenant, DateTime from)
         {
             var spec = new AppointmentSpec

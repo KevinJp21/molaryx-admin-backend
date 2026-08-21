@@ -31,12 +31,68 @@ namespace Application.Features.Dashboard.Query.GetPaymentsSummary
                 .Where(p => p.PaidAt >= currentMonthStart && p.PaidAt <= currentMonthEnd)
                 .ToArray();
 
+            var outstandingBalance = await CalculateOutstandingBalanceAsync(
+                access.IdTenant,
+                cancellationToken);
+
             return new GetPaymentsSummaryResponse
             {
                 CurrentMonthRevenue = currentMonthPayments.Sum(p => p.Amount),
+                OutstandingBalance = outstandingBalance,
                 RevenueOverTime = BuildRevenueOverTime(payments, seriesStart),
                 PaymentMethods = BuildPaymentMethods(currentMonthPayments),
             };
+        }
+
+        private async Task<decimal> CalculateOutstandingBalanceAsync(
+            long idTenant,
+            CancellationToken cancellationToken)
+        {
+            var billedAppointments = await _unitOfWork.AppointmentRepository.GetAll(
+                AppointmentSpec.ForDashboardOutstanding(idTenant),
+                cancellationToken) ?? [];
+
+            var billedTreatments = await _unitOfWork.PatientTreatmentRepository.GetAll(
+                PatientTreatmentsSpec.ForDashboardOutstanding(idTenant),
+                cancellationToken) ?? [];
+
+            var allPayments = await _unitOfWork.PaymentRepository.GetAll(
+                PaymentsSpec.ForDashboardOutstanding(idTenant),
+                cancellationToken) ?? [];
+
+            var paidByAppointment = allPayments
+                .Where(p => p.IdAppointment.GetValueOrDefault() > 0)
+                .GroupBy(p => p.IdAppointment!.Value)
+                .ToDictionary(g => g.Key, g => g.Sum(p => p.Amount));
+
+            var paidByTreatment = allPayments
+                .Where(p => p.IdPatientTreatment.GetValueOrDefault() > 0)
+                .GroupBy(p => p.IdPatientTreatment!.Value)
+                .ToDictionary(g => g.Key, g => g.Sum(p => p.Amount));
+
+            decimal outstanding = 0;
+
+            foreach (var appointment in billedAppointments)
+            {
+                paidByAppointment.TryGetValue(appointment.IdAppointment, out var paid);
+                var remaining = appointment.Price!.Value - paid;
+                if (remaining > 0)
+                {
+                    outstanding += remaining;
+                }
+            }
+
+            foreach (var treatment in billedTreatments)
+            {
+                paidByTreatment.TryGetValue(treatment.IdPatientTreatment, out var paid);
+                var remaining = treatment.AgreedPrice!.Value - paid;
+                if (remaining > 0)
+                {
+                    outstanding += remaining;
+                }
+            }
+
+            return outstanding;
         }
 
         private static List<RevenueOverTimeItem> BuildRevenueOverTime(
