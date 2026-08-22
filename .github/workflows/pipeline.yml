@@ -63,153 +63,258 @@ jobs:
 
     environment: production
 
+    permissions:
+      id-token: write
+      contents: read
+
     concurrency:
       group: molaryx-production
       cancel-in-progress: false
 
     steps:
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.2.5
-        env:
-          IMAGE_TAG: ${{ github.ref_name }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          envs: IMAGE_TAG
-          script: |
-            set -e
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
 
-            cd /opt/molaryx
+      - name: Deploy to EC2 via SSM
+        env:
+          INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+          IMAGE_TAG: ${{ github.ref_name }}
+        run: |
+          set -e
 
-            echo "========================================"
-            echo "Deploying Molaryx ${IMAGE_TAG}"
-            echo "========================================"
+          REMOTE_SCRIPT=$(cat <<REMOTE_SCRIPT
+          set -e
 
-            CURRENT_TAG=$(grep '^IMAGE_TAG=' .env | cut -d '=' -f2-)
-            POSTGRES_USER=$(grep '^POSTGRES_USER=' .env | cut -d '=' -f2-)
-            POSTGRES_DB=$(grep '^POSTGRES_DB=' .env | cut -d '=' -f2-)
+          cd /opt/molaryx
 
-            echo "Current version: ${CURRENT_TAG}"
-            echo "New version:     ${IMAGE_TAG}"
+          echo "========================================"
+          echo "Deploying Molaryx ${IMAGE_TAG}"
+          echo "========================================"
 
-            if [ "${CURRENT_TAG}" = "${IMAGE_TAG}" ]; then
-              echo "Already running ${IMAGE_TAG}."
-              exit 0
+          CURRENT_TAG=\$(grep '^IMAGE_TAG=' .env | cut -d '=' -f2-)
+          PREVIOUS_TAG="\${CURRENT_TAG}"
+
+          echo "Current version: \${CURRENT_TAG}"
+          echo "New version:     ${IMAGE_TAG}"
+
+          if [ "\${CURRENT_TAG}" = "${IMAGE_TAG}" ]; then
+            echo "Already running ${IMAGE_TAG}."
+            exit 0
+          fi
+
+          BACKUP_DIR="/opt/molaryx/backups"
+          BACKUP_FILE="\${BACKUP_DIR}/pre-${IMAGE_TAG}-\$(date +%Y%m%d%H%M%S).sql"
+
+          POSTGRES_USER=\$(grep '^POSTGRES_USER=' .env | cut -d '=' -f2-)
+          POSTGRES_DB=\$(grep '^POSTGRES_DB=' .env | cut -d '=' -f2-)
+
+          mkdir -p "\${BACKUP_DIR}"
+
+          echo "========================================"
+          echo "Creating database backup..."
+          echo "========================================"
+
+          docker compose exec -T postgres \
+            pg_dump \
+            -U "\${POSTGRES_USER}" \
+            --clean \
+            --if-exists \
+            "\${POSTGRES_DB}" \
+            > "\${BACKUP_FILE}"
+
+          echo "\${PREVIOUS_TAG}" > "\${BACKUP_FILE}.tag"
+
+          echo "Backup saved: \${BACKUP_FILE}"
+
+          echo "========================================"
+          echo "Updating IMAGE_TAG..."
+          echo "========================================"
+
+          sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
+
+          grep '^IMAGE_TAG=' .env
+
+          echo "========================================"
+          echo "Authenticating with GHCR..."
+          echo "========================================"
+
+          GHCR_TOKEN=\$(aws secretsmanager get-secret-value \
+            --secret-id "molaryx/ghcr-read-token" \
+            --query "SecretString" \
+            --output text)
+
+          printf "%s" "\${GHCR_TOKEN}" | \
+            docker login ghcr.io \
+            --username "KevinJp21" \
+            --password-stdin
+
+          unset GHCR_TOKEN
+
+          echo "GHCR authentication successful."
+
+          echo "========================================"
+          echo "Pulling ${IMAGE_TAG}..."
+          echo "========================================"
+
+          docker compose pull api
+
+          echo "========================================"
+          echo "Applying EF Core migrations..."
+          echo "========================================"
+
+          if ! docker compose run --rm --no-deps api \
+            dotnet molaryx-admin.dll --migrate; then
+
+            echo "ERROR: Migration failed."
+
+            echo "Restoring database..."
+
+            docker compose exec -T postgres \
+              psql \
+              -U "\${POSTGRES_USER}" \
+              -d "\${POSTGRES_DB}" \
+              -v ON_ERROR_STOP=1 \
+              < "\${BACKUP_FILE}"
+
+            if [ -n "\${PREVIOUS_TAG}" ]; then
+              sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
             fi
 
-            PREVIOUS_TAG="${CURRENT_TAG}"
-            BACKUP_DIR="/opt/molaryx/backups"
-            BACKUP_FILE="${BACKUP_DIR}/pre-${IMAGE_TAG}-$(date +%Y%m%d%H%M%S).sql"
+            echo "Database restored."
 
-            mkdir -p "${BACKUP_DIR}"
+            exit 1
+          fi
 
-            echo "Creating database backup..."
-            docker compose exec -T postgres \
-              pg_dump -U "${POSTGRES_USER}" --clean --if-exists "${POSTGRES_DB}" \
-              > "${BACKUP_FILE}"
+          echo "========================================"
+          echo "Starting API..."
+          echo "========================================"
 
-            echo "${PREVIOUS_TAG}" > "${BACKUP_FILE}.tag"
+          docker compose up -d api
 
-            echo "Backup saved: ${BACKUP_FILE}"
-            echo "Backup previous tag: ${PREVIOUS_TAG}"
+          echo "========================================"
+          echo "Waiting for API health..."
+          echo "========================================"
 
-            restore_database() {
-              echo "Restoring database from backup..."
-              docker compose exec -T postgres \
-                psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -v ON_ERROR_STOP=1 \
-                < "${BACKUP_FILE}"
-              echo "Database restored."
-            }
+          API_HEALTHY=false
 
-            wait_for_api() {
-              local label="$1"
-              echo "Waiting for API health (${label})..."
+          for i in \$(seq 1 12); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
+              echo "API is healthy."
+              API_HEALTHY=true
+              break
+            fi
 
-              for i in $(seq 1 12); do
-                if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
-                  echo "API is healthy (${label})."
-                  return 0
-                fi
+            echo "Health check attempt \${i}/12 failed."
 
-                echo "Health check attempt ${i}/12 failed (${label})."
+            if [ "\${i}" -lt 12 ]; then
+              sleep 5
+            fi
+          done
 
-                if [ "$i" -lt 12 ]; then
-                  sleep 5
-                fi
-              done
+          if [ "\${API_HEALTHY}" = "true" ]; then
+            echo "========================================"
+            echo "Deployment successful: ${IMAGE_TAG}"
+            echo "========================================"
 
-              return 1
-            }
+            docker compose ps
+            exit 0
+          fi
 
-            rollback_all() {
-              echo "========================================"
-              echo "Starting full rollback..."
-              echo "Rollback version: ${PREVIOUS_TAG}"
-              echo "========================================"
+          echo "========================================"
+          echo "ERROR: API health check failed."
+          echo "========================================"
 
-              if [ -n "${PREVIOUS_TAG}" ]; then
-                sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${PREVIOUS_TAG}/" .env
-                echo "IMAGE_TAG restored:"
-                grep '^IMAGE_TAG=' .env
+          docker logs molaryx-api --tail 100
 
-                docker compose pull api
-                docker compose up -d api
-              else
-                echo "WARNING: No previous IMAGE_TAG available."
-              fi
+          echo "========================================"
+          echo "Starting rollback..."
+          echo "========================================"
 
-              restore_database
+          if [ -n "\${PREVIOUS_TAG}" ]; then
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
 
-              if [ -n "${PREVIOUS_TAG}" ]; then
-                if wait_for_api "rollback"; then
-                  echo "Rollback successful. API restored to ${PREVIOUS_TAG}."
-                  docker compose ps
-                  return 0
-                fi
-              fi
+            echo "Restoring API version: \${PREVIOUS_TAG}"
 
-              echo "========================================"
-              echo "CRITICAL ERROR"
-              echo "Rollback also failed."
-              echo "Previous version: ${PREVIOUS_TAG}"
-              echo "Backup file: ${BACKUP_FILE}"
-              echo "========================================"
+            docker compose pull api
+            docker compose up -d api
+          fi
+
+          echo "Restoring database..."
+
+          docker compose exec -T postgres \
+            psql \
+            -U "\${POSTGRES_USER}" \
+            -d "\${POSTGRES_DB}" \
+            -v ON_ERROR_STOP=1 \
+            < "\${BACKUP_FILE}"
+
+          echo "Database restored."
+
+          echo "Waiting for rollback health..."
+
+          for i in \$(seq 1 12); do
+            if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
+              echo "Rollback successful."
 
               docker compose ps
-              docker logs molaryx-api --tail 100
-              return 1
-            }
-
-            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
-
-            echo "IMAGE_TAG updated:"
-            grep '^IMAGE_TAG=' .env
-
-            echo "Pulling ${IMAGE_TAG}..."
-            docker compose pull api
-
-            echo "Applying EF Core migrations..."
-            if ! docker compose run --rm --no-deps api dotnet molaryx-admin.dll --migrate; then
-              echo "ERROR: Migration failed."
-              restore_database
-              if [ -n "${PREVIOUS_TAG}" ]; then
-                sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${PREVIOUS_TAG}/" .env
-              fi
               exit 1
             fi
 
-            echo "Starting ${IMAGE_TAG}..."
-            docker compose up -d api
+            echo "Rollback health check attempt \${i}/12 failed."
 
-            if wait_for_api "deploy"; then
-              echo "========================================"
-              echo "Deployment successful: ${IMAGE_TAG}"
-              echo "========================================"
-              docker compose ps
-              exit 0
+            if [ "\${i}" -lt 12 ]; then
+              sleep 5
             fi
+          done
 
-            echo "ERROR: API health check failed."
-            rollback_all
+          echo "========================================"
+          echo "CRITICAL ERROR"
+          echo "Deployment failed."
+          echo "Rollback also failed."
+          echo "Backup: \${BACKUP_FILE}"
+          echo "Previous version: \${PREVIOUS_TAG}"
+          echo "========================================"
+
+          docker compose ps
+          docker logs molaryx-api --tail 100
+
+          exit 1
+
+          REMOTE_SCRIPT
+          )
+
+          PARAMETERS=$(jq -nc \
+            --arg script "$REMOTE_SCRIPT" \
+            '{commands: [$script]}')
+
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${INSTANCE_ID}" \
+            --document-name "AWS-RunShellScript" \
+            --parameters "$PARAMETERS" \
+            --query "Command.CommandId" \
+            --output text)
+
+          echo "SSM Command ID: ${COMMAND_ID}"
+
+          aws ssm wait command-executed \
+            --command-id "${COMMAND_ID}" \
+            --instance-id "${INSTANCE_ID}" \
+            || true
+
+          RESULT=$(aws ssm get-command-invocation \
+            --command-id "${COMMAND_ID}" \
+            --instance-id "${INSTANCE_ID}" \
+            --query '{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}' \
+            --output json)
+
+          echo "$RESULT"
+
+          STATUS=$(echo "$RESULT" | jq -r '.Status')
+
+          if [ "$STATUS" != "Success" ]; then
+            echo "ERROR: Remote deployment failed."
             exit 1
+          fi
