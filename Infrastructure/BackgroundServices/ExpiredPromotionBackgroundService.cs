@@ -7,45 +7,50 @@ namespace Infrastructure.BackgroundServices
         ILogger<ExpiredPromotionBackgroundService> logger
     ) : BackgroundService
     {
+        private static readonly TimeSpan CheckInterval = TimeSpan.FromHours(12);
+
         private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
         private readonly ILogger<ExpiredPromotionBackgroundService> _logger = logger;
 
         protected override async Task ExecuteAsync(
             CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            using var timer = new PeriodicTimer(CheckInterval);
+
+            try
             {
-                try
+                while (await timer.WaitForNextTickAsync(stoppingToken))
                 {
-                    await using var scope =
-                        _scopeFactory.CreateAsyncScope();
+                    try
+                    {
+                        await using var scope =
+                            _scopeFactory.CreateAsyncScope();
 
-                    var subscriptionService =
-                        scope.ServiceProvider
-                            .GetRequiredService<ITenantSubscriptionService>();
+                        var subscriptionService =
+                            scope.ServiceProvider
+                                .GetRequiredService<ITenantSubscriptionService>();
 
-                    var updatedCount =
-                        await subscriptionService.UpdateExpiredPromotionsAsync(
-                            stoppingToken
+                        var updatedCount =
+                            await subscriptionService.UpdateExpiredPromotionsAsync(
+                                stoppingToken
+                            );
+
+                        _logger.LogInformation(
+                            "Se actualizaron {UpdatedCount} suscripciones con promociones expiradas.",
+                            updatedCount
                         );
-
-                    _logger.LogInformation(
-                        "Se actualizaron {UpdatedCount} suscripciones con promociones expiradas.",
-                        updatedCount
-                    );
+                    }
+                    catch (Exception ex) when (ex is not OperationCanceledException)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Error al actualizar promociones expiradas."
+                        );
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "Error al actualizar promociones expiradas."
-                    );
-                }
-
-                await Task.Delay(
-                    TimeSpan.FromDays(1),
-                    stoppingToken
-                );
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
             }
         }
     }
