@@ -1,5 +1,6 @@
 using Application.Common.Regex;
 using Application.Common.Validation;
+using Domain.Enums;
 using FluentValidation;
 
 namespace Application.Features.Users.Command.CreateMember
@@ -9,8 +10,10 @@ namespace Application.Features.Users.Command.CreateMember
         public CreateMemberValidator()
         {
             RuleFor(x => x.IdUserRole)
-                .GreaterThan((short)0)
-                .WithMessage("El rol de usuario es obligatorio.");
+                .Must(role => role is
+                    (short)UserRoleEnum.PROFESSIONAL or
+                    (short)UserRoleEnum.ASSISTANT)
+                .WithMessage("El rol de usuario solo puede ser profesional o asistente.");
 
             RuleFor(x => x.Username)
                 .NotEmpty()

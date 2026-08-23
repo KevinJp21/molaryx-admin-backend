@@ -1,6 +1,7 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.Users.Command.CreateMember;
+using Application.Features.Users.Command.UpdateMember;
 using Application.Features.Users.Query.GetTeam;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +38,20 @@ namespace Presentation.Controllers
             return Ok(
                 new ApiResponse<bool>(
                     "Miembro registrado de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.UPDATE_MEMBER)]
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateMember(
+            [FromBody] UpdateMemberCommand body,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Miembro actualizado de manera exitosa.",
                     await _mediator.Send(body, cancellationToken)
                 )
             );

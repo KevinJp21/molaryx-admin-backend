@@ -1,9 +1,11 @@
 using Application.Common.Interfaces;
 using Application.Features.Users.Command.CreateMember;
+using Application.Features.Users.Command.UpdateMember;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Specifications;
 
 namespace Infrastructure.Services
@@ -264,6 +266,98 @@ namespace Infrastructure.Services
 
                 throw;
             }
+        }
+
+        public async Task<bool> UpdateMemberAsync(
+            UpdateMemberCommand command,
+            CancellationToken cancellationToken
+        )
+        {
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(
+                    command.IdUser,
+                    cancellationToken)
+                ?? throw new NotFoundException("El miembro no existe.");
+
+            if (user.IdTenant != access.IdTenant || user.DeletedAt is not null)
+            {
+                throw new InvalidOperationException("El miembro no pertenece a este consultorio.");
+            }
+
+            if (user.IdUserRole is not
+                ((short)UserRoleEnum.PROFESSIONAL or (short)UserRoleEnum.ASSISTANT))
+            {
+                throw new InvalidOperationException("El miembro no es válido.");
+            }
+
+            if (command.Username is not null)
+            {
+                var username = command.Username.Trim();
+                var usernameExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByUsername(username),
+                    cancellationToken);
+
+                if (usernameExists && !string.Equals(username, user.Username, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException("El nombre de usuario ya se encuentra registrado.");
+                }
+            }
+
+            if (command.IdentificationNumber is not null)
+            {
+                var identificationNumberExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByIdentificationNumber(command.IdentificationNumber),
+                    cancellationToken);
+
+                if (identificationNumberExists
+                    && command.IdentificationNumber != user.IdentificationNumber)
+                {
+                    throw new InvalidOperationException("El número de identificación ya se encuentra registrado.");
+                }
+            }
+
+            if (command.PhoneNumber is not null)
+            {
+                var phoneNumberExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByPhoneNumber(command.PhoneNumber),
+                    cancellationToken);
+
+                if (phoneNumberExists && command.PhoneNumber != user.PhoneNumber)
+                {
+                    throw new InvalidOperationException("El número de teléfono ya se encuentra registrado.");
+                }
+            }
+
+            if (command.Email is not null)
+            {
+                var email = command.Email.Trim().ToLowerInvariant();
+                var emailExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByEmail(email),
+                    cancellationToken);
+
+                if (emailExists && !string.Equals(email, user.Email, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException("El correo electrónico ya se encuentra registrado.");
+                }
+            }
+
+            user.Username = command.Username?.Trim() ?? user.Username;
+            user.FirstName = command.FirstName?.Trim() ?? user.FirstName;
+            user.SecondName = command.SecondName?.Trim() ?? user.SecondName;
+            user.FirstSurname = command.FirstSurname?.Trim() ?? user.FirstSurname;
+            user.SecondSurname = command.SecondSurname?.Trim() ?? user.SecondSurname;
+            user.IdIdentificationType = command.IdIdentificationType ?? user.IdIdentificationType;
+            user.IdentificationNumber = command.IdentificationNumber ?? user.IdentificationNumber;
+            user.BirthDate = command.BirthDate ?? user.BirthDate;
+            user.PhoneNumber = command.PhoneNumber ?? user.PhoneNumber;
+            user.Email = command.Email?.Trim().ToLowerInvariant() ?? user.Email;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+            await _unitOfWork.UserRepository.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

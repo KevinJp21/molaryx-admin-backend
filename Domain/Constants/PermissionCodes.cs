@@ -28,6 +28,7 @@ namespace Domain.Constants
         // Users / Team
         public const string GET_TEAM = "GET_TEAM";
         public const string CREATE_MEMBER = "CREATE_MEMBER";
+        public const string UPDATE_MEMBER = "UPDATE_MEMBER";
 
         // Treatments
         public const string GET_TREATMENTS = "GET_TREATMENTS";

@@ -22,6 +22,13 @@ public static class UserPermissionSeed
             IdModule = (short)ModuleEnum.USERS,
             Code = PermissionCodes.CREATE_MEMBER,
             CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.UPDATE_MEMBER,
+            IdModule = (short)ModuleEnum.USERS,
+            Code = PermissionCodes.UPDATE_MEMBER,
+            CreatedAt = SeedConstants.SeedDate
         }
     ];
 }
