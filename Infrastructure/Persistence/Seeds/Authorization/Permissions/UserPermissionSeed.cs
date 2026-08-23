@@ -11,9 +11,9 @@ public static class UserPermissionSeed
     [
         new Permission
         {
-            IdPermission = (short)PermissionEnum.GET_PROFESSIONALS,
+            IdPermission = (short)PermissionEnum.GET_TEAM,
             IdModule = (short)ModuleEnum.USERS,
-            Code = PermissionCodes.GET_PROFESSIONALS,
+            Code = PermissionCodes.GET_TEAM,
             CreatedAt = SeedConstants.SeedDate
         }
     ];

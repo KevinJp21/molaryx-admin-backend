@@ -4,21 +4,22 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Specifications;
 
-namespace Application.Features.Users.Query.GetProfessionals
+namespace Application.Features.Users.Query.GetTeam
 {
-    public class GetProfessionalsQueryHandler(
+    public class GetTeamQueryHandler(
         IUnitOfWork _unitOfWork,
         ITenantAccessService _tenantAccessService
-    ) : IRequestHandler<GetProfessionalsQuery, PagedResult<GetProfessionalsResponse>>
+    ) : IRequestHandler<GetTeamQuery, PagedResult<GetTeamResponse>>
     {
-        public async Task<PagedResult<GetProfessionalsResponse>> Handle(
-            GetProfessionalsQuery request,
+        public async Task<PagedResult<GetTeamResponse>> Handle(
+            GetTeamQuery request,
             CancellationToken cancellationToken = default)
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var spec = UserSpec.ForProfessionals(
+            var spec = UserSpec.ForTeam(
                 access.IdTenant,
+                request.IdUserRoles,
                 request.IdUserStatus,
                 request.Search);
 
@@ -29,12 +30,13 @@ namespace Application.Features.Users.Query.GetProfessionals
                 cancellationToken
             );
 
-            return new PagedResult<GetProfessionalsResponse>
+            return new PagedResult<GetTeamResponse>
             {
-                Items = [.. users.Select(user => new GetProfessionalsResponse
+                Items = [.. users.Select(user => new GetTeamResponse
                 {
                     IdProfessional = user.Professional?.IdProfessional,
                     IdUser = user.IdUser,
+                    IdUserRole = user.IdUserRole,
                     IdUserStatus = user.IdUserStatus,
                     StatusName = user.UserStatus.Name,
                     Username = user.Username,

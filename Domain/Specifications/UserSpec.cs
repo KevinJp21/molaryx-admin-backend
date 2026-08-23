@@ -1,6 +1,5 @@
 using Domain.Common;
 using Domain.Entities;
-using Domain.Enums;
 
 namespace Domain.Specifications
 {
@@ -12,21 +11,26 @@ namespace Domain.Specifications
             AddProfileIncludes();
         }
 
-        public static UserSpec ForProfessionals(
+        public static UserSpec ForTeam(
             long idTenant,
+            IReadOnlyCollection<short>? idUserRoles = null,
             short? idUserStatus = null,
             string? search = null)
         {
             var spec = new UserSpec
             {
-                Criteria = u =>
-                    u.IdTenant == idTenant &&
-                    (u.IdUserRole == (short)UserRoleEnum.OWNER || u.Professional != null),
+                Criteria = u => u.IdTenant == idTenant,
                 OrderBy = u => u.FirstName
             };
             spec.AddInclude(u => u.UserStatus);
             spec.AddInclude(u => u.IdentificationType);
             spec.AddInclude(u => u.Professional!);
+
+            if (idUserRoles is { Count: > 0 })
+            {
+                var roles = idUserRoles.ToArray();
+                spec.Criteria = spec.And(u => roles.Contains(u.IdUserRole));
+            }
 
             if (idUserStatus != null)
             {

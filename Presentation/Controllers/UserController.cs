@@ -1,6 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
-using Application.Features.Users.Query.GetProfessionals;
+using Application.Features.Users.Query.GetTeam;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +13,15 @@ namespace Presentation.Controllers
     [ApiController]
     public class UserController(IMediator _mediator) : ControllerBase
     {
-        [Authorize(Policy = PermissionCodes.GET_PROFESSIONALS)]
+        [Authorize(Policy = PermissionCodes.GET_TEAM)]
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PagedResult<GetProfessionalsResponse>>>> GetProfessionals(
-            [FromQuery] GetProfessionalsQuery query,
+        public async Task<ActionResult<ApiResponse<PagedResult<GetTeamResponse>>>> GetTeam(
+            [FromQuery] GetTeamQuery query,
             CancellationToken cancellationToken)
         {
             return Ok(
-                new ApiResponse<PagedResult<GetProfessionalsResponse>>(
-                    "Profesionales obtenidos de manera exitosa.",
+                new ApiResponse<PagedResult<GetTeamResponse>>(
+                    "Equipo obtenido de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
                 )
             );

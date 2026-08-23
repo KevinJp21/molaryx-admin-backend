@@ -1,9 +1,10 @@
-namespace Application.Features.Users.Query.GetProfessionals
+namespace Application.Features.Users.Query.GetTeam
 {
-    public class GetProfessionalsResponse
+    public class GetTeamResponse
     {
         public long? IdProfessional { get; set; }
         public long IdUser { get; set; }
+        public short IdUserRole { get; set; }
         public short IdUserStatus { get; set; }
         public string StatusName { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
