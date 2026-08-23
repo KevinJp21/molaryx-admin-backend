@@ -1,11 +1,11 @@
 using Application.Common.Regex;
 using FluentValidation;
 
-namespace Application.Features.Service.Command.CreateService
+namespace Application.Features.Procedure.Command.CreateProcedure
 {
-    public class CreateServiceCommandValidator : AbstractValidator<CreateServiceCommand>
+    public class CreateProcedureCommandValidator : AbstractValidator<CreateProcedureCommand>
     {
-        public CreateServiceCommandValidator()
+        public CreateProcedureCommandValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
@@ -27,6 +27,15 @@ namespace Application.Features.Service.Command.CreateService
                     ApplyConditionTo.CurrentValidator
                 )
                 .WithMessage("Ingrese una descripción válida.");
+
+            When(x => x.ReferencePrice.HasValue, () =>
+            {
+                RuleFor(x => x.ReferencePrice)
+                    .GreaterThan(0)
+                    .WithMessage("El precio de referencia debe ser mayor a 0.")
+                    .Must(price => price == Math.Round(price!.Value, 2))
+                    .WithMessage("El precio de referencia solo admite hasta 2 decimales.");
+            });
         }
     }
 }

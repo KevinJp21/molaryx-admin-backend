@@ -22,8 +22,10 @@ namespace Infrastructure.Persistence
         public DbSet<Promotion> Promotions { get; set; } = null!;
         public DbSet<PromotionPlan> PromotionPlans { get; set; } = null!;
         public DbSet<Patient> Patients { get; set; } = null!;
-        public DbSet<Service> Services { get; set; } = null!;
+        public DbSet<Procedure> Procedures { get; set; } = null!;
         public DbSet<Appointment> Appointments { get; set; } = null!;
+        public DbSet<AppointmentProcedure> AppointmentProcedures { get; set; } = null!;
+
         public DbSet<AppointmentStatus> AppointmentStatuses { get; set; } = null!;
         public DbSet<Professional> Professionals { get; set; } = null!;
         public DbSet<Treatment> Treatments { get; set; } = null!;

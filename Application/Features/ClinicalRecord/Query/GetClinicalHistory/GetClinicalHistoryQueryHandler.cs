@@ -112,7 +112,12 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                     record.CreatedByUser.FirstSurname,
                     record.CreatedByUser.SecondSurname),
                 Reference = MapReference(record),
-                ServiceName = record.Service?.Name ?? record.Appointment?.Service?.Name
+                ProcedureName = record.Procedure?.Name
+                    ?? (record.Appointment is null
+                        ? null
+                        : string.Join(
+                            ", ",
+                            record.Appointment.AppointmentProcedures.Select(p => p.Procedure.Name)))
             };
         }
 

@@ -43,8 +43,8 @@ namespace Domain.Specifications
                     (!idProfessional.HasValue || a.IdProfessional == idProfessional.Value),
                 OrderBy = a => a.StartAt
             };
+            IncludeProcedures(spec);
             spec.AddInclude(a => a.Patient);
-            spec.AddInclude(a => a.Service);
             spec.AddInclude(a => a.AppointmentStatus);
             spec.AddInclude(a => a.Professional);
             spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
@@ -67,8 +67,8 @@ namespace Domain.Specifications
                     && (!idAppointmentStatus.HasValue || a.IdAppointmentStatus == idAppointmentStatus),
                 OrderByDescending = a => a.StartAt
             };
+            IncludeProcedures(spec);
             spec.AddInclude(a => a.Patient);
-            spec.AddInclude(a => a.Service);
             spec.AddInclude(a => a.AppointmentStatus);
             spec.AddInclude(a => a.Professional);
             spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
@@ -84,6 +84,16 @@ namespace Domain.Specifications
             };
         }
 
+        public static AppointmentSpec ByIdWithProcedures(long idAppointment)
+        {
+            var spec = new AppointmentSpec
+            {
+                Criteria = a => a.IdAppointment == idAppointment
+            };
+            IncludeProcedures(spec);
+            return spec;
+        }
+
         public static AppointmentSpec ForDashboardPeriod(
             long idTenant,
             DateTime from,
@@ -97,7 +107,7 @@ namespace Domain.Specifications
                     && a.StartAt <= to,
                 OrderBy = a => a.StartAt
             };
-            spec.AddInclude(a => a.Service);
+            IncludeProcedures(spec);
             spec.AddInclude(a => a.AppointmentStatus);
             return spec;
         }
@@ -106,13 +116,15 @@ namespace Domain.Specifications
         {
             var cancelled = (short)AppointmentStatusEnum.CANCELLED;
 
-            return new AppointmentSpec
+            var spec = new AppointmentSpec
             {
                 Criteria = a =>
                     a.IdTenant == idTenant
-                    && a.Price != null
                     && a.IdAppointmentStatus != cancelled
+                    && a.AppointmentProcedures.Sum(p => p.Price) > 0
             };
+            IncludeProcedures(spec);
+            return spec;
         }
 
         public static AppointmentSpec ForDashboardUpcoming(long idTenant, DateTime from)
@@ -124,12 +136,18 @@ namespace Domain.Specifications
                     && a.StartAt >= from,
                 OrderBy = a => a.StartAt
             };
+            IncludeProcedures(spec);
             spec.AddInclude(a => a.Patient);
-            spec.AddInclude(a => a.Service);
             spec.AddInclude(a => a.AppointmentStatus);
             spec.AddInclude(a => a.Professional);
             spec.AddInclude($"{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
             return spec;
+        }
+
+        private static void IncludeProcedures(AppointmentSpec spec)
+        {
+            spec.AddInclude(a => a.AppointmentProcedures);
+            spec.AddInclude($"{nameof(Appointment.AppointmentProcedures)}.{nameof(AppointmentProcedure.Procedure)}");
         }
 
         private AppointmentSpec()

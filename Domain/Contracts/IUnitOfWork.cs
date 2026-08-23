@@ -30,7 +30,8 @@ namespace Domain.Contracts
 
         public IPatientsRepository PatientsRepository { get; }
 
-        public IServiceRepository ServiceRepository { get; }
+        public IProcedureRepository ProcedureRepository { get; }
+
 
         public IAppointmentRepository AppointmentRepository { get; }
 

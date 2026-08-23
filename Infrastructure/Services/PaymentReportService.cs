@@ -216,7 +216,7 @@ namespace Infrastructure.Services
                 "IDENTIFICACIÓN",
                 "CONCEPTO",
                 "TRATAMIENTO",
-                "SERVICIO",
+                "PROCEDIMIENTO",
                 "MÉTODO",
                 "MONTO",
                 "NOTAS"
@@ -262,7 +262,7 @@ namespace Infrastructure.Services
                     worksheet.Cell(currentRow, 4).Value = row.IdentificationNumber;
                     worksheet.Cell(currentRow, 5).Value = row.Concept;
                     worksheet.Cell(currentRow, 6).Value = row.TreatmentName;
-                    worksheet.Cell(currentRow, 7).Value = row.ServiceName;
+                    worksheet.Cell(currentRow, 7).Value = row.ProcedureNames;
                     worksheet.Cell(currentRow, 8).Value = row.PaymentMethod;
                     worksheet.Cell(currentRow, 9).Value = row.Amount;
                     worksheet.Cell(currentRow, 9).Style.NumberFormat.Format = AmountFormat;

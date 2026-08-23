@@ -23,7 +23,7 @@ namespace Infrastructure.Persistence.Seeds.Authorization
                 .HasData(PatientsPermissionSeed.Data);
 
             modelBuilder.Entity<Permission>()
-                .HasData(ServicePermissionSeed.Data);
+                .HasData(ProcedurePermissionSeed.Data);
 
             modelBuilder.Entity<Permission>()
                 .HasData(AppointmentPermissionSeed.Data);

@@ -27,10 +27,11 @@ namespace Domain.Specifications
 
             AddInclude(c => c.Patient);
             AddInclude(c => c.Patient.IdentificationType);
-            AddInclude(c => c.Service!);
+            AddInclude(c => c.Procedure!);
             AddInclude(c => c.CreatedByUser);
             AddInclude(c => c.Appointment!);
-            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Service)}");
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.AppointmentProcedures)}");
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.AppointmentProcedures)}.{nameof(AppointmentProcedure.Procedure)}");
             AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.AppointmentStatus)}");
             AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Professional)}");
             AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Professional)}.{nameof(Professional.User)}");

@@ -3,9 +3,9 @@ using Domain.Entities;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class ServiceRepository(
+    public class ProcedureRepository(
         AppDbContext context
-    ) : BaseRepository<Service, long>(context), IServiceRepository
+    ) : BaseRepository<Procedure, long>(context), IProcedureRepository
     {
     }
 }

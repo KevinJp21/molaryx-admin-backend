@@ -1087,9 +1087,9 @@ namespace Infrastructure.Services
         private static string GetRecordTitle(
             ClinicalHistoryRecordInformation record)
         {
-            if (!string.IsNullOrWhiteSpace(record.ServiceName))
+            if (!string.IsNullOrWhiteSpace(record.ProcedureName))
             {
-                return record.ServiceName.Trim();
+                return record.ProcedureName.Trim();
             }
 
             if (!string.IsNullOrWhiteSpace(record.Reference))

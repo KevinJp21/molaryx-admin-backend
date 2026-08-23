@@ -1,5 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
+using Application.Features.Appointment.Query.GetAppointments;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Specifications;
@@ -42,11 +43,16 @@ namespace Application.Features.Appointment.Query.GetAppointmentsList
                     IdUser = appointment.Professional.IdUser,
                     ProfessionalName = $"{appointment.Professional.User.FirstName}{(!string.IsNullOrEmpty(appointment.Professional.User.SecondName) ? $" {appointment.Professional.User.SecondName}" : string.Empty)}",
                     ProfessionalSurname = $"{appointment.Professional.User.FirstSurname}{(!string.IsNullOrEmpty(appointment.Professional.User.SecondSurname) ? $" {appointment.Professional.User.SecondSurname}" : string.Empty)}",
-                    IdService = appointment.IdService,
-                    ServiceName = appointment.Service.Name,
+                    Procedures = [.. appointment.AppointmentProcedures.Select(item => new AppointmentProcedureResponse
+                    {
+                        IdProcedure = item.IdProcedure,
+                        Name = item.Procedure.Name,
+                        Price = item.Price,
+                        Notes = item.Notes
+                    })],
+                    TotalPrice = appointment.AppointmentProcedures.Sum(p => p.Price),
                     IdPatientTreatment = appointment.IdPatientTreatment,
                     PatientTreatmentName = appointment.PatientTreatment?.Treatment?.Name,
-                    Price = appointment.Price,
                     IdAppointmentStatus = appointment.IdAppointmentStatus,
                     AppointmentStatus = appointment.AppointmentStatus.Name,
                     StartAt = appointment.StartAt,

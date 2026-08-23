@@ -1,4 +1,3 @@
-using Domain.Enums;
 using FluentValidation;
 
 namespace Application.Features.Appointment.Command.CreateAppointment
@@ -15,10 +14,6 @@ namespace Application.Features.Appointment.Command.CreateAppointment
                 .GreaterThan(0)
                 .WithMessage("El profesional es obligatorio.");
 
-            RuleFor(x => x.IdService)
-                .GreaterThan(0)
-                .WithMessage("El servicio es obligatorio.");
-
             When(x => x.IdPatientTreatment.GetValueOrDefault() != 0, () =>
             {
                 RuleFor(x => x.IdPatientTreatment)
@@ -26,19 +21,45 @@ namespace Application.Features.Appointment.Command.CreateAppointment
                     .WithMessage("El tratamiento del paciente no es válido.");
             });
 
-            RuleFor(x => x)
-                .Must(x => !(x.IdPatientTreatment.GetValueOrDefault() > 0
-                    && x.Price.GetValueOrDefault() > 0))
-                .WithMessage("La cita no puede tener plan de tratamiento y precio a la vez.");
+            RuleFor(x => x.Procedures)
+                .NotEmpty()
+                .WithMessage("Debe incluir al menos un procedimiento.");
 
-            When(x => x.Price.GetValueOrDefault() != 0, () =>
+            RuleFor(x => x.Procedures)
+                .Must(procedures => procedures
+                    .Select(p => p.IdProcedure)
+                    .Distinct()
+                    .Count() == procedures.Count)
+                .When(x => x.Procedures is { Count: > 0 })
+                .WithMessage("No se puede repetir el mismo procedimiento en la cita.");
+
+            RuleForEach(x => x.Procedures).ChildRules(procedure =>
             {
-                RuleFor(x => x.Price)
+                procedure.RuleFor(p => p.IdProcedure)
                     .GreaterThan(0)
-                    .WithMessage("El precio debe ser mayor a 0.")
-                    .Must(price => price == Math.Round(price!.Value, 2))
+                    .WithMessage("El procedimiento no es válido.");
+
+                procedure.RuleFor(p => p.Price)
+                    .GreaterThanOrEqualTo(0)
+                    .WithMessage("El precio no puede ser negativo.")
+                    .Must(price => price == Math.Round(price, 2))
                     .WithMessage("El precio solo admite hasta 2 decimales.");
+
+                procedure.RuleFor(p => p.Notes)
+                    .MaximumLength(500)
+                    .WithMessage("Las notas del procedimiento son demasiado largas.")
+                    .When(p => !string.IsNullOrWhiteSpace(p.Notes));
             });
+
+            RuleFor(x => x)
+                .Must(x => x.Procedures.All(p => p.Price == 0))
+                .When(x => x.IdPatientTreatment.GetValueOrDefault() > 0 && x.Procedures is { Count: > 0 })
+                .WithMessage("Los procedimientos de una cita con plan de tratamiento deben tener precio 0.");
+
+            RuleFor(x => x)
+                .Must(x => x.Procedures.Sum(p => p.Price) > 0)
+                .When(x => x.IdPatientTreatment.GetValueOrDefault() <= 0 && x.Procedures is { Count: > 0 })
+                .WithMessage("La cita debe tener al menos un procedimiento con precio mayor a 0.");
 
             RuleFor(x => x.StartAt)
                 .NotEmpty()

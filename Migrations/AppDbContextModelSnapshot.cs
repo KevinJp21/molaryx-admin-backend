@@ -56,10 +56,6 @@ namespace molaryxadmin.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id_professional");
 
-                    b.Property<long>("IdService")
-                        .HasColumnType("bigint")
-                        .HasColumnName("id_service");
-
                     b.Property<long>("IdTenant")
                         .HasColumnType("bigint")
                         .HasColumnName("id_tenant");
@@ -67,11 +63,6 @@ namespace molaryxadmin.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text")
                         .HasColumnName("notes");
-
-                    b.Property<decimal?>("Price")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("numeric(12,2)")
-                        .HasColumnName("price");
 
                     b.Property<DateTime>("StartAt")
                         .HasColumnType("timestamp without time zone")
@@ -94,12 +85,52 @@ namespace molaryxadmin.Migrations
 
                     b.HasIndex("IdTenant", "IdProfessional");
 
-                    b.HasIndex("IdTenant", "IdService");
+                    b.ToTable("appointments", (string)null);
+                });
 
-                    b.ToTable("appointments", null, t =>
-                        {
-                            t.HasCheckConstraint("ck_appointments_treatment_or_price", "(\r\n    id_patient_treatment IS NULL\r\n    OR price IS NULL\r\n)");
-                        });
+            modelBuilder.Entity("Domain.Entities.AppointmentProcedure", b =>
+                {
+                    b.Property<long>("IdAppointmentProcedure")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_appointment_procedure");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("IdAppointmentProcedure"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long>("IdAppointment")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_appointment");
+
+                    b.Property<long>("IdProcedure")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_procedure");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("notes");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("price");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("IdAppointmentProcedure");
+
+                    b.HasIndex("IdProcedure");
+
+                    b.HasIndex("IdAppointment", "IdProcedure")
+                        .IsUnique();
+
+                    b.ToTable("appointment_procedures", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.AppointmentStatus", b =>
@@ -219,9 +250,9 @@ namespace molaryxadmin.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("id_patient_treatment");
 
-                    b.Property<long?>("IdService")
+                    b.Property<long?>("IdProcedure")
                         .HasColumnType("bigint")
-                        .HasColumnName("id_service");
+                        .HasColumnName("id_procedure");
 
                     b.Property<long>("IdTenant")
                         .HasColumnType("bigint")
@@ -256,7 +287,7 @@ namespace molaryxadmin.Migrations
 
                     b.HasIndex("IdTenant", "IdPatientTreatment");
 
-                    b.HasIndex("IdTenant", "IdService");
+                    b.HasIndex("IdTenant", "IdProcedure");
 
                     b.ToTable("clinical_records", (string)null);
                 });
@@ -377,7 +408,7 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdModule = (short)4,
-                            Code = "SERVICES",
+                            Code = "PROCEDURES",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
@@ -985,28 +1016,28 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdPermission = (short)8,
-                            Code = "GET_SERVICES",
+                            Code = "GET_PROCEDURES",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
                         new
                         {
                             IdPermission = (short)9,
-                            Code = "CREATE_SERVICE",
+                            Code = "CREATE_PROCEDURE",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
                         new
                         {
                             IdPermission = (short)10,
-                            Code = "UPDATE_SERVICE",
+                            Code = "UPDATE_PROCEDURE",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
                         new
                         {
                             IdPermission = (short)11,
-                            Code = "DELETE_SERVICE",
+                            Code = "DELETE_PROCEDURE",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
@@ -1212,6 +1243,61 @@ namespace molaryxadmin.Migrations
                             IsActive = true,
                             Name = "Business"
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.Procedure", b =>
+                {
+                    b.Property<long>("IdProcedure")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_procedure");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("IdProcedure"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<long>("IdTenant")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_tenant");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<decimal?>("ReferencePrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("reference_price");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("IdProcedure");
+
+                    b.HasIndex("IdTenant", "IdProcedure")
+                        .IsUnique();
+
+                    b.HasIndex("IdTenant", "Name")
+                        .IsUnique()
+                        .HasFilter("deleted_at IS NULL");
+
+                    b.ToTable("procedures", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Professional", b =>
@@ -1481,56 +1567,6 @@ namespace molaryxadmin.Migrations
                             IdUserRole = (short)1,
                             IdPermission = (short)3
                         });
-                });
-
-            modelBuilder.Entity("Domain.Entities.Service", b =>
-                {
-                    b.Property<long>("IdService")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id_service");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("IdService"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<long>("IdTenant")
-                        .HasColumnType("bigint")
-                        .HasColumnName("id_tenant");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("IdService");
-
-                    b.HasIndex("IdTenant", "IdService")
-                        .IsUnique();
-
-                    b.HasIndex("IdTenant", "Name")
-                        .IsUnique()
-                        .HasFilter("deleted_at IS NULL");
-
-                    b.ToTable("services", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Tenant", b =>
@@ -2262,13 +2298,6 @@ namespace molaryxadmin.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Service", "Service")
-                        .WithMany("Appointments")
-                        .HasForeignKey("IdTenant", "IdService")
-                        .HasPrincipalKey("IdTenant", "IdService")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("AppointmentStatus");
 
                     b.Navigation("Patient");
@@ -2277,9 +2306,26 @@ namespace molaryxadmin.Migrations
 
                     b.Navigation("Professional");
 
-                    b.Navigation("Service");
-
                     b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Domain.Entities.AppointmentProcedure", b =>
+                {
+                    b.HasOne("Domain.Entities.Appointment", "Appointment")
+                        .WithMany("AppointmentProcedures")
+                        .HasForeignKey("IdAppointment")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Procedure", "Procedure")
+                        .WithMany("AppointmentProcedures")
+                        .HasForeignKey("IdProcedure")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Procedure");
                 });
 
             modelBuilder.Entity("Domain.Entities.ClinicalRecord", b =>
@@ -2315,10 +2361,10 @@ namespace molaryxadmin.Migrations
                         .HasPrincipalKey("IdTenant", "IdPatientTreatment")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Domain.Entities.Service", "Service")
+                    b.HasOne("Domain.Entities.Procedure", "Procedure")
                         .WithMany("ClinicalRecords")
-                        .HasForeignKey("IdTenant", "IdService")
-                        .HasPrincipalKey("IdTenant", "IdService")
+                        .HasForeignKey("IdTenant", "IdProcedure")
+                        .HasPrincipalKey("IdTenant", "IdProcedure")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Appointment");
@@ -2329,7 +2375,7 @@ namespace molaryxadmin.Migrations
 
                     b.Navigation("PatientTreatment");
 
-                    b.Navigation("Service");
+                    b.Navigation("Procedure");
 
                     b.Navigation("Tenant");
                 });
@@ -2462,6 +2508,17 @@ namespace molaryxadmin.Migrations
                     b.Navigation("Module");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Procedure", b =>
+                {
+                    b.HasOne("Domain.Entities.Tenant", "Tenant")
+                        .WithMany("Procedures")
+                        .HasForeignKey("IdTenant")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
             modelBuilder.Entity("Domain.Entities.Professional", b =>
                 {
                     b.HasOne("Domain.Entities.Tenant", "Tenant")
@@ -2527,17 +2584,6 @@ namespace molaryxadmin.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("UserRole");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Service", b =>
-                {
-                    b.HasOne("Domain.Entities.Tenant", "Tenant")
-                        .WithMany("Services")
-                        .HasForeignKey("IdTenant")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Domain.Entities.Tenant", b =>
@@ -2658,6 +2704,8 @@ namespace molaryxadmin.Migrations
 
             modelBuilder.Entity("Domain.Entities.Appointment", b =>
                 {
+                    b.Navigation("AppointmentProcedures");
+
                     b.Navigation("ClinicalRecords");
 
                     b.Navigation("Payments");
@@ -2715,6 +2763,13 @@ namespace molaryxadmin.Migrations
                     b.Navigation("TenantSubscriptions");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Procedure", b =>
+                {
+                    b.Navigation("AppointmentProcedures");
+
+                    b.Navigation("ClinicalRecords");
+                });
+
             modelBuilder.Entity("Domain.Entities.Professional", b =>
                 {
                     b.Navigation("Appointments");
@@ -2725,13 +2780,6 @@ namespace molaryxadmin.Migrations
                     b.Navigation("PromotionPlans");
 
                     b.Navigation("TenantSubscriptions");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Service", b =>
-                {
-                    b.Navigation("Appointments");
-
-                    b.Navigation("ClinicalRecords");
                 });
 
             modelBuilder.Entity("Domain.Entities.Tenant", b =>
@@ -2746,9 +2794,9 @@ namespace molaryxadmin.Migrations
 
                     b.Navigation("Payments");
 
-                    b.Navigation("Professionals");
+                    b.Navigation("Procedures");
 
-                    b.Navigation("Services");
+                    b.Navigation("Professionals");
 
                     b.Navigation("TenantSubscriptions");
 

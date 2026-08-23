@@ -41,7 +41,7 @@ namespace Application.Features.Dashboard.Query.GetAppointmentsSummary
                 TodayCount = monthAppointments.Count(a =>
                     a.StartAt >= todayStart && a.StartAt <= todayEnd),
                 ByStatus = BuildByStatus(monthAppointments),
-                TopServices = BuildTopServices(monthAppointments),
+                TopProcedures = BuildTopProcedures(monthAppointments),
                 Upcoming = [.. upcomingAppointments.Select(MapUpcoming)],
             };
         }
@@ -63,17 +63,18 @@ namespace Application.Features.Dashboard.Query.GetAppointmentsSummary
                 })];
         }
 
-        private static List<TopServiceItem> BuildTopServices(AppointmentEntity[] appointments)
+        private static List<TopProcedureItem> BuildTopProcedures(AppointmentEntity[] appointments)
         {
             return [.. appointments
-                .GroupBy(a => new { a.IdService, a.Service.Name })
+                .SelectMany(a => a.AppointmentProcedures)
+                .GroupBy(p => new { p.IdProcedure, p.Procedure.Name })
                 .OrderByDescending(g => g.Count())
                 .ThenBy(g => g.Key.Name)
                 .Take(TopLimit)
-                .Select(g => new TopServiceItem
+                .Select(g => new TopProcedureItem
                 {
-                    IdService = g.Key.IdService,
-                    ServiceName = g.Key.Name,
+                    IdProcedure = g.Key.IdProcedure,
+                    ProcedureName = g.Key.Name,
                     Count = g.Count(),
                 })];
         }
@@ -91,7 +92,9 @@ namespace Application.Features.Dashboard.Query.GetAppointmentsSummary
                 PatientSurname = BuildPersonName(
                     appointment.Patient.FirstSurname,
                     appointment.Patient.SecondSurname),
-                ServiceName = appointment.Service.Name,
+                ProcedureNames = string.Join(
+                    ", ",
+                    appointment.AppointmentProcedures.Select(p => p.Procedure.Name)),
                 ProfessionalName = BuildPersonName(
                     appointment.Professional.User.FirstName,
                     appointment.Professional.User.SecondName),

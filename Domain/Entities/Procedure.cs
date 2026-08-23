@@ -3,10 +3,10 @@ using Domain.Common;
 
 namespace Domain.Entities
 {
-    public class Service : BaseEntity
+    public class Procedure : BaseEntity
     {
-        [Column("id_service")]
-        public long IdService { get; set; }
+        [Column("id_procedure")]
+        public long IdProcedure { get; set; }
 
         [Column("id_tenant")]
         public long IdTenant { get; set; }
@@ -17,6 +17,9 @@ namespace Domain.Entities
         [Column("description")]
         public string? Description { get; set; }
 
+        [Column("reference_price")]
+        public decimal? ReferencePrice { get; set; }
+
         [Column("is_active")]
         public bool IsActive { get; set; }
 
@@ -25,7 +28,7 @@ namespace Domain.Entities
 
         public Tenant Tenant { get; set; } = null!;
 
-        public ICollection<Appointment> Appointments { get; set; } = [];
+        public ICollection<AppointmentProcedure> AppointmentProcedures { get; set; } = [];
         public ICollection<ClinicalRecord> ClinicalRecords { get; set; } = [];
     }
 }

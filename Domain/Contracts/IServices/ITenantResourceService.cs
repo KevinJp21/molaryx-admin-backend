@@ -14,9 +14,9 @@ namespace Domain.Contracts.IServices
             long idAppointment,
             CancellationToken cancellationToken = default);
 
-        Task<Service> RequireServiceAsync(
+        Task<Procedure> RequireProcedureAsync(
             long idTenant,
-            long idService,
+            long idProcedure,
             CancellationToken cancellationToken = default);
 
         Task<Treatment> RequireTreatmentAsync(

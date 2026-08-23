@@ -26,7 +26,7 @@ namespace Application.Features.Payment.Query.GetPaymentsSummaryByConcept
                     access.IdTenant,
                     request.IdAppointment!.Value,
                     cancellationToken);
-                price = appointment.Price;
+                price = appointment.AppointmentProcedures.Sum(p => p.Price);
             }
             else
             {

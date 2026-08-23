@@ -34,6 +34,6 @@ namespace Domain.Models
         public string CreatedByName { get; set; } = string.Empty;
         public string CreatedBySurname { get; set; } = string.Empty;
         public string? Reference { get; set; }
-        public string? ServiceName { get; set; }
+        public string? ProcedureName { get; set; }
     }
 }

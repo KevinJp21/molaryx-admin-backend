@@ -11,8 +11,8 @@ namespace Domain.Constants
         // Operación del consultorio
         public const string PATIENTS = "PATIENTS";
 
-        // Servicios
-        public const string SERVICES = "SERVICES";
+        // Procedimientos
+        public const string PROCEDURES = "PROCEDURES";
 
         // Citas
         public const string APPOINTMENTS = "APPOINTMENTS";

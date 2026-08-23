@@ -20,8 +20,8 @@ namespace Domain.Entities
         [Column("id_patient_treatment")]
         public long? IdPatientTreatment { get; set; }
 
-        [Column("id_service")]
-        public long? IdService { get; set; }
+        [Column("id_procedure")]
+        public long? IdProcedure { get; set; }
 
         [Column("id_created_by_user")]
         public long IdCreatedByUser { get; set; }
@@ -41,8 +41,6 @@ namespace Domain.Entities
         [Column("notes")]
         public string? Notes { get; set; }
 
-
-        // Navigation properties
         public Tenant Tenant { get; set; } = null!;
 
         public Patient Patient { get; set; } = null!;
@@ -51,7 +49,7 @@ namespace Domain.Entities
 
         public PatientTreatment? PatientTreatment { get; set; }
 
-        public Service? Service { get; set; }
+        public Procedure? Procedure { get; set; }
 
         public User CreatedByUser { get; set; } = null!;
     }

@@ -13,11 +13,11 @@ namespace Domain.Enums
         UPDATE_PATIENT = 6,
         DELETE_PATIENT = 7,
 
-        // Services
-        GET_SERVICES = 8,
-        CREATE_SERVICE = 9,
-        UPDATE_SERVICE = 10,
-        DELETE_SERVICE = 11,
+        // Procedures
+        GET_PROCEDURES = 8,
+        CREATE_PROCEDURE = 9,
+        UPDATE_PROCEDURE = 10,
+        DELETE_PROCEDURE = 11,
 
         // Appointments
         GET_APPOINTMENTS = 12,

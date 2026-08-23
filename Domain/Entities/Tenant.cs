@@ -40,7 +40,8 @@ namespace Domain.Entities
         public ICollection<User> Users { get; set; } = [];
         public ICollection<Professional> Professionals { get; set; } = [];
         public ICollection<Patient> Patients { get; set; } = [];
-        public ICollection<Service> Services { get; set; } = [];
+        public ICollection<Procedure> Procedures { get; set; } = [];
+
         public ICollection<Appointment> Appointments { get; set; } = [];
         public ICollection<Treatment> Treatments { get; set; } = [];
         public ICollection<PatientTreatment> PatientTreatments { get; set; } = [];

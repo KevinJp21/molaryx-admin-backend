@@ -24,11 +24,11 @@ namespace Application.Features.ClinicalRecord.Command.CreateClinicalRecord
                     .WithMessage("El tratamiento del paciente no es válido.");
             });
 
-            When(x => x.IdService.HasValue, () =>
+            When(x => x.IdProcedure.HasValue, () =>
             {
-                RuleFor(x => x.IdService)
+                RuleFor(x => x.IdProcedure)
                     .GreaterThan(0)
-                    .WithMessage("El servicio no es válido.");
+                    .WithMessage("El procedimiento no es válido.");
             });
 
             RuleFor(x => x.RecordedAt)

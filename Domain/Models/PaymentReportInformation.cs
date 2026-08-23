@@ -17,7 +17,7 @@ namespace Domain.Models
         public string IdentificationNumber { get; set; } = string.Empty;
         public string Concept { get; set; } = string.Empty;
         public string TreatmentName { get; set; } = string.Empty;
-        public string ServiceName { get; set; } = string.Empty;
+        public string ProcedureNames { get; set; } = string.Empty;
         public string PaymentMethod { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public string Notes { get; set; } = string.Empty;
