@@ -23,7 +23,7 @@ namespace Infrastructure.Persistence.Seeds.Authorization
                 .HasData(PatientsPermissionSeed.Data);
 
             modelBuilder.Entity<Permission>()
-                .HasData(ServicePermissionSeed.Data);
+                .HasData(ProcedurePermissionSeed.Data);
 
             modelBuilder.Entity<Permission>()
                 .HasData(AppointmentPermissionSeed.Data);
@@ -43,6 +43,12 @@ namespace Infrastructure.Persistence.Seeds.Authorization
             // Agregar permissos de cada rol
             modelBuilder.Entity<RolePermission>()
                 .HasData(OwnerPermissionSeed.Data);
+
+            modelBuilder.Entity<RolePermission>()
+                .HasData(AssistantPermissionSeed.Data);
+
+            modelBuilder.Entity<RolePermission>()
+                .HasData(ProfessionalPermissionSeed.Data);
 
             modelBuilder.Entity<RolePermission>()
                 .HasData(SurperAdminPermissionSeed.Data);

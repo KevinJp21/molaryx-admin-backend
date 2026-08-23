@@ -31,7 +31,7 @@ public static class ServiceRegistration
         var dataSource = new NpgsqlDataSourceBuilder(connectionString).Build();
         services.AddSingleton(dataSource);
 
-        var migrationsAssembly = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name
+        var migrationsAssembly = typeof(AppDbContext).Assembly.GetName().Name
             ?? typeof(ServiceRegistration).Assembly.GetName().Name;
 
         services.AddDbContext<AppDbContext>(options =>
@@ -113,7 +113,7 @@ public static class ServiceRegistration
         services.AddScoped<IEmailNotificationService, EmailNotificationService>();
         services.AddScoped<IPasswordResetTokenService, PasswordResetTokenService>();
         services.AddScoped<IPatientService, PatientService>();
-        services.AddScoped<IServiceService, ServiceService>();
+        services.AddScoped<IProcedureService, ProcedureService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<ITreatmentService, TreatmentService>();
         services.AddScoped<IPatientTreatmentService, PatientTreatmentService>();

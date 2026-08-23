@@ -33,7 +33,10 @@ namespace Domain.Models
         public string? Notes { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
         public string CreatedBySurname { get; set; } = string.Empty;
+        public string? AttendedByName { get; set; }
+        public string? AttendedBySurname { get; set; }
         public string? Reference { get; set; }
-        public string? ServiceName { get; set; }
+        public string? PatientTreatmentName { get; set; }
+        public string? ProcedureName { get; set; }
     }
 }

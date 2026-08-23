@@ -23,6 +23,12 @@ namespace Domain.Contracts.IServices
         Task SendResetPasswordEmailAsync(
             User user,
             CancellationToken cancellationToken = default);
-            
+
+        Task SendWelcomeMemberEmailAsync(
+            string email,
+            string firstName,
+            string temporaryPassword,
+            string consultoryName,
+            CancellationToken cancellationToken = default);
     }
 }

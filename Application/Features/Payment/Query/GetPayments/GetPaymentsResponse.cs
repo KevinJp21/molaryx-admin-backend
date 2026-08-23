@@ -29,8 +29,8 @@ namespace Application.Features.Payment.Query.GetPayments
     public class PaymentAppointment
     {
         public long IdAppointment { get; set; }
-        public long IdService { get; set; }
-        public string ServiceName { get; set; } = string.Empty;
+        public string ProcedureNames { get; set; } = string.Empty;
+        public decimal TotalPrice { get; set; }
         public short IdAppointmentStatus { get; set; }
         public string AppointmentStatus { get; set; } = string.Empty;
         public DateTime StartAt { get; set; }

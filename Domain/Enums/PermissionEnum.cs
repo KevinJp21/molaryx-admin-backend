@@ -13,38 +13,40 @@ namespace Domain.Enums
         UPDATE_PATIENT = 6,
         DELETE_PATIENT = 7,
 
-        // Services
-        GET_SERVICES = 8,
-        CREATE_SERVICE = 9,
-        UPDATE_SERVICE = 10,
-        DELETE_SERVICE = 11,
+        // Procedures
+        GET_PROCEDURES = 8,
+        CREATE_PROCEDURE = 9,
+        UPDATE_PROCEDURE = 10,
+        DELETE_PROCEDURE = 11,
 
         // Appointments
         GET_APPOINTMENTS = 12,
         CREATE_APPOINTMENT = 13,
         UPDATE_APPOINTMENT = 14,
 
-        // Users
-        GET_PROFESSIONALS = 15,
+        // Users / Team
+        GET_TEAM = 15,
+        CREATE_MEMBER = 16,
+        UPDATE_MEMBER = 17,
 
         // Treatments
-        GET_TREATMENTS = 16,
-        CREATE_TREATMENT = 17,
-        UPDATE_TREATMENT = 18,
-        DELETE_TREATMENT = 19,
+        GET_TREATMENTS = 18,
+        CREATE_TREATMENT = 19,
+        UPDATE_TREATMENT = 20,
+        DELETE_TREATMENT = 21,
 
         // Patient treatments
-        CREATE_PATIENT_TREATMENT = 20,
-        GET_PATIENT_TREATMENTS = 21,
-        UPDATE_PATIENT_TREATMENT = 22,
+        CREATE_PATIENT_TREATMENT = 22,
+        GET_PATIENT_TREATMENTS = 23,
+        UPDATE_PATIENT_TREATMENT = 24,
 
         // Payments
-        CREATE_PAYMENT = 23,
-        GET_PAYMENTS = 24,
-        GET_PAYMENTS_SUMMARY_BY_CONCEPT = 25,
+        CREATE_PAYMENT = 25,
+        GET_PAYMENTS = 26,
+        GET_PAYMENTS_SUMMARY_BY_CONCEPT = 27,
 
         // Clinical records
-        CREATE_CLINICAL_RECORD = 26,
-        GET_CLINICAL_RECORDS = 27,
+        CREATE_CLINICAL_RECORD = 28,
+        GET_CLINICAL_RECORDS = 29,
     }
 }

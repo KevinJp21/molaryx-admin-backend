@@ -29,8 +29,8 @@ public static class ModuleSeed
         },
         new Module
         {
-            IdModule = (short)ModuleEnum.SERVICES,
-            Code = ModuleCodes.SERVICES,
+            IdModule = (short)ModuleEnum.PROCEDURES,
+            Code = ModuleCodes.PROCEDURES,
             CreatedAt = SeedConstants.SeedDate
         },
         new Module

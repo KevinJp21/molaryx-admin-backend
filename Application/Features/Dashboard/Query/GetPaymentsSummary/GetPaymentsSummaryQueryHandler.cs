@@ -75,7 +75,7 @@ namespace Application.Features.Dashboard.Query.GetPaymentsSummary
             foreach (var appointment in billedAppointments)
             {
                 paidByAppointment.TryGetValue(appointment.IdAppointment, out var paid);
-                var remaining = appointment.Price!.Value - paid;
+                var remaining = appointment.AppointmentProcedures.Sum(p => p.Price) - paid;
                 if (remaining > 0)
                 {
                     outstanding += remaining;

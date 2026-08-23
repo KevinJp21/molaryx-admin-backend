@@ -14,7 +14,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(c => c.IdPatient).IsRequired();
             builder.Property(c => c.IdAppointment);
             builder.Property(c => c.IdPatientTreatment);
-            builder.Property(c => c.IdService);
+            builder.Property(c => c.IdProcedure);
             builder.Property(c => c.IdCreatedByUser).IsRequired();
             builder.Property(c => c.RecordedAt).IsRequired();
             builder.Property(c => c.Reason).IsRequired().HasMaxLength(255);
@@ -47,10 +47,10 @@ namespace Infrastructure.Persistence.Configuration
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
-            builder.HasOne(c => c.Service)
-                .WithMany(s => s.ClinicalRecords)
-                .HasForeignKey(c => new { c.IdTenant, c.IdService })
-                .HasPrincipalKey(s => new { s.IdTenant, s.IdService })
+            builder.HasOne(c => c.Procedure)
+                .WithMany(p => p.ClinicalRecords)
+                .HasForeignKey(c => new { c.IdTenant, c.IdProcedure })
+                .HasPrincipalKey(p => new { p.IdTenant, p.IdProcedure })
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 

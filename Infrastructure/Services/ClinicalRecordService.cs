@@ -3,6 +3,7 @@ using Application.Features.ClinicalRecord.Command.CreateClinicalRecord;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
+using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
@@ -30,7 +31,7 @@ namespace Infrastructure.Services
                     access.IdTenant,
                     request.IdPatient,
                     request.IdAppointment.Value,
-                    request.IdService,
+                    request.IdProcedure,
                     request.IdPatientTreatment,
                     cancellationToken);
             }
@@ -44,11 +45,11 @@ namespace Infrastructure.Services
                     cancellationToken);
             }
 
-            if (request.IdService is not null)
+            if (request.IdProcedure is not null)
             {
-                await _tenantResourceService.RequireServiceAsync(
+                await _tenantResourceService.RequireProcedureAsync(
                     access.IdTenant,
-                    request.IdService.Value,
+                    request.IdProcedure.Value,
                     cancellationToken);
             }
 
@@ -58,7 +59,7 @@ namespace Infrastructure.Services
                 IdPatient = request.IdPatient,
                 IdAppointment = request.IdAppointment,
                 IdPatientTreatment = request.IdPatientTreatment,
-                IdService = request.IdService,
+                IdProcedure = request.IdProcedure,
                 IdCreatedByUser = _currentUser.IdUser
                     ?? throw new InvalidOperationException("El usuario no está autenticado."),
                 RecordedAt = request.RecordedAt,
@@ -85,23 +86,30 @@ namespace Infrastructure.Services
             long idTenant,
             long idPatient,
             long idAppointment,
-            long? idService,
+            long? idProcedure,
             long? idPatientTreatment,
             CancellationToken cancellationToken)
         {
-            var appointment = await _tenantResourceService.RequireAppointmentAsync(
-                idTenant,
+            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(
                 idAppointment,
-                cancellationToken);
+                cancellationToken,
+                AppointmentSpec.ByIdWithProcedures(idAppointment))
+                ?? throw new Domain.Exceptions.NotFoundException("La cita no existe.");
+
+            if (appointment.IdTenant != idTenant)
+            {
+                throw new InvalidOperationException("La cita no pertenece a este consultorio.");
+            }
 
             if (appointment.IdPatient != idPatient)
             {
                 throw new InvalidOperationException("La cita no pertenece a este paciente.");
             }
 
-            if (idService is not null && appointment.IdService != idService)
+            if (idProcedure is not null
+                && !appointment.AppointmentProcedures.Any(p => p.IdProcedure == idProcedure))
             {
-                throw new InvalidOperationException("El servicio no pertenece a esta cita.");
+                throw new InvalidOperationException("El procedimiento no pertenece a esta cita.");
             }
 
             if (idPatientTreatment is not null && appointment.IdPatientTreatment != idPatientTreatment)

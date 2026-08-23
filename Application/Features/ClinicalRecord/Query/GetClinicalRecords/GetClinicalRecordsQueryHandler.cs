@@ -49,8 +49,8 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
                 IdClinicalRecord = clinicalRecord.IdClinicalRecord,
                 IdAppointment = clinicalRecord.IdAppointment,
                 IdPatientTreatment = clinicalRecord.IdPatientTreatment,
-                IdService = clinicalRecord.IdService,
-                ServiceName = clinicalRecord.Service?.Name,
+                IdProcedure = clinicalRecord.IdProcedure,
+                ProcedureName = clinicalRecord.Procedure?.Name,
                 RecordedAt = clinicalRecord.RecordedAt,
                 Reason = clinicalRecord.Reason,
                 Diagnosis = clinicalRecord.Diagnosis,
@@ -97,8 +97,9 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
             return new ClinicalRecordAppointment
             {
                 IdAppointment = appointment.IdAppointment,
-                IdService = appointment.IdService,
-                ServiceName = appointment.Service.Name,
+                ProcedureNames = string.Join(
+                    ", ",
+                    appointment.AppointmentProcedures.Select(p => p.Procedure.Name)),
                 IdAppointmentStatus = appointment.IdAppointmentStatus,
                 AppointmentStatus = appointment.AppointmentStatus.Name,
                 StartAt = appointment.StartAt,

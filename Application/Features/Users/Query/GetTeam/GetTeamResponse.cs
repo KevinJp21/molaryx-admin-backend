@@ -1,0 +1,22 @@
+namespace Application.Features.Users.Query.GetTeam
+{
+    public class GetTeamResponse
+    {
+        public long? IdProfessional { get; set; }
+        public long IdUser { get; set; }
+        public short IdUserRole { get; set; }
+        public short IdUserStatus { get; set; }
+        public string StatusName { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string? SecondName { get; set; }
+        public string FirstSurname { get; set; } = string.Empty;
+        public string? SecondSurname { get; set; }
+        public string IdentificationType { get; set; } = string.Empty;
+        public short IdIdentificationType { get; set; }
+        public string IdentificationNumber { get; set; } = string.Empty;
+        public DateOnly BirthDate { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
+}

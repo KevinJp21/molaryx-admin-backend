@@ -5,8 +5,8 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
         public long IdClinicalRecord { get; set; }
         public long? IdAppointment { get; set; }
         public long? IdPatientTreatment { get; set; }
-        public long? IdService { get; set; }
-        public string? ServiceName { get; set; }
+        public long? IdProcedure { get; set; }
+        public string? ProcedureName { get; set; }
         public DateTime RecordedAt { get; set; }
         public string Reason { get; set; } = string.Empty;
         public string? Diagnosis { get; set; }
@@ -39,8 +39,7 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
     public class ClinicalRecordAppointment
     {
         public long IdAppointment { get; set; }
-        public long IdService { get; set; }
-        public string ServiceName { get; set; } = string.Empty;
+        public string ProcedureNames { get; set; } = string.Empty;
         public short IdAppointmentStatus { get; set; }
         public string AppointmentStatus { get; set; } = string.Empty;
         public DateTime StartAt { get; set; }

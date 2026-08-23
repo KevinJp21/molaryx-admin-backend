@@ -35,7 +35,7 @@ namespace Infrastructure.Services
             var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(
                     idAppointment,
                     cancellationToken,
-                    AppointmentSpec.ById(idAppointment))
+                    AppointmentSpec.ByIdWithProcedures(idAppointment))
                 ?? throw new NotFoundException("La cita no existe.");
 
             if (appointment.IdTenant != idTenant)
@@ -46,23 +46,23 @@ namespace Infrastructure.Services
             return appointment;
         }
 
-        public async Task<Service> RequireServiceAsync(
+        public async Task<Procedure> RequireProcedureAsync(
             long idTenant,
-            long idService,
+            long idProcedure,
             CancellationToken cancellationToken = default)
         {
-            var service = await _unitOfWork.ServiceRepository.GetByIdAsync(
-                    idService,
+            var procedure = await _unitOfWork.ProcedureRepository.GetByIdAsync(
+                    idProcedure,
                     cancellationToken,
-                    ServicesSpec.ById(idService))
-                ?? throw new NotFoundException("El servicio no existe.");
+                    ProceduresSpec.ById(idProcedure))
+                ?? throw new NotFoundException("El procedimiento no existe.");
 
-            if (service.IdTenant != idTenant || !service.IsActive)
+            if (procedure.IdTenant != idTenant || !procedure.IsActive)
             {
-                throw new InvalidOperationException("El servicio no está disponible en este consultorio.");
+                throw new InvalidOperationException("El procedimiento no está disponible en este consultorio.");
             }
 
-            return service;
+            return procedure;
         }
 
         public async Task<Treatment> RequireTreatmentAsync(

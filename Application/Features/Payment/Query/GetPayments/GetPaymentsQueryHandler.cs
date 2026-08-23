@@ -81,8 +81,10 @@ namespace Application.Features.Payment.Query.GetPayments
             return new PaymentAppointment
             {
                 IdAppointment = appointment.IdAppointment,
-                IdService = appointment.IdService,
-                ServiceName = appointment.Service.Name,
+                ProcedureNames = string.Join(
+                    ", ",
+                    appointment.AppointmentProcedures.Select(p => p.Procedure.Name)),
+                TotalPrice = appointment.AppointmentProcedures.Sum(p => p.Price),
                 IdAppointmentStatus = appointment.IdAppointmentStatus,
                 AppointmentStatus = appointment.AppointmentStatus.Name,
                 StartAt = appointment.StartAt,

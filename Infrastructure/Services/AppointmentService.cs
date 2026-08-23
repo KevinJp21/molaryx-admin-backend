@@ -6,7 +6,6 @@ using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
-using Domain.Exceptions;
 using Domain.Specifications;
 
 namespace Infrastructure.Services
@@ -25,7 +24,7 @@ namespace Infrastructure.Services
             var idTenant = access.IdTenant;
 
             await _tenantResourceService.RequirePatientAsync(idTenant, request.IdPatient, cancellationToken);
-            await _tenantResourceService.RequireServiceAsync(idTenant, request.IdService, cancellationToken);
+            await EnsureProceduresAsync(idTenant, request.Procedures, request.IdPatientTreatment, cancellationToken);
 
             if (request.IdPatientTreatment is > 0)
             {
@@ -82,15 +81,20 @@ namespace Infrastructure.Services
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idTenant = access.IdTenant;
 
-            var appointment = await _tenantResourceService.RequireAppointmentAsync(
-                idTenant,
+            var appointment = await _unitOfWork.AppointmentRepository.GetByIdAsync(
                 request.IdAppointment,
-                cancellationToken);
+                cancellationToken,
+                AppointmentSpec.ByIdWithProcedures(request.IdAppointment))
+                ?? throw new Domain.Exceptions.NotFoundException("La cita no existe.");
+
+            if (appointment.IdTenant != idTenant)
+            {
+                throw new InvalidOperationException("La cita no pertenece a este consultorio.");
+            }
 
             AppointmentStatusRules.EnsureCanEdit(appointment.IdAppointmentStatus);
 
             var idPatient = request.IdPatient ?? appointment.IdPatient;
-            var idService = request.IdService ?? appointment.IdService;
             long? idPatientTreatment = appointment.IdPatientTreatment;
             if (request.IdPatientTreatment.HasValue)
             {
@@ -99,15 +103,6 @@ namespace Infrastructure.Services
                     : request.IdPatientTreatment;
             }
 
-            decimal? price = appointment.Price;
-            if (idPatientTreatment is not null)
-            {
-                price = null;
-            }
-            else if (request.Price.HasValue)
-            {
-                price = request.Price.Value <= 0 ? null : request.Price;
-            }
             var startAt = request.StartAt ?? appointment.StartAt;
             var endAt = request.EndAt ?? appointment.EndAt;
             var idAppointmentStatus = request.IdAppointmentStatus ?? appointment.IdAppointmentStatus;
@@ -123,9 +118,21 @@ namespace Infrastructure.Services
                 await _tenantResourceService.RequirePatientAsync(idTenant, idPatient, cancellationToken);
             }
 
-            if (request.IdService.HasValue)
+            if (request.Procedures is not null)
             {
-                await _tenantResourceService.RequireServiceAsync(idTenant, idService, cancellationToken);
+                await EnsureProceduresAsync(idTenant, request.Procedures, idPatientTreatment, cancellationToken);
+            }
+            else if (idPatientTreatment is not null
+                && appointment.AppointmentProcedures.Any(p => p.Price != 0))
+            {
+                throw new InvalidOperationException(
+                    "Los procedimientos de una cita con plan de tratamiento deben tener precio 0.");
+            }
+            else if (idPatientTreatment is null
+                && appointment.AppointmentProcedures.Sum(p => p.Price) <= 0)
+            {
+                throw new InvalidOperationException(
+                    "La cita debe tener al menos un procedimiento con precio mayor a 0.");
             }
 
             if (idPatientTreatment is not null)
@@ -175,14 +182,35 @@ namespace Infrastructure.Services
 
                 appointment.IdPatient = idPatient;
                 appointment.IdProfessional = idProfessional;
-                appointment.IdService = idService;
                 appointment.IdPatientTreatment = idPatientTreatment;
-                appointment.Price = price;
                 appointment.IdAppointmentStatus = idAppointmentStatus;
                 appointment.StartAt = startAt;
                 appointment.EndAt = endAt;
                 appointment.Notes = notes;
                 appointment.UpdatedAt = DateTime.UtcNow;
+
+                if (request.Procedures is not null)
+                {
+                    appointment.AppointmentProcedures.Clear();
+                    foreach (var item in request.Procedures)
+                    {
+                        appointment.AppointmentProcedures.Add(new AppointmentProcedure
+                        {
+                            IdProcedure = item.IdProcedure,
+                            Price = NormalizePrice(idPatientTreatment, item.Price),
+                            Notes = item.Notes,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                }
+                else if (idPatientTreatment is not null)
+                {
+                    foreach (var item in appointment.AppointmentProcedures)
+                    {
+                        item.Price = 0;
+                        item.UpdatedAt = DateTime.UtcNow;
+                    }
+                }
 
                 await _unitOfWork.AppointmentRepository.UpdateAsync(appointment, cancellationToken);
 
@@ -207,6 +235,48 @@ namespace Infrastructure.Services
                 throw;
             }
         }
+
+        private async Task EnsureProceduresAsync(
+            long idTenant,
+            List<AppointmentProcedureItem> procedures,
+            long? idPatientTreatment,
+            CancellationToken cancellationToken)
+        {
+            if (procedures.Count == 0)
+            {
+                throw new InvalidOperationException("Debe incluir al menos un procedimiento.");
+            }
+
+            if (procedures.Select(p => p.IdProcedure).Distinct().Count() != procedures.Count)
+            {
+                throw new InvalidOperationException("No se puede repetir el mismo procedimiento en la cita.");
+            }
+
+            if (idPatientTreatment is > 0)
+            {
+                if (procedures.Any(p => p.Price != 0))
+                {
+                    throw new InvalidOperationException(
+                        "Los procedimientos de una cita con plan de tratamiento deben tener precio 0.");
+                }
+            }
+            else if (procedures.Sum(p => p.Price) <= 0)
+            {
+                throw new InvalidOperationException(
+                    "La cita debe tener al menos un procedimiento con precio mayor a 0.");
+            }
+
+            foreach (var item in procedures)
+            {
+                await _tenantResourceService.RequireProcedureAsync(
+                    idTenant,
+                    item.IdProcedure,
+                    cancellationToken);
+            }
+        }
+
+        private static decimal NormalizePrice(long? idPatientTreatment, decimal price) =>
+            idPatientTreatment is > 0 ? 0 : price;
 
         private async Task EnsurePatientTreatmentAsync(
             long idTenant,
@@ -251,7 +321,7 @@ namespace Infrastructure.Services
             if (user.IdUserRole != (short)UserRoleEnum.OWNER)
             {
                 throw new InvalidOperationException(
-                    "El usuario seleccionado no es un profesional de este consultorio.");
+                    "El profesional seleccionado no está registrado en este consultorio.");
             }
 
             if (!_unitOfWork.IsInTransaction)
@@ -300,22 +370,27 @@ namespace Infrastructure.Services
             CreateAppointmentCommand request,
             CancellationToken cancellationToken)
         {
+            var idPatientTreatment = request.IdPatientTreatment is > 0
+                ? request.IdPatientTreatment
+                : null;
+
             var appointment = new Appointment
             {
                 IdTenant = idTenant,
                 IdPatient = request.IdPatient,
                 IdProfessional = idProfessional,
-                IdService = request.IdService,
-                IdPatientTreatment = request.IdPatientTreatment is > 0
-                    ? request.IdPatientTreatment
-                    : null,
-                Price = request.IdPatientTreatment is > 0
-                    ? null
-                    : request.Price is > 0 ? request.Price : null,
+                IdPatientTreatment = idPatientTreatment,
                 IdAppointmentStatus = (short)AppointmentStatusEnum.PENDING,
                 StartAt = request.StartAt,
                 EndAt = request.EndAt,
-                Notes = request.Notes
+                Notes = request.Notes,
+                AppointmentProcedures = [.. request.Procedures.Select(item => new AppointmentProcedure
+                {
+                    IdProcedure = item.IdProcedure,
+                    Price = NormalizePrice(idPatientTreatment, item.Price),
+                    Notes = item.Notes,
+                    CreatedAt = DateTime.UtcNow
+                })]
             };
 
             await _unitOfWork.AppointmentRepository.AddAsync(appointment, cancellationToken);

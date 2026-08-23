@@ -11,9 +11,23 @@ public static class UserPermissionSeed
     [
         new Permission
         {
-            IdPermission = (short)PermissionEnum.GET_PROFESSIONALS,
+            IdPermission = (short)PermissionEnum.GET_TEAM,
             IdModule = (short)ModuleEnum.USERS,
-            Code = PermissionCodes.GET_PROFESSIONALS,
+            Code = PermissionCodes.GET_TEAM,
+            CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.CREATE_MEMBER,
+            IdModule = (short)ModuleEnum.USERS,
+            Code = PermissionCodes.CREATE_MEMBER,
+            CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.UPDATE_MEMBER,
+            IdModule = (short)ModuleEnum.USERS,
+            Code = PermissionCodes.UPDATE_MEMBER,
             CreatedAt = SeedConstants.SeedDate
         }
     ];

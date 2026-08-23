@@ -19,9 +19,10 @@ namespace Infrastructure.Persistence
         IPromotionRepository promotionRepository,
         IPasswordResetTokenRepository passwordResetTokenRepository,
         IPatientsRepository patientsRepository,
-        IServiceRepository serviceRepository,
+        IProcedureRepository procedureRepository,
         IAppointmentRepository appointmentRepository,
         IProfessionalRepository professionalRepository,
+        IAssistantRepository assistantRepository,
         ITreatmentRepository treatmentRepository,
         IPatientTreatmentRepository patientTreatmentRepository,
         IPaymentRepository paymentRepository,
@@ -56,11 +57,14 @@ namespace Infrastructure.Persistence
 
         public IPatientsRepository PatientsRepository { get; } = patientsRepository;
 
-        public IServiceRepository ServiceRepository { get; } = serviceRepository;
+        public IProcedureRepository ProcedureRepository { get; } = procedureRepository;
+
 
         public IAppointmentRepository AppointmentRepository { get; } = appointmentRepository;
 
         public IProfessionalRepository ProfessionalRepository { get; } = professionalRepository;
+
+        public IAssistantRepository AssistantRepository { get; } = assistantRepository;
 
         public ITreatmentRepository TreatmentRepository { get; } = treatmentRepository;
 

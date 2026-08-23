@@ -19,7 +19,8 @@ namespace Domain.Specifications
             AddInclude(p => p.Patient.IdentificationType);
             AddInclude(p => p.PaymentMethod);
             AddInclude(p => p.Appointment!);
-            AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Service)}");
+            AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.AppointmentProcedures)}");
+            AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.AppointmentProcedures)}.{nameof(AppointmentProcedure.Procedure)}");
             AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.AppointmentStatus)}");
             AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Professional)}");
             AddInclude($"{nameof(Payment.Appointment)}.{nameof(Appointment.Professional)}.{nameof(Professional.User)}");

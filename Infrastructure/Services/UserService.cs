@@ -1,20 +1,24 @@
 using Application.Common.Interfaces;
+using Application.Features.Users.Command.CreateMember;
+using Application.Features.Users.Command.UpdateMember;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Specifications;
 
 namespace Infrastructure.Services
 {
     public class UserService(
-        IUnitOfWork unitOfWork,
-        IHasherService hasherService
+        IUnitOfWork _unitOfWork,
+        IHasherService _hasherService,
+        ITenantAccessService _tenantAccessService
     ) : IUserService
     {
-        private readonly IHasherService _hasherService = hasherService;
+        private readonly IHasherService _hasherService = _hasherService;
 
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IUnitOfWork _unitOfWork = _unitOfWork;
 
         public async Task<User> CreatePendingOwnerAsync<TOwnerRegistration>(
             TOwnerRegistration dto,
@@ -134,6 +138,226 @@ namespace Infrastructure.Services
             await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
 
             return user;
+        }
+
+        public async Task<(bool Success, string TemporaryPassword, string ConsultoryName)> CreateMemberAsync(
+            CreateMemberCommand command,
+            CancellationToken cancellationToken
+        )
+        {
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+
+            if (command.IdUserRole != (short)UserRoleEnum.PROFESSIONAL && command.IdUserRole != (short)UserRoleEnum.ASSISTANT)
+            {
+                throw new InvalidOperationException("El rol de usuario no es válido.");
+            }
+
+            var userCount = await _unitOfWork.UserRepository.CountAsync(UserSpec.ForTeamCount(access.IdTenant, command.IdUserRole), cancellationToken);
+
+            if (command.IdUserRole == (short)UserRoleEnum.PROFESSIONAL)
+            {
+                if (access.Subscription.MaxProfessionals is short maxProfessionals && userCount >= maxProfessionals)
+                {
+                    throw new InvalidOperationException("El consultorio ha alcanzado el número máximo de profesionales.");
+                }
+            }
+            else if (command.IdUserRole == (short)UserRoleEnum.ASSISTANT)
+            {
+                if (access.Subscription.MaxAssistants is short maxAssistants && userCount >= maxAssistants)
+                {
+                    throw new InvalidOperationException("El consultorio ha alcanzado el número máximo de asistentes.");
+                }
+            }
+
+            var usernameExists = await _unitOfWork.UserRepository.ExistsAsync(UserSpec.ByUsername(command.Username), cancellationToken);
+
+            if (usernameExists)
+            {
+                throw new InvalidOperationException("El nombre de usuario ya se encuentra registrado.");
+            }
+
+            var identificationNumberExists = await _unitOfWork.UserRepository.ExistsAsync(UserSpec.ByIdentificationNumber(command.IdentificationNumber), cancellationToken);
+
+            if (identificationNumberExists)
+            {
+                throw new InvalidOperationException("El número de identificación ya se encuentra registrado.");
+            }
+
+            var phoneNumberExists = await _unitOfWork.UserRepository.ExistsAsync(UserSpec.ByPhoneNumber(command.PhoneNumber), cancellationToken);
+
+            if (phoneNumberExists)
+            {
+                throw new InvalidOperationException("El número de teléfono ya se encuentra registrado.");
+            }
+
+            var emailExists = await _unitOfWork.UserRepository.ExistsAsync(UserSpec.ByEmail(command.Email), cancellationToken);
+
+            if (emailExists)
+            {
+                throw new InvalidOperationException("El correo electrónico ya se encuentra registrado.");
+            }
+
+            var salt = _hasherService.GenerateSalt();
+
+            var password = $"{command.IdentificationNumber}{command.Username}@Molaryx";
+
+            var hashedPassword = _hasherService.ComputeHashBytes(
+                password,
+                salt
+            );
+
+            await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+            try
+            {
+                var user = new User
+                {
+                    IdUserStatus = (short)UserStatusEnum.ACTIVE,
+                    IdUserRole = command.IdUserRole,
+                    IdTenant = access.IdTenant,
+                    Username = command.Username.Trim(),
+                    FirstName = command.FirstName.Trim(),
+                    SecondName = command.SecondName?.Trim(),
+                    FirstSurname = command.FirstSurname.Trim(),
+                    SecondSurname = command.SecondSurname?.Trim(),
+                    IdIdentificationType = command.IdIdentificationType,
+                    IdentificationNumber = command.IdentificationNumber,
+                    BirthDate = command.BirthDate,
+                    PhoneNumber = command.PhoneNumber,
+                    Email = command.Email.Trim().ToLowerInvariant(),
+                    Password = hashedPassword,
+                    Salt = salt
+                };
+                await _unitOfWork.UserRepository.AddAsync(user, cancellationToken);
+                await _unitOfWork.UserRepository.SaveChangesAsync(cancellationToken);
+
+                if (user.IdUserRole == (short)UserRoleEnum.PROFESSIONAL)
+                {
+                    var professional = new Professional
+                    {
+                        IdTenant = access.IdTenant,
+                        IdUser = user.IdUser
+                    };
+
+                    await _unitOfWork.ProfessionalRepository.AddAsync(professional, cancellationToken);
+                }
+
+                if (command.IdUserRole == (short)UserRoleEnum.ASSISTANT)
+                {
+                    var assistant = new Assistant
+                    {
+                        IdTenant = access.IdTenant,
+                        IdUser = user.IdUser
+                    };
+
+                    await _unitOfWork.AssistantRepository.AddAsync(assistant, cancellationToken);
+                }
+
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+                return (true, password, access.Tenant.ConsultoryName);
+            }
+            catch
+            {
+                if (_unitOfWork.IsInTransaction)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                }
+
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateMemberAsync(
+            UpdateMemberCommand command,
+            CancellationToken cancellationToken
+        )
+        {
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(
+                    command.IdUser,
+                    cancellationToken)
+                ?? throw new NotFoundException("El miembro no existe.");
+
+            if (user.IdTenant != access.IdTenant || user.DeletedAt is not null)
+            {
+                throw new InvalidOperationException("El miembro no pertenece a este consultorio.");
+            }
+
+            if (user.IdUserRole is not
+                ((short)UserRoleEnum.PROFESSIONAL or (short)UserRoleEnum.ASSISTANT))
+            {
+                throw new InvalidOperationException("El miembro no es válido.");
+            }
+
+            if (command.Username is not null)
+            {
+                var username = command.Username.Trim();
+                var usernameExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByUsername(username),
+                    cancellationToken);
+
+                if (usernameExists && !string.Equals(username, user.Username, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException("El nombre de usuario ya se encuentra registrado.");
+                }
+            }
+
+            if (command.IdentificationNumber is not null)
+            {
+                var identificationNumberExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByIdentificationNumber(command.IdentificationNumber),
+                    cancellationToken);
+
+                if (identificationNumberExists
+                    && command.IdentificationNumber != user.IdentificationNumber)
+                {
+                    throw new InvalidOperationException("El número de identificación ya se encuentra registrado.");
+                }
+            }
+
+            if (command.PhoneNumber is not null)
+            {
+                var phoneNumberExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByPhoneNumber(command.PhoneNumber),
+                    cancellationToken);
+
+                if (phoneNumberExists && command.PhoneNumber != user.PhoneNumber)
+                {
+                    throw new InvalidOperationException("El número de teléfono ya se encuentra registrado.");
+                }
+            }
+
+            if (command.Email is not null)
+            {
+                var email = command.Email.Trim().ToLowerInvariant();
+                var emailExists = await _unitOfWork.UserRepository.ExistsAsync(
+                    UserSpec.ByEmail(email),
+                    cancellationToken);
+
+                if (emailExists && !string.Equals(email, user.Email, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException("El correo electrónico ya se encuentra registrado.");
+                }
+            }
+
+            user.Username = command.Username?.Trim() ?? user.Username;
+            user.FirstName = command.FirstName?.Trim() ?? user.FirstName;
+            user.SecondName = command.SecondName?.Trim() ?? user.SecondName;
+            user.FirstSurname = command.FirstSurname?.Trim() ?? user.FirstSurname;
+            user.SecondSurname = command.SecondSurname?.Trim() ?? user.SecondSurname;
+            user.IdIdentificationType = command.IdIdentificationType ?? user.IdIdentificationType;
+            user.IdentificationNumber = command.IdentificationNumber ?? user.IdentificationNumber;
+            user.BirthDate = command.BirthDate ?? user.BirthDate;
+            user.PhoneNumber = command.PhoneNumber ?? user.PhoneNumber;
+            user.Email = command.Email?.Trim().ToLowerInvariant() ?? user.Email;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+            await _unitOfWork.UserRepository.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

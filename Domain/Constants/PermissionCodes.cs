@@ -14,19 +14,21 @@ namespace Domain.Constants
         public const string UPDATE_PATIENT = "UPDATE_PATIENT";
         public const string DELETE_PATIENT = "DELETE_PATIENT";
 
-        // Services
-        public const string GET_SERVICES = "GET_SERVICES";
-        public const string CREATE_SERVICE = "CREATE_SERVICE";
-        public const string UPDATE_SERVICE = "UPDATE_SERVICE";
-        public const string DELETE_SERVICE = "DELETE_SERVICE";
+        // Procedures
+        public const string GET_PROCEDURES = "GET_PROCEDURES";
+        public const string CREATE_PROCEDURE = "CREATE_PROCEDURE";
+        public const string UPDATE_PROCEDURE = "UPDATE_PROCEDURE";
+        public const string DELETE_PROCEDURE = "DELETE_PROCEDURE";
 
         // Appointments
         public const string GET_APPOINTMENTS = "GET_APPOINTMENTS";
         public const string CREATE_APPOINTMENT = "CREATE_APPOINTMENT";
         public const string UPDATE_APPOINTMENT = "UPDATE_APPOINTMENT";
 
-        // Users
-        public const string GET_PROFESSIONALS = "GET_PROFESSIONALS";
+        // Users / Team
+        public const string GET_TEAM = "GET_TEAM";
+        public const string CREATE_MEMBER = "CREATE_MEMBER";
+        public const string UPDATE_MEMBER = "UPDATE_MEMBER";
 
         // Treatments
         public const string GET_TREATMENTS = "GET_TREATMENTS";

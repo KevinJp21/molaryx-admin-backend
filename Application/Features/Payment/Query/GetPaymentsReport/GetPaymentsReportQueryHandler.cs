@@ -73,7 +73,11 @@ namespace Application.Features.Payment.Query.GetPaymentsReport
                 IdentificationNumber = payment.Patient.IdentificationNumber.Trim(),
                 Concept = isAppointmentPayment ? "Cita" : "Tratamiento",
                 TreatmentName = payment.PatientTreatment?.Treatment.Name ?? "—",
-                ServiceName = payment.Appointment?.Service.Name ?? "—",
+                ProcedureNames = payment.Appointment is null
+                    ? "—"
+                    : string.Join(
+                        ", ",
+                        payment.Appointment.AppointmentProcedures.Select(p => p.Procedure.Name)),
                 PaymentMethod = payment.PaymentMethod.Name,
                 Amount = payment.Amount,
                 Notes = string.IsNullOrWhiteSpace(payment.Notes) ? "—" : payment.Notes.Trim(),

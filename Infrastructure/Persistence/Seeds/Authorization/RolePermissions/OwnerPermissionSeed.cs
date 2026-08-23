@@ -23,22 +23,22 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
                 IdUserRole = (short)UserRoleEnum.OWNER,
                 IdPermission = (short)PermissionEnum.DELETE_PATIENT
             },
-            // Services
+            // Procedures
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.GET_SERVICES
+                IdPermission = (short)PermissionEnum.GET_PROCEDURES
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.CREATE_SERVICE
+                IdPermission = (short)PermissionEnum.CREATE_PROCEDURE
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.UPDATE_SERVICE
+                IdPermission = (short)PermissionEnum.UPDATE_PROCEDURE
             },
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.DELETE_SERVICE
+                IdPermission = (short)PermissionEnum.DELETE_PROCEDURE
             },
             // Appointments
             new RolePermission{
@@ -56,7 +56,15 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
             // Users
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,
-                IdPermission = (short)PermissionEnum.GET_PROFESSIONALS
+                IdPermission = (short)PermissionEnum.GET_TEAM
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.CREATE_MEMBER
+            },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.UPDATE_MEMBER
             },
             // Treatments
             new RolePermission{

@@ -10,7 +10,7 @@ namespace Application.Common.Validation
         public static bool IsValidType(short idIdentificationType) =>
             Enum.IsDefined(typeof(IdentificationTypeEnum), idIdentificationType);
 
-        public static bool IsAllowedForOwner(short idIdentificationType) =>
+        public static bool IsAllowedForUser(short idIdentificationType) =>
             idIdentificationType is
                 (short)IdentificationTypeEnum.CC or
                 (short)IdentificationTypeEnum.CE;

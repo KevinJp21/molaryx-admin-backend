@@ -46,7 +46,7 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                 request.IdPatient,
                 recordedFrom: recordedFrom,
                 recordedToInclusive: recordedToInclusive,
-                orderAscending: true);
+                orderAscending: false);
 
             var records = await _unitOfWork.ClinicalRecordRepository.GetAll(spec, cancellationToken)
                 ?? [];
@@ -111,9 +111,34 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                 CreatedBySurname = FormatGivenNames(
                     record.CreatedByUser.FirstSurname,
                     record.CreatedByUser.SecondSurname),
+                AttendedByName = MapAttendedByName(record),
+                AttendedBySurname = MapAttendedBySurname(record),
                 Reference = MapReference(record),
-                ServiceName = record.Service?.Name ?? record.Appointment?.Service?.Name
+                PatientTreatmentName = MapPatientTreatmentName(record),
+                ProcedureName = MapProcedureName(record)
             };
+        }
+
+        private static string? MapAttendedByName(Domain.Entities.ClinicalRecord record)
+        {
+            var user = record.Appointment?.Professional?.User;
+            if (user is null)
+            {
+                return null;
+            }
+
+            return FormatGivenNames(user.FirstName, user.SecondName);
+        }
+
+        private static string? MapAttendedBySurname(Domain.Entities.ClinicalRecord record)
+        {
+            var user = record.Appointment?.Professional?.User;
+            if (user is null)
+            {
+                return null;
+            }
+
+            return FormatGivenNames(user.FirstSurname, user.SecondSurname);
         }
 
         private static string? MapReference(Domain.Entities.ClinicalRecord record)
@@ -129,6 +154,35 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
             }
 
             return null;
+        }
+
+        private static string? MapPatientTreatmentName(Domain.Entities.ClinicalRecord record)
+        {
+            var name = record.PatientTreatment?.Treatment?.Name
+                ?? record.Appointment?.PatientTreatment?.Treatment?.Name;
+
+            return string.IsNullOrWhiteSpace(name) ? null : name.Trim();
+        }
+
+        private static string? MapProcedureName(Domain.Entities.ClinicalRecord record)
+        {
+            if (record.Appointment?.AppointmentProcedures is { Count: > 0 })
+            {
+                var names = record.Appointment.AppointmentProcedures
+                    .Select(p => p.Procedure?.Name)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .Select(name => name!.Trim())
+                    .ToArray();
+
+                if (names.Length > 0)
+                {
+                    return string.Join(", ", names);
+                }
+            }
+
+            return string.IsNullOrWhiteSpace(record.Procedure?.Name)
+                ? null
+                : record.Procedure.Name.Trim();
         }
 
         private static string FormatGivenNames(string first, string? second)
