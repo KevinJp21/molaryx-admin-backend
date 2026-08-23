@@ -45,6 +45,12 @@ namespace Infrastructure.Persistence.Seeds.Authorization
                 .HasData(OwnerPermissionSeed.Data);
 
             modelBuilder.Entity<RolePermission>()
+                .HasData(AssistantPermissionSeed.Data);
+
+            modelBuilder.Entity<RolePermission>()
+                .HasData(ProfessionalPermissionSeed.Data);
+
+            modelBuilder.Entity<RolePermission>()
                 .HasData(SurperAdminPermissionSeed.Data);
         }
     }

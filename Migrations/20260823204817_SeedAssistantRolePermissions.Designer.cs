@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace molaryxadmin.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260823204817_SeedAssistantRolePermissions")]
+    partial class SeedAssistantRolePermissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1649,76 +1652,6 @@ namespace molaryxadmin.Migrations
                         {
                             IdUserRole = (short)5,
                             IdPermission = (short)22
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)4
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)5
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)6
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)8
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)12
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)13
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)14
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)15
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)17
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)22
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)21
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)23
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)27
-                        },
-                        new
-                        {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)28
                         },
                         new
                         {
