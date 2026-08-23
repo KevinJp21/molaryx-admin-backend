@@ -1,5 +1,6 @@
 using Domain.Common;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Domain.Specifications
 {
@@ -19,7 +20,8 @@ namespace Domain.Specifications
         {
             var spec = new UserSpec
             {
-                Criteria = u => u.IdTenant == idTenant,
+                Criteria = u => u.IdTenant == idTenant &&
+                    u.DeletedAt == null,
                 OrderBy = u => u.FirstName
             };
             spec.AddInclude(u => u.UserStatus);
@@ -86,6 +88,18 @@ namespace Domain.Specifications
             var spec = new UserSpec
             {
                 Criteria = u => u.PhoneNumber == phoneNumber
+            };
+            return spec;
+        }
+
+        public static UserSpec ForTeamCount(long idTenant, short idUserRole)
+        {
+            var spec = new UserSpec
+            {
+                Criteria = u => u.IdTenant == idTenant && 
+                u.IdUserRole == idUserRole && 
+                u.IdUserRole != (short)UserRoleEnum.OWNER &&
+                u.DeletedAt == null
             };
             return spec;
         }

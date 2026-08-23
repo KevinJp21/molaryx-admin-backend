@@ -1,5 +1,6 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
+using Application.Features.Users.Command.CreateMember;
 using Application.Features.Users.Query.GetTeam;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,20 @@ namespace Presentation.Controllers
                 new ApiResponse<PagedResult<GetTeamResponse>>(
                     "Equipo obtenido de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.CREATE_MEMBER)]
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<bool>>> CreateMember(
+            [FromBody] CreateMemberCommand body,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Miembro registrado de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
                 )
             );
         }

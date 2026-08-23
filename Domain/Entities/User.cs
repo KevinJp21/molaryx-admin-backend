@@ -37,6 +37,8 @@ namespace Domain.Entities
         public byte[] Password { get; set; } = null!;
         [Column("salt")]
         public byte[] Salt { get; set; } = null!;
+        [Column("deleted_at")]
+        public DateTime? DeletedAt { get; set; }
 
         // Navigation properties
         public UserStatus UserStatus { get; set; } = null!;

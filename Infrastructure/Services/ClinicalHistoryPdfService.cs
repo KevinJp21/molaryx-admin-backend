@@ -760,19 +760,35 @@ namespace Infrastructure.Services
                     Unit.FromPoint(2);
             }
 
-            var professionalName =
-                $"{record.CreatedByName} " +
-                $"{record.CreatedBySurname}".Trim();
+            var attendedByName =
+                $"{record.AttendedByName} {record.AttendedBySurname}".Trim();
 
-            var professional =
+            if (!string.IsNullOrWhiteSpace(attendedByName))
+            {
+                var attendedBy =
+                    body.AddParagraph(
+                        $"Profesional · {attendedByName}");
+
+                attendedBy.Format.Font.Size = 7.5;
+                attendedBy.Format.Font.Color =
+                    MolaryxPdfTheme.Ink300;
+
+                attendedBy.Format.SpaceAfter =
+                    Unit.FromPoint(2);
+            }
+
+            var registeredByName =
+                $"{record.CreatedByName} {record.CreatedBySurname}".Trim();
+
+            var registeredBy =
                 body.AddParagraph(
-                    $"Profesional · {professionalName}");
+                    $"Registrado por · {registeredByName}");
 
-            professional.Format.Font.Size = 7.5;
-            professional.Format.Font.Color =
+            registeredBy.Format.Font.Size = 7.5;
+            registeredBy.Format.Font.Color =
                 MolaryxPdfTheme.Ink300;
 
-            professional.Format.SpaceAfter =
+            registeredBy.Format.SpaceAfter =
                 Unit.FromPoint(5);
 
             DrawTimelineClinicalField(

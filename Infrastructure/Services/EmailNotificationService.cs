@@ -105,6 +105,35 @@ namespace Infrastructure.Services
                 cancellationToken
             );
         }
+
+        public async Task SendWelcomeMemberEmailAsync(
+            string email,
+            string firstName,
+            string temporaryPassword,
+            string consultoryName,
+            CancellationToken cancellationToken = default)
+        {
+            var name = firstName.Trim().Split(' ')[0];
+
+            var html = EmailTemplateService.RenderTemplate(
+                "WelcomeMember",
+                new Dictionary<string, string>
+                {
+                    ["Name"] = name,
+                    ["Email"] = email,
+                    ["TemporaryPassword"] = temporaryPassword,
+                    ["ConsultoryName"] = consultoryName
+                }
+            );
+
+            await _emailService.SendAsync(
+                EmailFrom.NoReply,
+                email,
+                "¡Bienvenido a Molaryx!",
+                html,
+                cancellationToken
+            );
+        }
     }
 
 }

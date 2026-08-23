@@ -111,10 +111,34 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                 CreatedBySurname = FormatGivenNames(
                     record.CreatedByUser.FirstSurname,
                     record.CreatedByUser.SecondSurname),
+                AttendedByName = MapAttendedByName(record),
+                AttendedBySurname = MapAttendedBySurname(record),
                 Reference = MapReference(record),
                 PatientTreatmentName = MapPatientTreatmentName(record),
                 ProcedureName = MapProcedureName(record)
             };
+        }
+
+        private static string? MapAttendedByName(Domain.Entities.ClinicalRecord record)
+        {
+            var user = record.Appointment?.Professional?.User;
+            if (user is null)
+            {
+                return null;
+            }
+
+            return FormatGivenNames(user.FirstName, user.SecondName);
+        }
+
+        private static string? MapAttendedBySurname(Domain.Entities.ClinicalRecord record)
+        {
+            var user = record.Appointment?.Professional?.User;
+            if (user is null)
+            {
+                return null;
+            }
+
+            return FormatGivenNames(user.FirstSurname, user.SecondSurname);
         }
 
         private static string? MapReference(Domain.Entities.ClinicalRecord record)

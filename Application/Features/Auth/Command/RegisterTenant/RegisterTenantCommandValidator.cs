@@ -175,7 +175,7 @@ namespace Application.Features.Auth.Command.RegisterTenant
                     );
 
                 RuleFor(x => x.Owner.IdIdentificationType)
-                    .Must(IdentificationValidation.IsAllowedForOwner)
+                    .Must(IdentificationValidation.IsAllowedForUser)
                     .WithMessage(
                         "El tipo de identificación del propietario no es válido. Use CC o CE."
                     );
@@ -194,7 +194,7 @@ namespace Application.Features.Auth.Command.RegisterTenant
                         x => !string.IsNullOrWhiteSpace(
                             x.Owner.IdentificationNumber
                         )
-                        && IdentificationValidation.IsAllowedForOwner(
+                        && IdentificationValidation.IsAllowedForUser(
                             x.Owner.IdIdentificationType
                         ),
                         ApplyConditionTo.CurrentValidator

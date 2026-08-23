@@ -42,6 +42,8 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.Salt).HasColumnType("bytea").IsRequired();
 
+            builder.Property(u => u.DeletedAt);
+
             builder.Property(u => u.CreatedAt).IsRequired();
 
             builder.Property(u => u.UpdatedAt);

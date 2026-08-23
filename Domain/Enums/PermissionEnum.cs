@@ -26,25 +26,26 @@ namespace Domain.Enums
 
         // Users / Team
         GET_TEAM = 15,
+        CREATE_MEMBER = 16,
 
         // Treatments
-        GET_TREATMENTS = 16,
-        CREATE_TREATMENT = 17,
-        UPDATE_TREATMENT = 18,
-        DELETE_TREATMENT = 19,
+        GET_TREATMENTS = 17,
+        CREATE_TREATMENT = 18,
+        UPDATE_TREATMENT = 19,
+        DELETE_TREATMENT = 20,
 
         // Patient treatments
-        CREATE_PATIENT_TREATMENT = 20,
-        GET_PATIENT_TREATMENTS = 21,
-        UPDATE_PATIENT_TREATMENT = 22,
+        CREATE_PATIENT_TREATMENT = 21,
+        GET_PATIENT_TREATMENTS = 22,
+        UPDATE_PATIENT_TREATMENT = 23,
 
         // Payments
-        CREATE_PAYMENT = 23,
-        GET_PAYMENTS = 24,
-        GET_PAYMENTS_SUMMARY_BY_CONCEPT = 25,
+        CREATE_PAYMENT = 24,
+        GET_PAYMENTS = 25,
+        GET_PAYMENTS_SUMMARY_BY_CONCEPT = 26,
 
         // Clinical records
-        CREATE_CLINICAL_RECORD = 26,
-        GET_CLINICAL_RECORDS = 27,
+        CREATE_CLINICAL_RECORD = 27,
+        GET_CLINICAL_RECORDS = 28,
     }
 }

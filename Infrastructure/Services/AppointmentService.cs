@@ -321,7 +321,7 @@ namespace Infrastructure.Services
             if (user.IdUserRole != (short)UserRoleEnum.OWNER)
             {
                 throw new InvalidOperationException(
-                    "El usuario seleccionado no es un profesional de este consultorio.");
+                    "El profesional seleccionado no está registrado en este consultorio.");
             }
 
             if (!_unitOfWork.IsInTransaction)
