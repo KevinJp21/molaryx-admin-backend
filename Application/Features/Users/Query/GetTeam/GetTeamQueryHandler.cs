@@ -47,7 +47,7 @@ namespace Application.Features.Users.Query.GetTeam
                     IdentificationType = user.IdentificationType.Name,
                     IdIdentificationType = user.IdIdentificationType,
                     IdentificationNumber = user.IdentificationNumber,
-                    BirthDate = user.BirthDate.ToString(),
+                    BirthDate = user.BirthDate,
                     PhoneNumber = user.PhoneNumber,
                     Email = user.Email
                 })],

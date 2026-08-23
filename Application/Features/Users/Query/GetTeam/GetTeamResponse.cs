@@ -15,7 +15,7 @@ namespace Application.Features.Users.Query.GetTeam
         public string IdentificationType { get; set; } = string.Empty;
         public short IdIdentificationType { get; set; }
         public string IdentificationNumber { get; set; } = string.Empty;
-        public string BirthDate { get; set; } = string.Empty;
+        public DateOnly BirthDate { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
     }
