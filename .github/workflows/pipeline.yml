@@ -130,14 +130,6 @@ jobs:
           echo "Backup saved: \${BACKUP_FILE}"
 
           echo "========================================"
-          echo "Updating IMAGE_TAG..."
-          echo "========================================"
-
-          sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
-
-          grep '^IMAGE_TAG=' .env
-
-          echo "========================================"
           echo "Authenticating with GHCR..."
           echo "========================================"
 
@@ -159,7 +151,21 @@ jobs:
           echo "Pulling ${IMAGE_TAG}..."
           echo "========================================"
 
-          docker compose pull api
+          IMAGE_TAG=${IMAGE_TAG} docker compose pull api
+
+          echo "========================================"
+          echo "Updating IMAGE_TAG..."
+          echo "========================================"
+
+          sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${IMAGE_TAG}/" .env
+
+          grep '^IMAGE_TAG=' .env
+
+          echo "========================================"
+          echo "Stopping API before migration..."
+          echo "========================================"
+
+          docker compose stop api
 
           echo "========================================"
           echo "Applying EF Core migrations..."
@@ -179,11 +185,42 @@ jobs:
               -v ON_ERROR_STOP=1 \
               < "\${BACKUP_FILE}"
 
+            echo "Database restored."
+
             if [ -n "\${PREVIOUS_TAG}" ]; then
               sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
+
+              echo "Restoring API version: \${PREVIOUS_TAG}"
+
+              IMAGE_TAG="\${PREVIOUS_TAG}" docker compose pull api
+              docker compose up -d api
             fi
 
-            echo "Database restored."
+            echo "Waiting for rollback health..."
+
+            for i in \$(seq 1 12); do
+              if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
+                echo "Rollback successful."
+
+                docker compose ps
+                exit 1
+              fi
+
+              echo "Rollback health check attempt \${i}/12 failed."
+
+              if [ "\${i}" -lt 12 ]; then
+                sleep 5
+              fi
+            done
+
+            echo "========================================"
+            echo "CRITICAL: Migration failed and rollback health check also failed."
+            echo "Backup: \${BACKUP_FILE}"
+            echo "Previous version: \${PREVIOUS_TAG}"
+            echo "========================================"
+
+            docker compose ps
+            docker logs molaryx-api --tail 100
 
             exit 1
           fi
@@ -233,14 +270,8 @@ jobs:
           echo "Starting rollback..."
           echo "========================================"
 
-          if [ -n "\${PREVIOUS_TAG}" ]; then
-            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
-
-            echo "Restoring API version: \${PREVIOUS_TAG}"
-
-            docker compose pull api
-            docker compose up -d api
-          fi
+          echo "Stopping API before database restore..."
+          docker compose stop api
 
           echo "Restoring database..."
 
@@ -252,6 +283,15 @@ jobs:
             < "\${BACKUP_FILE}"
 
           echo "Database restored."
+
+          if [ -n "\${PREVIOUS_TAG}" ]; then
+            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
+
+            echo "Restoring API version: \${PREVIOUS_TAG}"
+
+            IMAGE_TAG="\${PREVIOUS_TAG}" docker compose pull api
+            docker compose up -d api
+          fi
 
           echo "Waiting for rollback health..."
 

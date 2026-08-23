@@ -13,6 +13,7 @@ namespace Application.Features.Users.Query.GetTeam
         public string FirstSurname { get; set; } = string.Empty;
         public string? SecondSurname { get; set; }
         public string IdentificationType { get; set; } = string.Empty;
+        public short IdIdentificationType { get; set; }
         public string IdentificationNumber { get; set; } = string.Empty;
         public string BirthDate { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;

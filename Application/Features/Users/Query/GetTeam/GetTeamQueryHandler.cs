@@ -45,6 +45,7 @@ namespace Application.Features.Users.Query.GetTeam
                     FirstSurname = user.FirstSurname,
                     SecondSurname = user.SecondSurname,
                     IdentificationType = user.IdentificationType.Name,
+                    IdIdentificationType = user.IdIdentificationType,
                     IdentificationNumber = user.IdentificationNumber,
                     BirthDate = user.BirthDate.ToString(),
                     PhoneNumber = user.PhoneNumber,
