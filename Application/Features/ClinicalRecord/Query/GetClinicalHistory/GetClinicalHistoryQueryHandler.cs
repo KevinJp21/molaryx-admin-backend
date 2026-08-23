@@ -46,7 +46,7 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                 request.IdPatient,
                 recordedFrom: recordedFrom,
                 recordedToInclusive: recordedToInclusive,
-                orderAscending: true);
+                orderAscending: false);
 
             var records = await _unitOfWork.ClinicalRecordRepository.GetAll(spec, cancellationToken)
                 ?? [];
@@ -112,12 +112,8 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                     record.CreatedByUser.FirstSurname,
                     record.CreatedByUser.SecondSurname),
                 Reference = MapReference(record),
-                ProcedureName = record.Procedure?.Name
-                    ?? (record.Appointment is null
-                        ? null
-                        : string.Join(
-                            ", ",
-                            record.Appointment.AppointmentProcedures.Select(p => p.Procedure.Name)))
+                PatientTreatmentName = MapPatientTreatmentName(record),
+                ProcedureName = MapProcedureName(record)
             };
         }
 
@@ -134,6 +130,35 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
             }
 
             return null;
+        }
+
+        private static string? MapPatientTreatmentName(Domain.Entities.ClinicalRecord record)
+        {
+            var name = record.PatientTreatment?.Treatment?.Name
+                ?? record.Appointment?.PatientTreatment?.Treatment?.Name;
+
+            return string.IsNullOrWhiteSpace(name) ? null : name.Trim();
+        }
+
+        private static string? MapProcedureName(Domain.Entities.ClinicalRecord record)
+        {
+            if (record.Appointment?.AppointmentProcedures is { Count: > 0 })
+            {
+                var names = record.Appointment.AppointmentProcedures
+                    .Select(p => p.Procedure?.Name)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .Select(name => name!.Trim())
+                    .ToArray();
+
+                if (names.Length > 0)
+                {
+                    return string.Join(", ", names);
+                }
+            }
+
+            return string.IsNullOrWhiteSpace(record.Procedure?.Name)
+                ? null
+                : record.Procedure.Name.Trim();
         }
 
         private static string FormatGivenNames(string first, string? second)

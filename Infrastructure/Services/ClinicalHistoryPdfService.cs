@@ -715,23 +715,50 @@ namespace Infrastructure.Services
             body.Format.RightIndent = Unit.FromPoint(1);
             body.VerticalAlignment = VerticalAlignment.Top;
 
-            var heading =
-                body.AddParagraph(
-                    GetRecordTitle(record));
-
-            heading.Format.Font.Size = 10.5;
-            heading.Format.Font.Bold = true;
-            heading.Format.Font.Color =
-                MolaryxPdfTheme.Ink50;
-
-            if (index > 1)
+            if (!string.IsNullOrWhiteSpace(record.Reference))
             {
-                heading.Format.SpaceBefore =
-                    Unit.FromPoint(10);
-            }
+                var reference =
+                    body.AddParagraph();
 
-            heading.Format.SpaceAfter =
-                Unit.FromPoint(2);
+                reference.Format.Font.Size = 7;
+
+                if (index > 1)
+                {
+                    reference.Format.SpaceBefore =
+                        Unit.FromPoint(10);
+                }
+
+                var referenceText =
+                    reference.AddFormattedText(
+                        record.Reference.Trim(),
+                        TextFormat.Bold);
+
+                referenceText.Font.Size = 7;
+                referenceText.Font.Color =
+                    MolaryxPdfTheme.Accent500;
+
+                reference.Format.SpaceAfter =
+                    Unit.FromPoint(5);
+            }
+            else
+            {
+                var heading =
+                    body.AddParagraph("Evolución clínica");
+
+                heading.Format.Font.Size = 10.5;
+                heading.Format.Font.Bold = true;
+                heading.Format.Font.Color =
+                    MolaryxPdfTheme.Ink50;
+
+                if (index > 1)
+                {
+                    heading.Format.SpaceBefore =
+                        Unit.FromPoint(10);
+                }
+
+                heading.Format.SpaceAfter =
+                    Unit.FromPoint(2);
+            }
 
             var professionalName =
                 $"{record.CreatedByName} " +
@@ -748,25 +775,15 @@ namespace Infrastructure.Services
             professional.Format.SpaceAfter =
                 Unit.FromPoint(5);
 
-            if (!string.IsNullOrWhiteSpace(record.Reference))
-            {
-                var reference =
-                    body.AddParagraph();
+            DrawTimelineClinicalField(
+                body,
+                "Plan de tratamiento",
+                record.PatientTreatmentName);
 
-                reference.Format.Font.Size = 7;
-
-                var referenceText =
-                    reference.AddFormattedText(
-                        record.Reference.Trim(),
-                        TextFormat.Bold);
-
-                referenceText.Font.Size = 7;
-                referenceText.Font.Color =
-                    MolaryxPdfTheme.Accent500;
-
-                reference.Format.SpaceAfter =
-                    Unit.FromPoint(5);
-            }
+            DrawTimelineClinicalField(
+                body,
+                "Procedimientos",
+                record.ProcedureName);
 
             DrawTimelineClinicalField(
                 body,
@@ -1082,22 +1099,6 @@ namespace Infrastructure.Services
             int count)
         {
             return $"{count} registro{(count == 1 ? "" : "s")}";
-        }
-
-        private static string GetRecordTitle(
-            ClinicalHistoryRecordInformation record)
-        {
-            if (!string.IsNullOrWhiteSpace(record.ProcedureName))
-            {
-                return record.ProcedureName.Trim();
-            }
-
-            if (!string.IsNullOrWhiteSpace(record.Reference))
-            {
-                return record.Reference.Trim();
-            }
-
-            return "Evolución clínica";
         }
 
         private static string FormatTimelineDayMonth(

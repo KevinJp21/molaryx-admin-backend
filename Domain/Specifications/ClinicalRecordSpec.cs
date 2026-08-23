@@ -35,6 +35,8 @@ namespace Domain.Specifications
             AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.AppointmentStatus)}");
             AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Professional)}");
             AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.Professional)}.{nameof(Professional.User)}");
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.PatientTreatment)}");
+            AddInclude($"{nameof(ClinicalRecord.Appointment)}.{nameof(Appointment.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
             AddInclude(c => c.PatientTreatment!);
             AddInclude($"{nameof(ClinicalRecord.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
             AddInclude($"{nameof(ClinicalRecord.PatientTreatment)}.{nameof(PatientTreatment.PatientTreatmentStatus)}");
