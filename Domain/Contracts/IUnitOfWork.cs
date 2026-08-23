@@ -37,6 +37,8 @@ namespace Domain.Contracts
 
         public IProfessionalRepository ProfessionalRepository { get; }
 
+        public IAssistantRepository AssistantRepository { get; }
+
         public ITreatmentRepository TreatmentRepository { get; }
 
         public IPatientTreatmentRepository PatientTreatmentRepository { get; }

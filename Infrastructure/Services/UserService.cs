@@ -240,11 +240,15 @@ namespace Infrastructure.Services
                     await _unitOfWork.ProfessionalRepository.AddAsync(professional, cancellationToken);
                 }
 
-                // TODO: Crear entidad de asistente
-
                 if (command.IdUserRole == (short)UserRoleEnum.ASSISTANT)
                 {
-                    throw new NotImplementedException("Modulo no implementado.");
+                    var assistant = new Assistant
+                    {
+                        IdTenant = access.IdTenant,
+                        IdUser = user.IdUser
+                    };
+
+                    await _unitOfWork.AssistantRepository.AddAsync(assistant, cancellationToken);
                 }
 
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
