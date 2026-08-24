@@ -106,12 +106,88 @@ jobs:
           fi
 
           BACKUP_DIR="/opt/molaryx/backups"
-          BACKUP_FILE="\${BACKUP_DIR}/pre-${IMAGE_TAG}-\$(date +%Y%m%d%H%M%S).sql"
+          BACKUP_FILE="\${BACKUP_DIR}/pre-${IMAGE_TAG}-\$(date +%Y%m%d%H%M%S).dump"
 
           POSTGRES_USER=\$(grep '^POSTGRES_USER=' .env | cut -d '=' -f2-)
           POSTGRES_DB=\$(grep '^POSTGRES_DB=' .env | cut -d '=' -f2-)
 
           mkdir -p "\${BACKUP_DIR}"
+
+          rollback_to_backup() {
+            local reason="\$1"
+
+            echo "========================================"
+            echo "Starting rollback (\${reason})..."
+            echo "========================================"
+
+            echo "Stopping API before database restore..."
+            docker compose stop api
+
+            echo "Recreating database..."
+
+            docker compose exec -T postgres \
+              psql \
+              -U "\${POSTGRES_USER}" \
+              -d postgres \
+              -v ON_ERROR_STOP=1 \
+              -c "DROP DATABASE \\"\${POSTGRES_DB}\\" WITH (FORCE);"
+
+            docker compose exec -T postgres \
+              psql \
+              -U "\${POSTGRES_USER}" \
+              -d postgres \
+              -v ON_ERROR_STOP=1 \
+              -c "CREATE DATABASE \\"\${POSTGRES_DB}\\";"
+
+            echo "Restoring database from backup..."
+
+            docker compose exec -T postgres \
+              pg_restore \
+              -U "\${POSTGRES_USER}" \
+              -d "\${POSTGRES_DB}" \
+              --clean \
+              --if-exists \
+              --no-owner \
+              < "\${BACKUP_FILE}"
+
+            echo "Database restored."
+
+            if [ -n "\${PREVIOUS_TAG}" ]; then
+              sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
+
+              echo "Restoring API version: \${PREVIOUS_TAG}"
+
+              IMAGE_TAG="\${PREVIOUS_TAG}" docker compose pull api
+              docker compose up -d api
+            fi
+
+            echo "Waiting for rollback health..."
+
+            for i in \$(seq 1 12); do
+              if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
+                echo "Rollback successful."
+                docker compose ps
+                return 0
+              fi
+
+              echo "Rollback health check attempt \${i}/12 failed."
+
+              if [ "\${i}" -lt 12 ]; then
+                sleep 5
+              fi
+            done
+
+            echo "========================================"
+            echo "CRITICAL: Rollback health check failed."
+            echo "Backup: \${BACKUP_FILE}"
+            echo "Previous version: \${PREVIOUS_TAG}"
+            echo "========================================"
+
+            docker compose ps
+            docker logs molaryx-api --tail 100
+
+            return 1
+          }
 
           echo "========================================"
           echo "Creating database backup..."
@@ -120,8 +196,7 @@ jobs:
           docker compose exec -T postgres \
             pg_dump \
             -U "\${POSTGRES_USER}" \
-            --clean \
-            --if-exists \
+            -Fc \
             "\${POSTGRES_DB}" \
             > "\${BACKUP_FILE}"
 
@@ -176,51 +251,9 @@ jobs:
 
             echo "ERROR: Migration failed."
 
-            echo "Restoring database..."
-
-            docker compose exec -T postgres \
-              psql \
-              -U "\${POSTGRES_USER}" \
-              -d "\${POSTGRES_DB}" \
-              -v ON_ERROR_STOP=1 \
-              < "\${BACKUP_FILE}"
-
-            echo "Database restored."
-
-            if [ -n "\${PREVIOUS_TAG}" ]; then
-              sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
-
-              echo "Restoring API version: \${PREVIOUS_TAG}"
-
-              IMAGE_TAG="\${PREVIOUS_TAG}" docker compose pull api
-              docker compose up -d api
+            if rollback_to_backup "migration failed"; then
+              exit 1
             fi
-
-            echo "Waiting for rollback health..."
-
-            for i in \$(seq 1 12); do
-              if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
-                echo "Rollback successful."
-
-                docker compose ps
-                exit 1
-              fi
-
-              echo "Rollback health check attempt \${i}/12 failed."
-
-              if [ "\${i}" -lt 12 ]; then
-                sleep 5
-              fi
-            done
-
-            echo "========================================"
-            echo "CRITICAL: Migration failed and rollback health check also failed."
-            echo "Backup: \${BACKUP_FILE}"
-            echo "Previous version: \${PREVIOUS_TAG}"
-            echo "========================================"
-
-            docker compose ps
-            docker logs molaryx-api --tail 100
 
             exit 1
           fi
@@ -266,49 +299,9 @@ jobs:
 
           docker logs molaryx-api --tail 100
 
-          echo "========================================"
-          echo "Starting rollback..."
-          echo "========================================"
-
-          echo "Stopping API before database restore..."
-          docker compose stop api
-
-          echo "Restoring database..."
-
-          docker compose exec -T postgres \
-            psql \
-            -U "\${POSTGRES_USER}" \
-            -d "\${POSTGRES_DB}" \
-            -v ON_ERROR_STOP=1 \
-            < "\${BACKUP_FILE}"
-
-          echo "Database restored."
-
-          if [ -n "\${PREVIOUS_TAG}" ]; then
-            sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=\${PREVIOUS_TAG}/" .env
-
-            echo "Restoring API version: \${PREVIOUS_TAG}"
-
-            IMAGE_TAG="\${PREVIOUS_TAG}" docker compose pull api
-            docker compose up -d api
+          if rollback_to_backup "API health failed"; then
+            exit 1
           fi
-
-          echo "Waiting for rollback health..."
-
-          for i in \$(seq 1 12); do
-            if curl -fsS -o /dev/null http://127.0.0.1:3000/; then
-              echo "Rollback successful."
-
-              docker compose ps
-              exit 1
-            fi
-
-            echo "Rollback health check attempt \${i}/12 failed."
-
-            if [ "\${i}" -lt 12 ]; then
-              sleep 5
-            fi
-          done
 
           echo "========================================"
           echo "CRITICAL ERROR"
@@ -317,9 +310,6 @@ jobs:
           echo "Backup: \${BACKUP_FILE}"
           echo "Previous version: \${PREVIOUS_TAG}"
           echo "========================================"
-
-          docker compose ps
-          docker logs molaryx-api --tail 100
 
           exit 1
 
