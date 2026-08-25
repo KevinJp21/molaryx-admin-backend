@@ -1,5 +1,6 @@
 using Application.Features.Appointment.Command.CreateAppointment;
 using Application.Features.Appointment.Command.UpdateAppointment;
+using Application.Context;
 using Domain.Common.Appointments;
 using Domain.Common.Patients;
 using Domain.Contracts;
@@ -13,7 +14,9 @@ namespace Infrastructure.Services
     public class AppointmentService(
         IUnitOfWork _unitOfWork,
         ITenantAccessService _tenantAccessService,
-        ITenantResourceService _tenantResourceService
+        ITenantResourceService _tenantResourceService,
+        INotificationHandler _notificationHandler,
+        ICurrentUser _currentUser
     ) : IAppointmentService
     {
         public async Task<bool> CreateAppointment(
@@ -46,7 +49,7 @@ namespace Infrastructure.Services
                     excludeIdAppointment: null,
                     cancellationToken);
 
-                await AddAppointmentAsync(
+                var appointment = await AddAppointmentAsync(
                     idTenant,
                     professional.IdProfessional,
                     request,
@@ -59,6 +62,15 @@ namespace Infrastructure.Services
                 else
                 {
                     await _unitOfWork.AppointmentRepository.SaveChangesAsync(cancellationToken);
+                }
+
+                if (_currentUser.IdUser != professional.IdUser)
+                {
+                    await _notificationHandler.NotifyAppointmentAssignedAsync(
+                        idTenant,
+                        professional.IdUser,
+                        appointment.IdAppointment,
+                        cancellationToken);
                 }
 
                 return true;
@@ -146,7 +158,9 @@ namespace Infrastructure.Services
 
             try
             {
+                var previousIdProfessional = appointment.IdProfessional;
                 long idProfessional = appointment.IdProfessional;
+                long? newProfessionalIdUser = null;
 
                 if (request.IdUser.HasValue)
                 {
@@ -155,6 +169,7 @@ namespace Infrastructure.Services
                         request.IdUser.Value,
                         cancellationToken);
                     idProfessional = professional.IdProfessional;
+                    newProfessionalIdUser = professional.IdUser;
                 }
 
                 var scheduleChanged =
@@ -171,6 +186,11 @@ namespace Infrastructure.Services
                         endAt,
                         appointment.IdAppointment,
                         cancellationToken);
+
+                    if (startAt != appointment.StartAt)
+                    {
+                        appointment.ReminderSentAt = null;
+                    }
                 }
 
                 appointment.IdPatient = idPatient;
@@ -214,6 +234,17 @@ namespace Infrastructure.Services
                 else
                 {
                     await _unitOfWork.AppointmentRepository.SaveChangesAsync(cancellationToken);
+                }
+
+                if (idProfessional != previousIdProfessional
+                    && newProfessionalIdUser is long idUser
+                    && _currentUser.IdUser != idUser)
+                {
+                    await _notificationHandler.NotifyAppointmentAssignedAsync(
+                        idTenant,
+                        idUser,
+                        appointment.IdAppointment,
+                        cancellationToken);
                 }
 
                 return true;
@@ -357,7 +388,7 @@ namespace Infrastructure.Services
             }
         }
 
-        private async Task AddAppointmentAsync(
+        private async Task<Appointment> AddAppointmentAsync(
             long idTenant,
             long idProfessional,
             CreateAppointmentCommand request,
@@ -387,6 +418,8 @@ namespace Infrastructure.Services
             };
 
             await _unitOfWork.AppointmentRepository.AddAsync(appointment, cancellationToken);
+
+            return appointment;
         }
     }
 }

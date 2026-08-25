@@ -67,6 +67,20 @@ builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProv
 builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, PermissionAuthorizationMiddlewareResultHandler>();
 builder.Services.AddHostedService<ExpiredPromotionBackgroundService>();
+builder.Services.AddHostedService<AppointmentReminderBackgroundService>();
+
+var frontendUrl = builder.Configuration["App:FrontendUrl"] ?? "http://localhost:3001";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PoliticaCors", policy =>
+    {
+        policy
+            .WithOrigins(frontendUrl)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
 
@@ -126,6 +140,8 @@ app.UseRateLimiter();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHub<Presentation.Hubs.NotificationHub>("/api/v1/hub/notifications");
 
 app.MapControllers();
 

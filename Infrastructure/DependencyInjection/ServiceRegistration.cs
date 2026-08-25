@@ -3,6 +3,9 @@ using Infrastructure.Persistence;
 using Npgsql;
 using Infrastructure.Persistence.Repositories;
 using Domain.Contracts.IServices;
+using Domain.Contracts.IJobs;
+using Infrastructure.Handlers;
+using Infrastructure.Jobs;
 using Infrastructure.Security;
 using Infrastructure.Services;
 using Domain.Contracts;
@@ -123,6 +126,18 @@ public static class ServiceRegistration
         services.AddScoped<IClinicalRecordService, ClinicalRecordService>();
         services.AddScoped<IClinicalHistoryPdfService, ClinicalHistoryPdfService>();
         services.AddScoped<IPaymentReportService, PaymentReportService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<INotificationHandler, NotificationHandler>();
+        services.AddScoped<IAppointmentReminderJob, AppointmentReminderJob>();
+        services.AddSingleton<INotificationRealtimePublisher, NotificationRealtimePublisher>();
+        services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, Presentation.Hubs.NotificationUserIdProvider>();
+        /*
+        services.AddSignalR(options =>
+        {
+            options.EnableDetailedErrors = true;
+        });
+        */
+        services.AddSignalR();
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
