@@ -144,13 +144,6 @@ namespace Infrastructure.Services
                     cancellationToken);
             }
 
-            if (request.IdAppointmentStatus.HasValue)
-            {
-                AppointmentStatusRules.EnsureCanTransition(
-                    appointment.IdAppointmentStatus,
-                    request.IdAppointmentStatus.Value);
-            }
-
             try
             {
                 long idProfessional = appointment.IdProfessional;

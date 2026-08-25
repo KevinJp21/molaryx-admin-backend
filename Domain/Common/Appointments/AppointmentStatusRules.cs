@@ -11,31 +11,6 @@ namespace Domain.Common.Appointments
             AppointmentStatusEnum.IN_PROGRESS
         ];
 
-        private static readonly Dictionary<AppointmentStatusEnum, HashSet<AppointmentStatusEnum>> AllowedTransitions =
-            new()
-            {
-                [AppointmentStatusEnum.PENDING] =
-                [
-                    AppointmentStatusEnum.CONFIRMED,
-                    AppointmentStatusEnum.CANCELLED
-                ],
-                [AppointmentStatusEnum.CONFIRMED] =
-                [
-                    AppointmentStatusEnum.COMPLETED,
-                    AppointmentStatusEnum.CANCELLED,
-                    AppointmentStatusEnum.NO_SHOW
-                ],
-                [AppointmentStatusEnum.IN_PROGRESS] =
-                [
-                    AppointmentStatusEnum.COMPLETED,
-                    AppointmentStatusEnum.CANCELLED,
-                    AppointmentStatusEnum.NO_SHOW
-                ],
-                [AppointmentStatusEnum.COMPLETED] = [],
-                [AppointmentStatusEnum.CANCELLED] = [],
-                [AppointmentStatusEnum.NO_SHOW] = []
-            };
-
         private static readonly Dictionary<AppointmentStatusEnum, string> DisplayNames = new()
         {
             [AppointmentStatusEnum.PENDING] = "Pendiente",
@@ -95,32 +70,6 @@ namespace Domain.Common.Appointments
             {
                 throw new InvalidOperationException(
                     $"No se puede registrar un pago en una cita en estado {GetDisplayName(status)}.");
-            }
-        }
-
-        public static void EnsureCanTransition(short fromStatus, short toStatus)
-            => EnsureCanTransition(
-                (AppointmentStatusEnum)fromStatus,
-                (AppointmentStatusEnum)toStatus);
-
-        public static void EnsureCanTransition(
-            AppointmentStatusEnum from,
-            AppointmentStatusEnum to)
-        {
-            if (from == to)
-            {
-                return;
-            }
-
-            if (!Enum.IsDefined(from) || !Enum.IsDefined(to))
-            {
-                throw new InvalidOperationException("El estado de la cita no es válido.");
-            }
-
-            if (!AllowedTransitions.TryGetValue(from, out var allowed) || !allowed.Contains(to))
-            {
-                throw new InvalidOperationException(
-                    $"No se puede cambiar la cita de {GetDisplayName(from)} a {GetDisplayName(to)}.");
             }
         }
     }

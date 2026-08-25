@@ -92,13 +92,6 @@ namespace Infrastructure.Services
                 periodicAmount = null;
             }
 
-            if (request.IdPatientTreatmentStatus.HasValue)
-            {
-                PatientTreatmentStatusRules.EnsureCanTransition(
-                    patientTreatment.IdPatientTreatmentStatus,
-                    request.IdPatientTreatmentStatus.Value);
-            }
-
             if (idPaymentFrequency.HasValue
                 && idPaymentFrequency.Value != (short)PaymentFrequencyEnum.ONE_TIME
                 && (periodicAmount is null || periodicAmount <= 0))
