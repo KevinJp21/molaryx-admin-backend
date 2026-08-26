@@ -125,6 +125,16 @@ namespace Infrastructure.Services
                 throw new InvalidOperationException("La hora de fin debe ser posterior a la de inicio.");
             }
 
+            // Solo exigir horario futuro al reprogramar; permite actualizar estado/datos
+            // de citas pasadas cuando StartAt/EndAt se reenvían sin cambio.
+            if (request.StartAt.HasValue
+                && request.StartAt.Value != appointment.StartAt
+                && startAt <= DateTime.UtcNow)
+            {
+                throw new InvalidOperationException(
+                    "La fecha y hora de inicio debe ser mayor a la fecha y hora actual.");
+            }
+
             if (request.IdPatient.HasValue)
             {
                 await _tenantResourceService.RequirePatientAsync(idTenant, idPatient, cancellationToken);
