@@ -43,6 +43,17 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static TenantSubscriptionSpec WithExpiredSubscriptions(DateTime currentDate)
+        {
+            return new TenantSubscriptionSpec
+            {
+                Criteria = ts =>
+                    ts.IdTenantSubscriptionStatus == (short)TenantSubscriptionStatusEnum.ACTIVE
+                    && ts.EndsAt.HasValue
+                    && ts.EndsAt.Value <= currentDate
+            };
+        }
+
         private TenantSubscriptionSpec()
         {
         }

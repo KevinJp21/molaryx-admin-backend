@@ -67,6 +67,7 @@ builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProv
 builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, PermissionAuthorizationMiddlewareResultHandler>();
 builder.Services.AddHostedService<ExpiredPromotionBackgroundService>();
+builder.Services.AddHostedService<ExpiredSubscriptionBackgroundService>();
 builder.Services.AddHostedService<AppointmentReminderBackgroundService>();
 
 var frontendUrl = builder.Configuration["App:FrontendUrl"] ?? "http://localhost:3001";

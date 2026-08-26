@@ -226,6 +226,7 @@ namespace Infrastructure.Services
             subscription.IdTenantSubscriptionStatus = (short)TenantSubscriptionStatusEnum.ACTIVE;
 
             subscription.StartsAt = startsAt;
+            subscription.EndsAt = startsAt.AddMonths(1);
 
             if (subscription.IdPromotion.HasValue)
             {
@@ -266,6 +267,43 @@ namespace Infrastructure.Services
                 subscription.PromotionEndsAt = null;
 
                 await _unitOfWork.TenantSubscriptionRepository.UpdateAsync(subscription, cancellationToken);
+
+                updatedCount++;
+            }
+
+            if (updatedCount > 0)
+            {
+                await _unitOfWork.SaveChangeAsync(cancellationToken);
+            }
+
+            return updatedCount;
+        }
+
+        public async Task<int> UpdateExpiredSubscriptionsAsync(CancellationToken cancellationToken)
+        {
+            var expiredSubscriptions = await _unitOfWork.TenantSubscriptionRepository
+                .GetAll(
+                    TenantSubscriptionSpec.WithExpiredSubscriptions(DateTime.UtcNow),
+                    cancellationToken
+                ) ?? [];
+
+            var updatedCount = 0;
+            var now = DateTime.UtcNow;
+
+            foreach (var subscription in expiredSubscriptions)
+            {
+                subscription.IdTenantSubscriptionStatus =
+                    (short)TenantSubscriptionStatusEnum.EXPIRED;
+                subscription.UpdatedAt = now;
+
+                if (subscription.IdPromotion.HasValue)
+                {
+                    subscription.IdPromotion = null;
+                    subscription.PromotionEndsAt = null;
+                }
+
+                await _unitOfWork.TenantSubscriptionRepository
+                    .UpdateAsync(subscription, cancellationToken);
 
                 updatedCount++;
             }

@@ -18,5 +18,7 @@ namespace Domain.Contracts.IServices
         Task<TenantSubscription> ActivateSubscriptionAsync(long idTenantSubscription, CancellationToken cancellationToken);
 
         Task<int> UpdateExpiredPromotionsAsync(CancellationToken cancellationToken);
+
+        Task<int> UpdateExpiredSubscriptionsAsync(CancellationToken cancellationToken);
     }
 }
