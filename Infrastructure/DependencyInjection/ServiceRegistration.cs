@@ -108,6 +108,7 @@ public static class ServiceRegistration
         services.AddScoped<ISessionService, SessionService>();
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserLegalAcceptanceService, UserLegalAcceptanceService>();
         services.AddScoped<ITenantService, TenantService>();
         services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
         services.AddScoped<IPromotionService, PromotionService>();

@@ -37,6 +37,7 @@ namespace Infrastructure.Persistence
         public DbSet<PaymentFrequency> PaymentFrequencies { get; set; } = null!;
         public DbSet<ClinicalRecord> ClinicalRecords { get; set; } = null!;
         public DbSet<Notification> Notifications { get; set; } = null!;
+        public DbSet<UserLegalAcceptance> UserLegalAcceptances { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

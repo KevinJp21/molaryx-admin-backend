@@ -9,6 +9,7 @@ namespace Application.Features.Auth.Command.RegisterTenant
     (
         ITenantService _tenantService,
         IUserService _userService,
+        IUserLegalAcceptanceService _userLegalAcceptanceService,
         ITenantSubscriptionService _tenantSubscriptionService,
         IPromotionService _promotionService,
         IEmailNotificationService _emailNotificationService,
@@ -41,9 +42,16 @@ namespace Application.Features.Auth.Command.RegisterTenant
                 // Se guardan cambios porque el tenant debe existir para asignarlo a un user
                 await _unitOfWork.SaveChangeAsync(cancellationToken);
 
-                await _userService.CreatePendingOwnerAsync(
+                var owner = await _userService.CreatePendingOwnerAsync(
                     request.Owner,
                     tenant.IdTenant,
+                    cancellationToken
+                );
+
+                await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+                await _userLegalAcceptanceService.RecordRegistrationAcceptancesAsync(
+                    owner.IdUser,
                     cancellationToken
                 );
 

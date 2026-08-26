@@ -28,7 +28,8 @@ namespace Infrastructure.Persistence
         IPaymentRepository paymentRepository,
         IPaymentMethodRepository paymentMethodRepository,
         IClinicalRecordRepository clinicalRecordRepository,
-        INotificationRepository notificationRepository
+        INotificationRepository notificationRepository,
+        IUserLegalAcceptanceRepository userLegalAcceptanceRepository
         ) : IUnitOfWork
     {
         private readonly AppDbContext _context = context;
@@ -78,6 +79,8 @@ namespace Infrastructure.Persistence
         public IClinicalRecordRepository ClinicalRecordRepository { get; } = clinicalRecordRepository;
 
         public INotificationRepository NotificationRepository { get; } = notificationRepository;
+
+        public IUserLegalAcceptanceRepository UserLegalAcceptanceRepository { get; } = userLegalAcceptanceRepository;
 
         private IDbContextTransaction? _currentTransaction;
 
