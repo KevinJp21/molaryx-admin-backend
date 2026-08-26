@@ -42,6 +42,10 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
                 IdUserRole = (short)UserRoleEnum.PROFESSIONAL,
                 IdPermission = (short)PermissionEnum.GET_TEAM
             },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.PROFESSIONAL,
+                IdPermission = (short)PermissionEnum.GET_PROFILE
+            },
             // Treatments
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.PROFESSIONAL,

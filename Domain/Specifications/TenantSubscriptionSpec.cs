@@ -19,6 +19,18 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static TenantSubscriptionSpec LatestByTenant(long idTenant)
+        {
+            var spec = new TenantSubscriptionSpec
+            {
+                Criteria = ts => ts.IdTenant == idTenant,
+                OrderByDescending = ts => ts.StartsAt
+            };
+            spec.AddInclude(ts => ts.TenantSubscriptionStatus);
+            spec.AddInclude(ts => ts.Plan);
+            return spec;
+        }
+
         public static TenantSubscriptionSpec ByIdWithPromotion(long idTenantSubscription)
         {
             var spec = new TenantSubscriptionSpec

@@ -112,7 +112,9 @@ namespace Domain.Specifications
         {
             AddInclude(u => u.UserRole);
             AddInclude(u => u.UserStatus);
+            AddInclude(u => u.IdentificationType);
             AddInclude(u => u.Tenant);
+            AddInclude($"{nameof(User.Tenant)}.{nameof(Tenant.IdentificationType)}");
         }
     }
 }

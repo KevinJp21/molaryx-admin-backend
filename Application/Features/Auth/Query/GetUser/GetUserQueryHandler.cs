@@ -63,7 +63,10 @@ namespace Application.Features.Auth.Query.GetUser
 
             var subscription = await _unitOfWork.TenantSubscriptionRepository.GetFirstAsync(
                 TenantSubscriptionSpec.ActiveByTenant(tenantId),
-                cancellationToken);
+                cancellationToken)
+                ?? await _unitOfWork.TenantSubscriptionRepository.GetFirstAsync(
+                    TenantSubscriptionSpec.LatestByTenant(tenantId),
+                    cancellationToken);
 
             if (subscription is null)
             {
@@ -75,7 +78,8 @@ namespace Application.Features.Auth.Query.GetUser
                 PlanName = subscription.Plan?.Name ?? string.Empty,
                 StartsAt = subscription.StartsAt,
                 EndsAt = subscription.EndsAt,
-                DaysRemaining = CalculateDaysRemaining(subscription.EndsAt)
+                DaysRemaining = CalculateDaysRemaining(subscription.EndsAt),
+                StatusName = subscription.TenantSubscriptionStatus?.Name ?? string.Empty
             };
         }
 

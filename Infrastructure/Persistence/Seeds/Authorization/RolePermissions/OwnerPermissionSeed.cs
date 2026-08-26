@@ -66,6 +66,10 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
                 IdUserRole = (short)UserRoleEnum.OWNER,
                 IdPermission = (short)PermissionEnum.UPDATE_MEMBER
             },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.OWNER,
+                IdPermission = (short)PermissionEnum.GET_PROFILE
+            },
             // Treatments
             new RolePermission{
                 IdUserRole = (short)UserRoleEnum.OWNER,

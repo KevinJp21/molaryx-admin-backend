@@ -31,6 +31,7 @@ namespace Application.Features.Auth.Query.GetUser
         public DateTime? StartsAt { get; set; }
         public DateTime? EndsAt { get; set; }
         public int? DaysRemaining { get; set; }
+        public string StatusName { get; set; } = string.Empty;
     }
 
     public class ModulePermissions
