@@ -2,6 +2,7 @@ using Application.Common.Mediator.Interfaces;
 using Application.Context;
 using Domain.Contracts;
 using Domain.Specifications;
+using Shared.Utils;
 
 namespace Application.Features.Auth.Query.GetUser
 {
@@ -38,6 +39,7 @@ namespace Application.Features.Auth.Query.GetUser
                 Names = $"{user.FirstName}{(!string.IsNullOrEmpty(user.SecondName) ? $" {user.SecondName}" : string.Empty)}",
                 Surnames = $"{user.FirstSurname}{(!string.IsNullOrEmpty(user.SecondSurname) ? $" {user.SecondSurname}" : string.Empty)}",
                 Email = user.Email,
+                Subscription = await ResolveSubscriptionAsync(user.IdTenant, cancellationToken),
                 Permissions = [.. permissions
                     .GroupBy(p => p.Module.Code)
                     .Select(g => new ModulePermissions
@@ -48,6 +50,45 @@ namespace Application.Features.Auth.Query.GetUser
             };
 
             return mapperResult;
+        }
+
+        private async Task<SubscriptionSummary?> ResolveSubscriptionAsync(
+            long? idTenant,
+            CancellationToken cancellationToken)
+        {
+            if (idTenant is not long tenantId)
+            {
+                return null;
+            }
+
+            var subscription = await _unitOfWork.TenantSubscriptionRepository.GetFirstAsync(
+                TenantSubscriptionSpec.ActiveByTenant(tenantId),
+                cancellationToken);
+
+            if (subscription is null)
+            {
+                return null;
+            }
+
+            return new SubscriptionSummary
+            {
+                PlanName = subscription.Plan?.Name ?? string.Empty,
+                StartsAt = subscription.StartsAt,
+                EndsAt = subscription.EndsAt,
+                DaysRemaining = CalculateDaysRemaining(subscription.EndsAt)
+            };
+        }
+
+        private static int? CalculateDaysRemaining(DateTime? endsAt)
+        {
+            if (!endsAt.HasValue)
+            {
+                return null;
+            }
+
+            var today = DateTimeHelper.ToColombiaTime(DateTime.UtcNow).Date;
+            var endDate = DateTimeHelper.ToColombiaTime(endsAt.Value).Date;
+            return (endDate - today).Days;
         }
     }
 }

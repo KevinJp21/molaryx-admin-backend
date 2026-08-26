@@ -15,6 +15,7 @@ namespace Domain.Specifications
                     && ts.IdTenantSubscriptionStatus == (short)TenantSubscriptionStatusEnum.ACTIVE
             };
             spec.AddInclude(ts => ts.TenantSubscriptionStatus);
+            spec.AddInclude(ts => ts.Plan);
             return spec;
         }
 
