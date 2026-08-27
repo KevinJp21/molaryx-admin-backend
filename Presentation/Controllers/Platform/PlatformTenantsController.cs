@@ -1,6 +1,5 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
-using Application.DTOs.Tenant;
 using Application.Features.Platform.Tenant.Command.ActivateTenant;
 using Application.Features.Platform.Tenant.Command.CreateBusinessTenant;
 using Application.Features.Platform.Tenant.Query.GetTenants;
@@ -18,12 +17,12 @@ namespace Presentation.Controllers.Platform
     {
         [Authorize(Policy = PermissionCodes.GET_PF_TENANTS)]
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants(
+        public async Task<ActionResult<ApiResponse<PagedResult<GetTenantsResponse>>>> GetTenants(
             [FromQuery] GetTenantsQuery query,
             CancellationToken cancellationToken)
         {
             return Ok(
-                new ApiResponse<PagedResult<TenantDto>>(
+                new ApiResponse<PagedResult<GetTenantsResponse>>(
                     "Tenants obtenidos de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
                 )
