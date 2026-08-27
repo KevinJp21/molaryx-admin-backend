@@ -12,24 +12,6 @@ namespace Domain.Common.Patients
             PatientTreatmentStatusEnum.CANCELLED
         ];
 
-        private static readonly Dictionary<PatientTreatmentStatusEnum, HashSet<PatientTreatmentStatusEnum>> AllowedTransitions =
-            new()
-            {
-                [PatientTreatmentStatusEnum.ACTIVE] =
-                [
-                    PatientTreatmentStatusEnum.PAUSED,
-                    PatientTreatmentStatusEnum.COMPLETED,
-                    PatientTreatmentStatusEnum.CANCELLED
-                ],
-                [PatientTreatmentStatusEnum.PAUSED] =
-                [
-                    PatientTreatmentStatusEnum.ACTIVE,
-                    PatientTreatmentStatusEnum.CANCELLED
-                ],
-                [PatientTreatmentStatusEnum.COMPLETED] = [],
-                [PatientTreatmentStatusEnum.CANCELLED] = [],
-            };
-
         private static readonly Dictionary<PatientTreatmentStatusEnum, string> DisplayNames = new()
         {
             [PatientTreatmentStatusEnum.ACTIVE] = "Activo",
@@ -109,32 +91,6 @@ namespace Domain.Common.Patients
             {
                 throw new InvalidOperationException(
                     $"No se puede asociar una cita a un tratamiento en estado {GetDisplayName(status)}.");
-            }
-        }
-
-        public static void EnsureCanTransition(short fromStatus, short toStatus)
-            => EnsureCanTransition(
-                (PatientTreatmentStatusEnum)fromStatus,
-                (PatientTreatmentStatusEnum)toStatus);
-
-        public static void EnsureCanTransition(
-            PatientTreatmentStatusEnum from,
-            PatientTreatmentStatusEnum to)
-        {
-            if (from == to)
-            {
-                return;
-            }
-
-            if (!Enum.IsDefined(from) || !Enum.IsDefined(to))
-            {
-                throw new InvalidOperationException("El estado del tratamiento no es válido.");
-            }
-
-            if (!AllowedTransitions.TryGetValue(from, out var allowed) || !allowed.Contains(to))
-            {
-                throw new InvalidOperationException(
-                    $"No se puede cambiar el tratamiento de {GetDisplayName(from)} a {GetDisplayName(to)}.");
             }
         }
     }

@@ -262,6 +262,14 @@ namespace Application.Features.Auth.Command.RegisterTenant
                         "una mayúscula, una minúscula, un número y un carácter especial."
                     );
             });
+
+            RuleFor(x => x.AcceptedTermsAndConditions)
+                .Equal(true)
+                .WithMessage("Debe aceptar los Términos y Condiciones.");
+
+            RuleFor(x => x.AcceptedPrivacyPolicy)
+                .Equal(true)
+                .WithMessage("Debe aceptar la Política de Privacidad.");
         }
     }
 }

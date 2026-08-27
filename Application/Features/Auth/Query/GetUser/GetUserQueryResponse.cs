@@ -9,6 +9,7 @@ namespace Application.Features.Auth.Query.GetUser
         public string Names { get; set; } = string.Empty;
         public string Surnames { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public SubscriptionSummary? Subscription { get; set; }
         public List<ModulePermissions> Permissions { get; set; } = [];
     }
 
@@ -22,6 +23,15 @@ namespace Application.Features.Auth.Query.GetUser
     {
         public short IdUserStatus { get; set; }
         public string Name { get; set; } = string.Empty;
+    }
+
+    public class SubscriptionSummary
+    {
+        public string PlanName { get; set; } = string.Empty;
+        public DateTime? StartsAt { get; set; }
+        public DateTime? EndsAt { get; set; }
+        public int? DaysRemaining { get; set; }
+        public string StatusName { get; set; } = string.Empty;
     }
 
     public class ModulePermissions

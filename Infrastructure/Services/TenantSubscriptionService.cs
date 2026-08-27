@@ -1,8 +1,10 @@
+using Application.Features.Platform.Tenant.Command.UpdateTenant;
 using Domain.Constants;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Specifications;
 
 namespace Infrastructure.Services
@@ -226,6 +228,7 @@ namespace Infrastructure.Services
             subscription.IdTenantSubscriptionStatus = (short)TenantSubscriptionStatusEnum.ACTIVE;
 
             subscription.StartsAt = startsAt;
+            subscription.EndsAt = startsAt.AddMonths(1);
 
             if (subscription.IdPromotion.HasValue)
             {
@@ -241,6 +244,53 @@ namespace Infrastructure.Services
                 .UpdateAsync(subscription, cancellationToken);
 
             return subscription;
+        }
+
+        public async Task UpdateSubscriptionAsync(
+            long idTenant,
+            UpdateTenantSubscriptionRequest request,
+            CancellationToken cancellationToken)
+        {
+            var subscription = await _unitOfWork.TenantSubscriptionRepository
+                .GetByIdAsync(request.IdTenantSubscription, cancellationToken)
+                ?? throw new NotFoundException("La suscripción no existe.");
+
+            if (subscription.IdTenant != idTenant)
+            {
+                throw new InvalidOperationException(
+                    "La suscripción no pertenece a este consultorio.");
+            }
+
+            if (request.Price.HasValue && request.Price.Value <= 0)
+            {
+                throw new InvalidOperationException(
+                    "El precio de la suscripción debe ser mayor que cero.");
+            }
+
+            var startsAt = request.StartsAt ?? subscription.StartsAt;
+            var endsAt = request.EndsAt ?? subscription.EndsAt;
+
+            if (startsAt.HasValue && endsAt.HasValue && endsAt <= startsAt)
+            {
+                throw new InvalidOperationException(
+                    "La fecha de fin de la suscripción debe ser posterior a la de inicio.");
+            }
+
+            subscription.IdTenantSubscriptionStatus =
+                request.IdTenantSubscriptionStatus ?? subscription.IdTenantSubscriptionStatus;
+            subscription.Price = request.Price ?? subscription.Price;
+            subscription.MaxProfessionals =
+                request.MaxProfessionals ?? subscription.MaxProfessionals;
+            subscription.MaxAssistants =
+                request.MaxAssistants ?? subscription.MaxAssistants;
+            subscription.MaxPatients = request.MaxPatients ?? subscription.MaxPatients;
+            subscription.StartsAt = request.StartsAt ?? subscription.StartsAt;
+            subscription.EndsAt = request.EndsAt ?? subscription.EndsAt;
+            subscription.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.TenantSubscriptionRepository.UpdateAsync(
+                subscription,
+                cancellationToken);
         }
 
         public async Task<int> UpdateExpiredPromotionsAsync(CancellationToken cancellationToken)
@@ -266,6 +316,43 @@ namespace Infrastructure.Services
                 subscription.PromotionEndsAt = null;
 
                 await _unitOfWork.TenantSubscriptionRepository.UpdateAsync(subscription, cancellationToken);
+
+                updatedCount++;
+            }
+
+            if (updatedCount > 0)
+            {
+                await _unitOfWork.SaveChangeAsync(cancellationToken);
+            }
+
+            return updatedCount;
+        }
+
+        public async Task<int> UpdateExpiredSubscriptionsAsync(CancellationToken cancellationToken)
+        {
+            var expiredSubscriptions = await _unitOfWork.TenantSubscriptionRepository
+                .GetAll(
+                    TenantSubscriptionSpec.WithExpiredSubscriptions(DateTime.UtcNow),
+                    cancellationToken
+                ) ?? [];
+
+            var updatedCount = 0;
+            var now = DateTime.UtcNow;
+
+            foreach (var subscription in expiredSubscriptions)
+            {
+                subscription.IdTenantSubscriptionStatus =
+                    (short)TenantSubscriptionStatusEnum.EXPIRED;
+                subscription.UpdatedAt = now;
+
+                if (subscription.IdPromotion.HasValue)
+                {
+                    subscription.IdPromotion = null;
+                    subscription.PromotionEndsAt = null;
+                }
+
+                await _unitOfWork.TenantSubscriptionRepository
+                    .UpdateAsync(subscription, cancellationToken);
 
                 updatedCount++;
             }

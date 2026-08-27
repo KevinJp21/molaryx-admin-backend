@@ -1,6 +1,7 @@
 using Application.Common.Interfaces;
 using Application.Features.Users.Command.CreateMember;
 using Application.Features.Users.Command.UpdateMember;
+using Application.Features.Platform.Tenant.Command.UpdateTenant;
 using Domain.Entities;
 
 namespace Domain.Contracts.IServices
@@ -27,6 +28,12 @@ namespace Domain.Contracts.IServices
 
         Task<bool> UpdateMemberAsync(
             UpdateMemberCommand command,
+            CancellationToken cancellationToken
+        );
+
+        Task UpdateOwnerAsync(
+            long idTenant,
+            UpdateTenantOwnerRequest request,
             CancellationToken cancellationToken
         );
     }

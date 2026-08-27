@@ -64,6 +64,10 @@ namespace molaryxadmin.Migrations
                         .HasColumnType("text")
                         .HasColumnName("notes");
 
+                    b.Property<DateTime?>("ReminderSentAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("reminder_sent_at");
+
                     b.Property<DateTime>("StartAt")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("start_at");
@@ -477,6 +481,64 @@ namespace molaryxadmin.Migrations
                             Code = "CLINICAL_RECORDS",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
+                });
+
+            modelBuilder.Entity("Domain.Entities.Notification", b =>
+                {
+                    b.Property<long>("IdNotification")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_notification");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("IdNotification"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("body");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("IdTenant")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_tenant");
+
+                    b.Property<long>("IdUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_user");
+
+                    b.Property<bool>("IsViewed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_viewed");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("subject");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("IdNotification");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("IdUser");
+
+                    b.HasIndex("IdTenant", "IdUser", "IsViewed");
+
+                    b.ToTable("notifications", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PasswordResetToken", b =>
@@ -1016,182 +1078,196 @@ namespace molaryxadmin.Migrations
                         },
                         new
                         {
-                            IdPermission = (short)15,
+                            IdPermission = (short)4,
+                            Code = "UPDATE_PF_TENANT",
+                            CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdModule = (short)1
+                        },
+                        new
+                        {
+                            IdPermission = (short)16,
                             Code = "GET_TEAM",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)2
                         },
                         new
                         {
-                            IdPermission = (short)16,
+                            IdPermission = (short)17,
                             Code = "CREATE_MEMBER",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)2
                         },
                         new
                         {
-                            IdPermission = (short)17,
+                            IdPermission = (short)18,
                             Code = "UPDATE_MEMBER",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)2
                         },
                         new
                         {
-                            IdPermission = (short)4,
+                            IdPermission = (short)19,
+                            Code = "GET_PROFILE",
+                            CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IdModule = (short)2
+                        },
+                        new
+                        {
+                            IdPermission = (short)5,
                             Code = "GET_PATIENTS",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)3
                         },
                         new
                         {
-                            IdPermission = (short)5,
+                            IdPermission = (short)6,
                             Code = "CREATE_PATIENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)3
                         },
                         new
                         {
-                            IdPermission = (short)6,
+                            IdPermission = (short)7,
                             Code = "UPDATE_PATIENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)3
                         },
                         new
                         {
-                            IdPermission = (short)7,
+                            IdPermission = (short)8,
                             Code = "DELETE_PATIENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)3
                         },
                         new
                         {
-                            IdPermission = (short)8,
+                            IdPermission = (short)9,
                             Code = "GET_PROCEDURES",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
                         new
                         {
-                            IdPermission = (short)9,
+                            IdPermission = (short)10,
                             Code = "CREATE_PROCEDURE",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
                         new
                         {
-                            IdPermission = (short)10,
+                            IdPermission = (short)11,
                             Code = "UPDATE_PROCEDURE",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
                         new
                         {
-                            IdPermission = (short)11,
+                            IdPermission = (short)12,
                             Code = "DELETE_PROCEDURE",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)4
                         },
                         new
                         {
-                            IdPermission = (short)12,
+                            IdPermission = (short)13,
                             Code = "GET_APPOINTMENTS",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)5
                         },
                         new
                         {
-                            IdPermission = (short)13,
+                            IdPermission = (short)14,
                             Code = "CREATE_APPOINTMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)5
                         },
                         new
                         {
-                            IdPermission = (short)14,
+                            IdPermission = (short)15,
                             Code = "UPDATE_APPOINTMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)5
                         },
                         new
                         {
-                            IdPermission = (short)19,
+                            IdPermission = (short)21,
                             Code = "CREATE_TREATMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)6
                         },
                         new
                         {
-                            IdPermission = (short)20,
+                            IdPermission = (short)22,
                             Code = "UPDATE_TREATMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)6
                         },
                         new
                         {
-                            IdPermission = (short)18,
+                            IdPermission = (short)20,
                             Code = "GET_TREATMENTS",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)6
                         },
                         new
                         {
-                            IdPermission = (short)21,
+                            IdPermission = (short)23,
                             Code = "DELETE_TREATMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)6
                         },
                         new
                         {
-                            IdPermission = (short)23,
+                            IdPermission = (short)25,
                             Code = "GET_PATIENT_TREATMENTS",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)7
                         },
                         new
                         {
-                            IdPermission = (short)22,
+                            IdPermission = (short)24,
                             Code = "CREATE_PATIENT_TREATMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)7
                         },
                         new
                         {
-                            IdPermission = (short)24,
+                            IdPermission = (short)26,
                             Code = "UPDATE_PATIENT_TREATMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)7
                         },
                         new
                         {
-                            IdPermission = (short)25,
+                            IdPermission = (short)27,
                             Code = "CREATE_PAYMENT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)8
                         },
                         new
                         {
-                            IdPermission = (short)26,
+                            IdPermission = (short)28,
                             Code = "GET_PAYMENTS",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)8
                         },
                         new
                         {
-                            IdPermission = (short)27,
+                            IdPermission = (short)29,
                             Code = "GET_PAYMENTS_SUMMARY_BY_CONCEPT",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)8
                         },
                         new
                         {
-                            IdPermission = (short)28,
+                            IdPermission = (short)30,
                             Code = "CREATE_CLINICAL_RECORD",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)9
                         },
                         new
                         {
-                            IdPermission = (short)29,
+                            IdPermission = (short)31,
                             Code = "GET_CLINICAL_RECORDS",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             IdModule = (short)9
@@ -1263,7 +1339,7 @@ namespace molaryxadmin.Migrations
                             IdPlan = (short)1,
                             Code = "BASIC",
                             CreatedAt = new DateTime(2026, 7, 22, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Plan básico para consultorios pequeños.",
+                            Description = "Plan esencial para consultorios que buscan organizar su gestión.",
                             IsActive = true,
                             MaxAssistants = (short)1,
                             MaxPatients = 500,
@@ -1485,11 +1561,6 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdUserRole = (short)2,
-                            IdPermission = (short)4
-                        },
-                        new
-                        {
-                            IdUserRole = (short)2,
                             IdPermission = (short)5
                         },
                         new
@@ -1575,22 +1646,22 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdUserRole = (short)2,
-                            IdPermission = (short)23
-                        },
-                        new
-                        {
-                            IdUserRole = (short)2,
                             IdPermission = (short)22
                         },
                         new
                         {
                             IdUserRole = (short)2,
-                            IdPermission = (short)24
+                            IdPermission = (short)23
                         },
                         new
                         {
                             IdUserRole = (short)2,
                             IdPermission = (short)25
+                        },
+                        new
+                        {
+                            IdUserRole = (short)2,
+                            IdPermission = (short)24
                         },
                         new
                         {
@@ -1614,8 +1685,13 @@ namespace molaryxadmin.Migrations
                         },
                         new
                         {
-                            IdUserRole = (short)5,
-                            IdPermission = (short)4
+                            IdUserRole = (short)2,
+                            IdPermission = (short)30
+                        },
+                        new
+                        {
+                            IdUserRole = (short)2,
+                            IdPermission = (short)31
                         },
                         new
                         {
@@ -1630,12 +1706,12 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdUserRole = (short)5,
-                            IdPermission = (short)8
+                            IdPermission = (short)7
                         },
                         new
                         {
                             IdUserRole = (short)5,
-                            IdPermission = (short)12
+                            IdPermission = (short)9
                         },
                         new
                         {
@@ -1655,17 +1731,22 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdUserRole = (short)5,
-                            IdPermission = (short)18
+                            IdPermission = (short)16
                         },
                         new
                         {
                             IdUserRole = (short)5,
-                            IdPermission = (short)23
+                            IdPermission = (short)19
                         },
                         new
                         {
-                            IdUserRole = (short)4,
-                            IdPermission = (short)4
+                            IdUserRole = (short)5,
+                            IdPermission = (short)20
+                        },
+                        new
+                        {
+                            IdUserRole = (short)5,
+                            IdPermission = (short)25
                         },
                         new
                         {
@@ -1680,12 +1761,12 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdUserRole = (short)4,
-                            IdPermission = (short)8
+                            IdPermission = (short)7
                         },
                         new
                         {
                             IdUserRole = (short)4,
-                            IdPermission = (short)12
+                            IdPermission = (short)9
                         },
                         new
                         {
@@ -1705,17 +1786,22 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdUserRole = (short)4,
-                            IdPermission = (short)18
+                            IdPermission = (short)16
                         },
                         new
                         {
                             IdUserRole = (short)4,
-                            IdPermission = (short)23
+                            IdPermission = (short)19
                         },
                         new
                         {
                             IdUserRole = (short)4,
-                            IdPermission = (short)22
+                            IdPermission = (short)20
+                        },
+                        new
+                        {
+                            IdUserRole = (short)4,
+                            IdPermission = (short)25
                         },
                         new
                         {
@@ -1725,12 +1811,17 @@ namespace molaryxadmin.Migrations
                         new
                         {
                             IdUserRole = (short)4,
-                            IdPermission = (short)28
+                            IdPermission = (short)26
                         },
                         new
                         {
                             IdUserRole = (short)4,
-                            IdPermission = (short)29
+                            IdPermission = (short)30
+                        },
+                        new
+                        {
+                            IdUserRole = (short)4,
+                            IdPermission = (short)31
                         },
                         new
                         {
@@ -1746,6 +1837,11 @@ namespace molaryxadmin.Migrations
                         {
                             IdUserRole = (short)1,
                             IdPermission = (short)3
+                        },
+                        new
+                        {
+                            IdUserRole = (short)1,
+                            IdPermission = (short)4
                         });
                 });
 
@@ -2264,6 +2360,58 @@ namespace molaryxadmin.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserLegalAcceptance", b =>
+                {
+                    b.Property<long>("IdUserLegalAcceptance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_user_legal_acceptance");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("IdUserLegalAcceptance"));
+
+                    b.Property<DateTime>("AcceptedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("accepted_at");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("DocumentVersion")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("document_version");
+
+                    b.Property<short>("IdDocumentType")
+                        .HasColumnType("smallint")
+                        .HasColumnName("id_document_type");
+
+                    b.Property<long>("IdUser")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_user");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)")
+                        .HasColumnName("ip_address");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("user_agent");
+
+                    b.HasKey("IdUserLegalAcceptance");
+
+                    b.HasIndex("IdUser", "IdDocumentType", "DocumentVersion");
+
+                    b.ToTable("user_legal_acceptances", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.UserRole", b =>
                 {
                     b.Property<short>("IdUserRole")
@@ -2583,6 +2731,24 @@ namespace molaryxadmin.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("Domain.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("IdTenant")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.PasswordResetToken", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -2894,6 +3060,17 @@ namespace molaryxadmin.Migrations
                     b.Navigation("UserStatus");
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserLegalAcceptance", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("LegalAcceptances")
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.UserSession", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -3030,6 +3207,8 @@ namespace molaryxadmin.Migrations
                     b.Navigation("Assistant");
 
                     b.Navigation("ClinicalRecords");
+
+                    b.Navigation("LegalAcceptances");
 
                     b.Navigation("PasswordResetTokens");
 

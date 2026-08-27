@@ -15,6 +15,19 @@ namespace Domain.Specifications
                     && ts.IdTenantSubscriptionStatus == (short)TenantSubscriptionStatusEnum.ACTIVE
             };
             spec.AddInclude(ts => ts.TenantSubscriptionStatus);
+            spec.AddInclude(ts => ts.Plan);
+            return spec;
+        }
+
+        public static TenantSubscriptionSpec LatestByTenant(long idTenant)
+        {
+            var spec = new TenantSubscriptionSpec
+            {
+                Criteria = ts => ts.IdTenant == idTenant,
+                OrderByDescending = ts => ts.StartsAt ?? ts.CreatedAt
+            };
+            spec.AddInclude(ts => ts.TenantSubscriptionStatus);
+            spec.AddInclude(ts => ts.Plan);
             return spec;
         }
 
@@ -41,6 +54,17 @@ namespace Domain.Specifications
             spec.AddInclude(nameof(TenantSubscription.Promotion));
             spec.AddInclude(ts => ts.Plan);
             return spec;
+        }
+
+        public static TenantSubscriptionSpec WithExpiredSubscriptions(DateTime currentDate)
+        {
+            return new TenantSubscriptionSpec
+            {
+                Criteria = ts =>
+                    ts.IdTenantSubscriptionStatus == (short)TenantSubscriptionStatusEnum.ACTIVE
+                    && ts.EndsAt.HasValue
+                    && ts.EndsAt.Value <= currentDate
+            };
         }
 
         private TenantSubscriptionSpec()

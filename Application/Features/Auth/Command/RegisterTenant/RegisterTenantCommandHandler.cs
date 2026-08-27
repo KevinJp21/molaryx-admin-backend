@@ -9,9 +9,11 @@ namespace Application.Features.Auth.Command.RegisterTenant
     (
         ITenantService _tenantService,
         IUserService _userService,
+        IUserLegalAcceptanceService _userLegalAcceptanceService,
         ITenantSubscriptionService _tenantSubscriptionService,
         IPromotionService _promotionService,
         IEmailNotificationService _emailNotificationService,
+        INotificationHandler _notificationHandler,
         IUnitOfWork _unitOfWork,
         ILogger<RegisterTenantCommandHandler> _logger
     ) : IRequestHandler<RegisterTenantCommand, bool>
@@ -41,9 +43,16 @@ namespace Application.Features.Auth.Command.RegisterTenant
                 // Se guardan cambios porque el tenant debe existir para asignarlo a un user
                 await _unitOfWork.SaveChangeAsync(cancellationToken);
 
-                await _userService.CreatePendingOwnerAsync(
+                var owner = await _userService.CreatePendingOwnerAsync(
                     request.Owner,
                     tenant.IdTenant,
+                    cancellationToken
+                );
+
+                await _unitOfWork.SaveChangeAsync(cancellationToken);
+
+                await _userLegalAcceptanceService.RecordRegistrationAcceptancesAsync(
+                    owner.IdUser,
                     cancellationToken
                 );
 
@@ -70,6 +79,22 @@ namespace Application.Features.Auth.Command.RegisterTenant
                         ex,
                         "Error al enviar el correo de bienvenida al usuario {OwnerEmail}.",
                         request.Owner.Email
+                    );
+                }
+
+                try
+                {
+                    await _notificationHandler.NotifyTenantRegisteredAsync(
+                        tenant.IdTenant,
+                        tenant.ConsultoryName,
+                        cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error al notificar el registro del consultorio {IdTenant}.",
+                        tenant.IdTenant
                     );
                 }
 

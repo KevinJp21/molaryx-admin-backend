@@ -76,9 +76,7 @@ namespace Application.Features.Appointment.Command.UpdateAppointment
             {
                 RuleFor(x => x.StartAt)
                     .NotNull()
-                    .WithMessage("La fecha y hora de inicio son obligatorias al editar el horario.")
-                    .GreaterThan(DateTime.Now)
-                    .WithMessage("La fecha y hora de inicio debe ser mayor a la fecha y hora actual.");
+                    .WithMessage("La fecha y hora de inicio son obligatorias al editar el horario.");
 
                 RuleFor(x => x.EndAt)
                     .NotNull()

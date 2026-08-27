@@ -1,8 +1,10 @@
 using Application.Common.Interfaces;
+using Application.Features.Platform.Tenant.Command.UpdateTenant;
 using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Specifications;
 
 namespace Infrastructure.Services
@@ -104,6 +106,80 @@ namespace Infrastructure.Services
             await _unitOfWork.TenantRepository.UpdateAsync(tenant, cancellationToken);
 
             return tenant;
+        }
+
+        public async Task UpdateTenantAsync(
+            long idTenant,
+            UpdateTenantInfoRequest request,
+            CancellationToken cancellationToken)
+        {
+            var tenant = await _unitOfWork.TenantRepository.GetByIdAsync(
+                    idTenant,
+                    cancellationToken,
+                    TenantSpec.ById(idTenant))
+                ?? throw new NotFoundException("El consultorio no existe.");
+
+            if (request.Email is not null)
+            {
+                var email = request.Email.Trim().ToLowerInvariant();
+                var emailExists = await _unitOfWork.TenantRepository.ExistsAsync(
+                    TenantSpec.ByEmail(email),
+                    cancellationToken);
+
+                if (emailExists && !string.Equals(
+                        tenant.Email,
+                        email,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(
+                        "El correo electrónico del consultorio ya se encuentra registrado.");
+                }
+            }
+
+            if (request.IdentificationNumber is not null)
+            {
+                var identificationNumber = request.IdentificationNumber.Trim();
+                var identificationExists = await _unitOfWork.TenantRepository.ExistsAsync(
+                    TenantSpec.ByIdentificationNumber(identificationNumber),
+                    cancellationToken);
+
+                if (identificationExists
+                    && identificationNumber != tenant.IdentificationNumber)
+                {
+                    throw new InvalidOperationException(
+                        "El número de identificación del consultorio ya se encuentra registrado.");
+                }
+            }
+
+            if (request.PhoneNumber is not null)
+            {
+                var phoneNumber = request.PhoneNumber.Trim();
+                var phoneExists = await _unitOfWork.TenantRepository.ExistsAsync(
+                    TenantSpec.ByPhoneNumber(phoneNumber),
+                    cancellationToken);
+
+                if (phoneExists && phoneNumber != tenant.PhoneNumber)
+                {
+                    throw new InvalidOperationException(
+                        "El número de telefono del consultorio ya se encuentra registrado.");
+                }
+            }
+
+            tenant.IdIdentificationType =
+                request.IdIdentificationType ?? tenant.IdIdentificationType;
+            tenant.IdentificationNumber = request.IdentificationNumber is null
+                ? tenant.IdentificationNumber
+                : request.IdentificationNumber.Trim();
+            tenant.ConsultoryName = request.ConsultoryName?.Trim() ?? tenant.ConsultoryName;
+            tenant.Email = request.Email is null
+                ? tenant.Email
+                : request.Email.Trim().ToLowerInvariant();
+            tenant.PhoneNumber = request.PhoneNumber?.Trim() ?? tenant.PhoneNumber;
+            tenant.Address = request.Address?.Trim() ?? tenant.Address;
+            tenant.IdTenantStatus = request.IdTenantStatus ?? tenant.IdTenantStatus;
+            tenant.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.TenantRepository.UpdateAsync(tenant, cancellationToken);
         }
     }
 }

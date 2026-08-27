@@ -19,6 +19,10 @@ namespace Infrastructure.Persistence.Seeds.Authorization.RolePermissions
                 IdUserRole = (short)UserRoleEnum.SUPER_ADMIN,
                 IdPermission = (short)PermissionEnum.CREATE_PF_BUSINESS_TENANT
             },
+            new RolePermission{
+                IdUserRole = (short)UserRoleEnum.SUPER_ADMIN,
+                IdPermission = (short)PermissionEnum.UPDATE_PF_TENANT
+            },
         ];
     }
 }

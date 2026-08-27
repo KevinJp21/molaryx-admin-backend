@@ -5,6 +5,15 @@ namespace Domain.Specifications
 {
     public class TenantSpec : BaseSpecification<Tenant>
     {
+        public static TenantSpec ById(long idTenant)
+        {
+            var spec = new TenantSpec
+            {
+                Criteria = t => t.IdTenant == idTenant
+            };
+            return spec;
+        }
+
         public static TenantSpec ByEmail(string email)
         {
             var spec = new TenantSpec
