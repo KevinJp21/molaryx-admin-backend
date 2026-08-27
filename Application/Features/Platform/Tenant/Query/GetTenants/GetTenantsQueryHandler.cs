@@ -61,6 +61,8 @@ namespace Application.Features.Platform.Tenant.Query.GetTenants
                                         u.SecondSurname
                                     }.Where(x => !string.IsNullOrWhiteSpace(x))
                                 ),
+                                IdUserStatus = u.IdUserStatus,
+                                UserStatusName = u.UserStatus.Name,
                                 IdIdentificationType = u.IdIdentificationType,
                                 IdentificationCode = u.IdentificationType.Code,
                                 IdentificationNumber = u.IdentificationNumber,

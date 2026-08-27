@@ -7,6 +7,7 @@ namespace Domain.Constants
         public const string GET_PF_TENANTS = "GET_PF_TENANTS";
         public const string ACTIVATE_PF_TENANT = "ACTIVATE_PF_TENANT";
         public const string CREATE_PF_BUSINESS_TENANT = "CREATE_PF_BUSINESS_TENANT";
+        public const string UPDATE_PF_TENANT = "UPDATE_PF_TENANT";
 
         // Patients
         public const string GET_PATIENTS = "GET_PATIENTS";

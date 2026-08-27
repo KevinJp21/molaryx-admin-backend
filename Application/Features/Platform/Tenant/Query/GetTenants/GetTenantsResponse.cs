@@ -39,6 +39,10 @@ namespace Application.Features.Platform.Tenant.Query.GetTenants
 
         public string Name { get; set; } = string.Empty;
 
+        public short IdUserStatus { get; set; }
+
+        public string UserStatusName { get; set; } = string.Empty;
+
         public short IdIdentificationType { get; set; }
 
         public string IdentificationCode { get; set; } = string.Empty;
