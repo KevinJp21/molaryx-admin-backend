@@ -41,7 +41,7 @@ namespace Infrastructure.Persistence.Configuration
                     IdPlan = (short)PlanEnum.BASIC,
                     Code = PlanCodes.BASIC,
                     Name = "Basic",
-                    Description = "Plan básico para consultorios pequeños.",
+                    Description = "Plan esencial para consultorios que buscan organizar su gestión.",
                     Price = 79900,
                     MaxProfessionals = 1,
                     MaxAssistants = 1,

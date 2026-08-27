@@ -24,7 +24,7 @@ namespace Domain.Specifications
             var spec = new TenantSubscriptionSpec
             {
                 Criteria = ts => ts.IdTenant == idTenant,
-                OrderByDescending = ts => ts.StartsAt
+                OrderByDescending = ts => ts.StartsAt ?? ts.CreatedAt
             };
             spec.AddInclude(ts => ts.TenantSubscriptionStatus);
             spec.AddInclude(ts => ts.Plan);
