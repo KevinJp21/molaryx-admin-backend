@@ -19,7 +19,7 @@ namespace Application.Features.Platform.Tenant.Query.GetTenants
             var page = PaginationHelper.GetEffectivePage(request.Page);
             var size = PaginationHelper.GetEffectivePageSize(request.Size);
 
-            var spec = new TenantsSpec();
+            var spec = new TenantsSpec(request.IdTenantStatus, request.Search);
 
             var (totalItems, tenants) = await _unitOfWork.TenantRepository.GetPagedAsync(
                 page,
