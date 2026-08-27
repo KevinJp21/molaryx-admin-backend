@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace molaryxadmin.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260827164115_MakeNotificationTenantOptional")]
+    partial class MakeNotificationTenantOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -502,6 +505,10 @@ namespace molaryxadmin.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<short>("IdNotificationStatus")
+                        .HasColumnType("smallint")
+                        .HasColumnName("id_notification_status");
+
                     b.Property<long?>("IdTenant")
                         .HasColumnType("bigint")
                         .HasColumnName("id_tenant");
@@ -509,10 +516,6 @@ namespace molaryxadmin.Migrations
                     b.Property<long>("IdUser")
                         .HasColumnType("bigint")
                         .HasColumnName("id_user");
-
-                    b.Property<bool>("IsViewed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_viewed");
 
                     b.Property<string>("Subject")
                         .IsRequired()
@@ -536,7 +539,7 @@ namespace molaryxadmin.Migrations
 
                     b.HasIndex("IdUser");
 
-                    b.HasIndex("IdTenant", "IdUser", "IsViewed");
+                    b.HasIndex("IdTenant", "IdUser", "IdNotificationStatus");
 
                     b.ToTable("notifications", (string)null);
                 });

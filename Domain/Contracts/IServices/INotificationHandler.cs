@@ -15,5 +15,10 @@ namespace Domain.Contracts.IServices
             DateTime startAt,
             string patientName,
             CancellationToken cancellationToken = default);
+
+        Task NotifyTenantRegisteredAsync(
+            long idTenant,
+            string consultoryName,
+            CancellationToken cancellationToken = default);
     }
 }

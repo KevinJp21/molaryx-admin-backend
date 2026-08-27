@@ -1,11 +1,14 @@
+using Domain.Contracts;
 using Domain.Contracts.IServices;
 using Domain.Enums;
+using Domain.Specifications;
 using Shared.Utils;
 
 namespace Infrastructure.Handlers
 {
     public class NotificationHandler(
-        INotificationService _notificationService
+        INotificationService _notificationService,
+        IUnitOfWork _unitOfWork
     ) : INotificationHandler
     {
         public Task NotifyAppointmentAssignedAsync(
@@ -45,8 +48,34 @@ namespace Infrastructure.Handlers
                 cancellationToken);
         }
 
-        private async Task NotifyUsersAsync(
+        public async Task NotifyTenantRegisteredAsync(
             long idTenant,
+            string consultoryName,
+            CancellationToken cancellationToken = default)
+        {
+            var superAdmins = await _unitOfWork.UserRepository.GetAll(
+                UserSpec.ForSuperAdmins(),
+                cancellationToken) ?? [];
+
+            if (superAdmins.Length == 0)
+            {
+                return;
+            }
+
+            var body =
+                $"El consultorio \"{consultoryName}\" (#{idTenant}) se registró y está pendiente de aprobación.";
+
+            await NotifyUsersAsync(
+                idTenant: null,
+                superAdmins.Select(u => u.IdUser).ToArray(),
+                nameof(NotificationTypeEnum.TENANT_REGISTERED),
+                "Nuevo consultorio registrado",
+                body,
+                cancellationToken);
+        }
+
+        private async Task NotifyUsersAsync(
+            long? idTenant,
             IReadOnlyCollection<long> idUsers,
             string type,
             string subject,

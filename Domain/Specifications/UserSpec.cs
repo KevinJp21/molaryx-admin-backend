@@ -104,6 +104,17 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static UserSpec ForSuperAdmins()
+        {
+            return new UserSpec
+            {
+                Criteria = u =>
+                    u.IdUserRole == (short)UserRoleEnum.SUPER_ADMIN
+                    && u.DeletedAt == null
+                    && u.IdUserStatus == (short)UserStatusEnum.ACTIVE
+            };
+        }
+
         private UserSpec()
         {
         }

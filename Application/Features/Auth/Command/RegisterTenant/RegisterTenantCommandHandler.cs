@@ -13,6 +13,7 @@ namespace Application.Features.Auth.Command.RegisterTenant
         ITenantSubscriptionService _tenantSubscriptionService,
         IPromotionService _promotionService,
         IEmailNotificationService _emailNotificationService,
+        INotificationHandler _notificationHandler,
         IUnitOfWork _unitOfWork,
         ILogger<RegisterTenantCommandHandler> _logger
     ) : IRequestHandler<RegisterTenantCommand, bool>
@@ -78,6 +79,22 @@ namespace Application.Features.Auth.Command.RegisterTenant
                         ex,
                         "Error al enviar el correo de bienvenida al usuario {OwnerEmail}.",
                         request.Owner.Email
+                    );
+                }
+
+                try
+                {
+                    await _notificationHandler.NotifyTenantRegisteredAsync(
+                        tenant.IdTenant,
+                        tenant.ConsultoryName,
+                        cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Error al notificar el registro del consultorio {IdTenant}.",
+                        tenant.IdTenant
                     );
                 }
 

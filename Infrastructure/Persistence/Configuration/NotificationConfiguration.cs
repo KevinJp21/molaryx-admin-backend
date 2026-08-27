@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.HasKey(n => n.IdNotification);
 
-            builder.Property(n => n.IdTenant).IsRequired();
+            builder.Property(n => n.IdTenant);
             builder.Property(n => n.IdUser).IsRequired();
 
             builder.Property(n => n.Type)
@@ -27,15 +27,16 @@ namespace Infrastructure.Persistence.Configuration
                 .HasMaxLength(1000)
                 .IsRequired();
 
-            builder.Property(n => n.IdNotificationStatus).IsRequired();
+            builder.Property(n => n.IsViewed).IsRequired();
 
-            builder.HasIndex(n => new { n.IdTenant, n.IdUser, n.IdNotificationStatus });
+            builder.HasIndex(n => new { n.IdTenant, n.IdUser, n.IsViewed });
             builder.HasIndex(n => n.CreatedAt);
 
             builder.HasOne(n => n.Tenant)
                 .WithMany()
                 .HasForeignKey(n => n.IdTenant)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
 
             builder.HasOne(n => n.User)
                 .WithMany()

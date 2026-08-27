@@ -18,13 +18,19 @@ namespace Application.Features.Notification.Query.GetNotifications
             GetNotificationsQuery request,
             CancellationToken cancellationToken = default)
         {
-            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idUser = _currentUser.IdUser!.Value;
+            long? idTenant = null;
+
+            if (_currentUser.IdUserRole != (short)UserRoleEnum.SUPER_ADMIN)
+            {
+                var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+                idTenant = access.IdTenant;
+            }
 
             var page = PaginationHelper.GetEffectivePage(request.Page);
             var size = PaginationHelper.GetEffectivePageSize(request.Size);
 
-            var spec = new NotificationsSpec(access.IdTenant, idUser, request.OnlyUnviewed);
+            var spec = new NotificationsSpec(idTenant, idUser, request.OnlyUnviewed);
 
             var (totalItems, notifications) = await _unitOfWork.NotificationRepository.GetPagedAsync(
                 page,
@@ -42,7 +48,7 @@ namespace Application.Features.Notification.Query.GetNotifications
                         Type = n.Type,
                         Subject = n.Subject,
                         Body = n.Body,
-                        IsViewed = n.IdNotificationStatus == (short)NotificationStatusEnum.READ,
+                        IsViewed = n.IsViewed,
                         CreatedAt = n.CreatedAt
                     })
                 ],

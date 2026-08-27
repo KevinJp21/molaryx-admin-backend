@@ -9,7 +9,7 @@ namespace Domain.Entities
         public long IdNotification { get; set; }
 
         [Column("id_tenant")]
-        public long IdTenant { get; set; }
+        public long? IdTenant { get; set; }
 
         [Column("id_user")]
         public long IdUser { get; set; }
@@ -23,10 +23,10 @@ namespace Domain.Entities
         [Column("body")]
         public string Body { get; set; } = string.Empty;
 
-        [Column("id_notification_status")]
-        public short IdNotificationStatus { get; set; }
+        [Column("is_viewed")]
+        public bool IsViewed { get; set; }
 
-        public Tenant Tenant { get; set; } = null!;
+        public Tenant? Tenant { get; set; }
 
         public User User { get; set; } = null!;
     }

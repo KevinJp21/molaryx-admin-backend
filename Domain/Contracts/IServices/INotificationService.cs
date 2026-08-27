@@ -3,7 +3,7 @@ namespace Domain.Contracts.IServices
     public interface INotificationService
     {
         Task NotifyUserAsync(
-            long idTenant,
+            long? idTenant,
             long idUser,
             string type,
             string subject,

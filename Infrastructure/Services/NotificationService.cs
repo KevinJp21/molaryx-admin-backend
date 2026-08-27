@@ -17,7 +17,7 @@ namespace Infrastructure.Services
     ) : INotificationService
     {
         public async Task NotifyUserAsync(
-            long idTenant,
+            long? idTenant,
             long idUser,
             string type,
             string subject,
@@ -31,7 +31,7 @@ namespace Infrastructure.Services
                 Type = type,
                 Subject = subject,
                 Body = body,
-                IdNotificationStatus = (short)NotificationStatusEnum.UNREAD,
+                IsViewed = false,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -46,7 +46,7 @@ namespace Infrastructure.Services
                     Type = notification.Type,
                     Subject = notification.Subject,
                     Body = notification.Body,
-                    IsViewed = false,
+                    IsViewed = notification.IsViewed,
                     CreatedAt = notification.CreatedAt
                 },
                 cancellationToken);
@@ -56,20 +56,20 @@ namespace Infrastructure.Services
             long idNotification,
             CancellationToken cancellationToken = default)
         {
-            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idUser = _currentUser.IdUser!.Value;
+            var idTenant = await ResolveNotificationTenantAsync(cancellationToken);
 
             var notification = await _unitOfWork.NotificationRepository.GetFirstAsync(
-                NotificationsSpec.ById(access.IdTenant, idUser, idNotification),
+                NotificationsSpec.ById(idTenant, idUser, idNotification),
                 cancellationToken)
                 ?? throw new NotFoundException("La notificación no existe.");
 
-            if (notification.IdNotificationStatus == (short)NotificationStatusEnum.READ)
+            if (notification.IsViewed)
             {
                 return true;
             }
 
-            notification.IdNotificationStatus = (short)NotificationStatusEnum.READ;
+            notification.IsViewed = true;
             notification.UpdatedAt = DateTime.UtcNow;
 
             await _unitOfWork.NotificationRepository.UpdateAsync(notification, cancellationToken);
@@ -80,11 +80,11 @@ namespace Infrastructure.Services
 
         public async Task<bool> MarkAllAsReadAsync(CancellationToken cancellationToken = default)
         {
-            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
             var idUser = _currentUser.IdUser!.Value;
+            var idTenant = await ResolveNotificationTenantAsync(cancellationToken);
 
             var unread = await _unitOfWork.NotificationRepository.GetAll(
-                NotificationsSpec.UnreadByUser(access.IdTenant, idUser),
+                NotificationsSpec.UnreadByUser(idTenant, idUser),
                 cancellationToken);
 
             if (unread is null || unread.Length == 0)
@@ -95,13 +95,24 @@ namespace Infrastructure.Services
             var now = DateTime.UtcNow;
             foreach (var notification in unread)
             {
-                notification.IdNotificationStatus = (short)NotificationStatusEnum.READ;
+                notification.IsViewed = true;
                 notification.UpdatedAt = now;
                 await _unitOfWork.NotificationRepository.UpdateAsync(notification, cancellationToken);
             }
 
             await _unitOfWork.NotificationRepository.SaveChangesAsync(cancellationToken);
             return true;
+        }
+
+        private async Task<long?> ResolveNotificationTenantAsync(CancellationToken cancellationToken)
+        {
+            if (_currentUser.IdUserRole == (short)UserRoleEnum.SUPER_ADMIN)
+            {
+                return null;
+            }
+
+            var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
+            return access.IdTenant;
         }
     }
 }
