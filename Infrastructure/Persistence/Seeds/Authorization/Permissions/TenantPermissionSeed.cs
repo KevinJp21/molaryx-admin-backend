@@ -29,6 +29,13 @@ public static class TenantPermissionSeed
             IdModule = (short)ModuleEnum.TENANTS,
             Code = PermissionCodes.CREATE_PF_BUSINESS_TENANT,
             CreatedAt = SeedConstants.SeedDate
+        },
+        new Permission
+        {
+            IdPermission = (short)PermissionEnum.UPDATE_PF_TENANT,
+            IdModule = (short)ModuleEnum.TENANTS,
+            Code = PermissionCodes.UPDATE_PF_TENANT,
+            CreatedAt = SeedConstants.SeedDate
         }
     ];
 }

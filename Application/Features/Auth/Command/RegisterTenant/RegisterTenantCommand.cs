@@ -9,6 +9,8 @@ namespace Application.Features.Auth.Command.RegisterTenant
         public long? IdPromotion { get; set; }
         public TenantRegistration Tenant { get; set; } = null!;
         public OwnerRegistration Owner { get; set; } = null!;
+        public bool AcceptedTermsAndConditions { get; set; }
+        public bool AcceptedPrivacyPolicy { get; set; }
     }
 
         

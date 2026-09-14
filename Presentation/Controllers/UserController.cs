@@ -2,6 +2,7 @@ using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
 using Application.Features.Users.Command.CreateMember;
 using Application.Features.Users.Command.UpdateMember;
+using Application.Features.Users.Query.GetProfile;
 using Application.Features.Users.Query.GetTeam;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,20 @@ namespace Presentation.Controllers
     [ApiController]
     public class UserController(IMediator _mediator) : ControllerBase
     {
+        [Authorize(Policy = PermissionCodes.GET_PROFILE)]
+        [HttpGet]
+        [EndpointDescription("Obtiene el perfil completo del usuario autenticado. Si es propietario, incluye los datos del consultorio.")]
+        public async Task<ActionResult<ApiResponse<GetProfileQueryResponse>>> GetProfile(
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<GetProfileQueryResponse>(
+                    "Perfil obtenido de manera exitosa.",
+                    await _mediator.Send(new GetProfileQuery(), cancellationToken)
+                )
+            );
+        }
+
         [Authorize(Policy = PermissionCodes.GET_TEAM)]
         [HttpGet]
         public async Task<ActionResult<ApiResponse<PagedResult<GetTeamResponse>>>> GetTeam(

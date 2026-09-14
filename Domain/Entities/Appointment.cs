@@ -32,6 +32,9 @@ namespace Domain.Entities
         [Column("notes")]
         public string? Notes { get; set; }
 
+        [Column("reminder_sent_at")]
+        public DateTime? ReminderSentAt { get; set; }
+
         public Tenant Tenant { get; set; } = null!;
 
         public Patient Patient { get; set; } = null!;

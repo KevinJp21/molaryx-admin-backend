@@ -1,4 +1,5 @@
 using Application.Common.Interfaces;
+using Application.Features.Platform.Tenant.Command.UpdateTenant;
 using Domain.Entities;
 
 namespace Domain.Contracts.IServices
@@ -17,5 +18,10 @@ namespace Domain.Contracts.IServices
             long IdTenant,
             CancellationToken cancellationToken
         );
+
+        Task UpdateTenantAsync(
+            long idTenant,
+            UpdateTenantInfoRequest request,
+            CancellationToken cancellationToken);
     }
 }

@@ -1,3 +1,4 @@
+using Application.Features.Platform.Tenant.Command.UpdateTenant;
 using Domain.Entities;
 
 namespace Domain.Contracts.IServices
@@ -17,6 +18,13 @@ namespace Domain.Contracts.IServices
 
         Task<TenantSubscription> ActivateSubscriptionAsync(long idTenantSubscription, CancellationToken cancellationToken);
 
+        Task UpdateSubscriptionAsync(
+            long idTenant,
+            UpdateTenantSubscriptionRequest request,
+            CancellationToken cancellationToken);
+
         Task<int> UpdateExpiredPromotionsAsync(CancellationToken cancellationToken);
+
+        Task<int> UpdateExpiredSubscriptionsAsync(CancellationToken cancellationToken);
     }
 }

@@ -49,6 +49,10 @@ namespace Domain.Contracts
 
         public IClinicalRecordRepository ClinicalRecordRepository { get; }
 
+        public INotificationRepository NotificationRepository { get; }
+
+        public IUserLegalAcceptanceRepository UserLegalAcceptanceRepository { get; }
+
         Task<int> SaveChangeAsync(CancellationToken? cancellationToken);
 
         Task BeginTransactionAsync(CancellationToken? cancellationToken = null);

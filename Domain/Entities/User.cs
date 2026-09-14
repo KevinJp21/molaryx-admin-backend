@@ -50,5 +50,6 @@ namespace Domain.Entities
         public Professional? Professional { get; set; }
         public Assistant? Assistant { get; set; }
         public ICollection<ClinicalRecord> ClinicalRecords { get; set; } = [];
+        public ICollection<UserLegalAcceptance> LegalAcceptances { get; set; } = [];
     }
 }

@@ -144,6 +144,26 @@ namespace Domain.Specifications
             return spec;
         }
 
+        public static AppointmentSpec ForUpcomingReminders(DateTime from, DateTime to)
+        {
+            var pending = (short)AppointmentStatusEnum.PENDING;
+            var confirmed = (short)AppointmentStatusEnum.CONFIRMED;
+
+            var spec = new AppointmentSpec
+            {
+                Criteria = a =>
+                    a.StartAt >= from
+                    && a.StartAt <= to
+                    && a.ReminderSentAt == null
+                    && (a.IdAppointmentStatus == pending
+                        || a.IdAppointmentStatus == confirmed),
+                OrderBy = a => a.StartAt
+            };
+            spec.AddInclude(a => a.Patient);
+            spec.AddInclude(a => a.Professional);
+            return spec;
+        }
+
         private static void IncludeProcedures(AppointmentSpec spec)
         {
             spec.AddInclude(a => a.AppointmentProcedures);

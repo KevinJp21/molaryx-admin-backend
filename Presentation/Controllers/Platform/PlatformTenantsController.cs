@@ -1,8 +1,8 @@
 using Application.Common.Mediator.Interfaces;
 using Application.Common.Pagination;
-using Application.DTOs.Tenant;
 using Application.Features.Platform.Tenant.Command.ActivateTenant;
 using Application.Features.Platform.Tenant.Command.CreateBusinessTenant;
+using Application.Features.Platform.Tenant.Command.UpdateTenant;
 using Application.Features.Platform.Tenant.Query.GetTenants;
 using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -18,14 +18,28 @@ namespace Presentation.Controllers.Platform
     {
         [Authorize(Policy = PermissionCodes.GET_PF_TENANTS)]
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PagedResult<TenantDto>>>> GetTenants(
+        public async Task<ActionResult<ApiResponse<PagedResult<GetTenantsResponse>>>> GetTenants(
             [FromQuery] GetTenantsQuery query,
             CancellationToken cancellationToken)
         {
             return Ok(
-                new ApiResponse<PagedResult<TenantDto>>(
+                new ApiResponse<PagedResult<GetTenantsResponse>>(
                     "Tenants obtenidos de manera exitosa.",
                     await _mediator.Send(query, cancellationToken)
+                )
+            );
+        }
+
+        [Authorize(Policy = PermissionCodes.UPDATE_PF_TENANT)]
+        [HttpPut]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateTenant(
+            [FromBody] UpdateTenantCommand body,
+            CancellationToken cancellationToken)
+        {
+            return Ok(
+                new ApiResponse<bool>(
+                    "Consultorio actualizado de manera exitosa.",
+                    await _mediator.Send(body, cancellationToken)
                 )
             );
         }

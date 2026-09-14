@@ -1,5 +1,6 @@
 using Application.Features.Appointment.Command.CreateAppointment;
 using Application.Features.Appointment.Command.UpdateAppointment;
+using Application.Context;
 using Domain.Common.Appointments;
 using Domain.Common.Patients;
 using Domain.Contracts;
@@ -13,7 +14,9 @@ namespace Infrastructure.Services
     public class AppointmentService(
         IUnitOfWork _unitOfWork,
         ITenantAccessService _tenantAccessService,
-        ITenantResourceService _tenantResourceService
+        ITenantResourceService _tenantResourceService,
+        INotificationHandler _notificationHandler,
+        ICurrentUser _currentUser
     ) : IAppointmentService
     {
         public async Task<bool> CreateAppointment(
@@ -46,7 +49,7 @@ namespace Infrastructure.Services
                     excludeIdAppointment: null,
                     cancellationToken);
 
-                await AddAppointmentAsync(
+                var appointment = await AddAppointmentAsync(
                     idTenant,
                     professional.IdProfessional,
                     request,
@@ -59,6 +62,15 @@ namespace Infrastructure.Services
                 else
                 {
                     await _unitOfWork.AppointmentRepository.SaveChangesAsync(cancellationToken);
+                }
+
+                if (_currentUser.IdUser != professional.IdUser)
+                {
+                    await _notificationHandler.NotifyAppointmentAssignedAsync(
+                        idTenant,
+                        professional.IdUser,
+                        appointment.IdAppointment,
+                        cancellationToken);
                 }
 
                 return true;
@@ -113,6 +125,16 @@ namespace Infrastructure.Services
                 throw new InvalidOperationException("La hora de fin debe ser posterior a la de inicio.");
             }
 
+            // Solo exigir horario futuro al reprogramar; permite actualizar estado/datos
+            // de citas pasadas cuando StartAt/EndAt se reenvían sin cambio.
+            if (request.StartAt.HasValue
+                && request.StartAt.Value != appointment.StartAt
+                && startAt <= DateTime.UtcNow)
+            {
+                throw new InvalidOperationException(
+                    "La fecha y hora de inicio debe ser mayor a la fecha y hora actual.");
+            }
+
             if (request.IdPatient.HasValue)
             {
                 await _tenantResourceService.RequirePatientAsync(idTenant, idPatient, cancellationToken);
@@ -144,16 +166,11 @@ namespace Infrastructure.Services
                     cancellationToken);
             }
 
-            if (request.IdAppointmentStatus.HasValue)
-            {
-                AppointmentStatusRules.EnsureCanTransition(
-                    appointment.IdAppointmentStatus,
-                    request.IdAppointmentStatus.Value);
-            }
-
             try
             {
+                var previousIdProfessional = appointment.IdProfessional;
                 long idProfessional = appointment.IdProfessional;
+                long? newProfessionalIdUser = null;
 
                 if (request.IdUser.HasValue)
                 {
@@ -162,6 +179,7 @@ namespace Infrastructure.Services
                         request.IdUser.Value,
                         cancellationToken);
                     idProfessional = professional.IdProfessional;
+                    newProfessionalIdUser = professional.IdUser;
                 }
 
                 var scheduleChanged =
@@ -178,6 +196,11 @@ namespace Infrastructure.Services
                         endAt,
                         appointment.IdAppointment,
                         cancellationToken);
+
+                    if (startAt != appointment.StartAt)
+                    {
+                        appointment.ReminderSentAt = null;
+                    }
                 }
 
                 appointment.IdPatient = idPatient;
@@ -221,6 +244,17 @@ namespace Infrastructure.Services
                 else
                 {
                     await _unitOfWork.AppointmentRepository.SaveChangesAsync(cancellationToken);
+                }
+
+                if (idProfessional != previousIdProfessional
+                    && newProfessionalIdUser is long idUser
+                    && _currentUser.IdUser != idUser)
+                {
+                    await _notificationHandler.NotifyAppointmentAssignedAsync(
+                        idTenant,
+                        idUser,
+                        appointment.IdAppointment,
+                        cancellationToken);
                 }
 
                 return true;
@@ -364,7 +398,7 @@ namespace Infrastructure.Services
             }
         }
 
-        private async Task AddAppointmentAsync(
+        private async Task<Appointment> AddAppointmentAsync(
             long idTenant,
             long idProfessional,
             CreateAppointmentCommand request,
@@ -394,6 +428,8 @@ namespace Infrastructure.Services
             };
 
             await _unitOfWork.AppointmentRepository.AddAsync(appointment, cancellationToken);
+
+            return appointment;
         }
     }
 }

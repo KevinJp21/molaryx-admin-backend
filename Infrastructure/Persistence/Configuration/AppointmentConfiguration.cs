@@ -22,6 +22,7 @@ namespace Infrastructure.Persistence.Configuration
             builder.Property(a => a.StartAt).IsRequired();
             builder.Property(a => a.EndAt).IsRequired();
             builder.Property(a => a.Notes);
+            builder.Property(a => a.ReminderSentAt);
 
             builder.HasOne(a => a.Tenant)
                 .WithMany(t => t.Appointments)
