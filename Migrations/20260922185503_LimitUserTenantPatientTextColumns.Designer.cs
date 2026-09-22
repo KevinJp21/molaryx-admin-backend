@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace molaryxadmin.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260922185503_LimitUserTenantPatientTextColumns")]
+    partial class LimitUserTenantPatientTextColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -604,8 +607,7 @@ namespace molaryxadmin.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -615,14 +617,14 @@ namespace molaryxadmin.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("first_name");
 
                     b.Property<string>("FirstSurname")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("first_surname");
 
                     b.Property<short>("IdIdentificationType")
@@ -650,13 +652,13 @@ namespace molaryxadmin.Migrations
                         .HasColumnName("phone_number");
 
                     b.Property<string>("SecondName")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("second_name");
 
                     b.Property<string>("SecondSurname")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("second_surname");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1554,12 +1556,10 @@ namespace molaryxadmin.Migrations
             modelBuilder.Entity("Domain.Entities.RolePermission", b =>
                 {
                     b.Property<short>("IdUserRole")
-                        .HasColumnType("smallint")
-                        .HasColumnName("id_user_role");
+                        .HasColumnType("smallint");
 
                     b.Property<short>("IdPermission")
-                        .HasColumnType("smallint")
-                        .HasColumnName("id_permission");
+                        .HasColumnType("smallint");
 
                     b.HasKey("IdUserRole", "IdPermission");
 
@@ -2288,14 +2288,14 @@ namespace molaryxadmin.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("first_name");
 
                     b.Property<string>("FirstSurname")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("first_surname");
 
                     b.Property<short>("IdIdentificationType")
@@ -2337,13 +2337,13 @@ namespace molaryxadmin.Migrations
                         .HasColumnName("salt");
 
                     b.Property<string>("SecondName")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("second_name");
 
                     b.Property<string>("SecondSurname")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("second_surname");
 
                     b.Property<DateTime?>("UpdatedAt")

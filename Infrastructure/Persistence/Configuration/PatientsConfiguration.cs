@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -14,14 +15,26 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(p => p.IdTenant).IsRequired();
             builder.Property(p => p.IdIdentificationType).IsRequired();
-            builder.Property(p => p.IdentificationNumber).IsRequired();
-            builder.Property(p => p.FirstName).IsRequired();
-            builder.Property(p => p.SecondName);
-            builder.Property(p => p.FirstSurname).IsRequired();
-            builder.Property(p => p.SecondSurname);
+            builder.Property(p => p.IdentificationNumber)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.IdentificationNumber);
+            builder.Property(p => p.FirstName)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.PersonName);
+            builder.Property(p => p.SecondName)
+                .HasMaxLength(FieldLengths.PersonName);
+            builder.Property(p => p.FirstSurname)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.PersonName);
+            builder.Property(p => p.SecondSurname)
+                .HasMaxLength(FieldLengths.PersonName);
             builder.Property(p => p.BirthDate).IsRequired();
-            builder.Property(p => p.PhoneNumber).IsRequired();
-            builder.Property(p => p.Email).IsRequired();
+            builder.Property(p => p.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.PhoneNumber);
+            builder.Property(p => p.Email)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.Email);
             builder.Property(p => p.IsActive).IsRequired();
             builder.Property(p => p.DeletedAt);
 

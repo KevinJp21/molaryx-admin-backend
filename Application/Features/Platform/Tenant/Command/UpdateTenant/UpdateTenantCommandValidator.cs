@@ -1,5 +1,6 @@
 using Application.Common.Regex;
 using Application.Common.Validation;
+using Domain.Constants;
 using Domain.Enums;
 using FluentValidation;
 
@@ -24,7 +25,7 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Tenant!.ConsultoryName)
                         .NotEmpty()
                         .WithMessage("El nombre del consultorio es obligatorio.")
-                        .MaximumLength(150)
+                        .MaximumLength(FieldLengths.ConsultoryName)
                         .WithMessage("El nombre ingresado es demasiado largo.");
                 });
 
@@ -33,6 +34,8 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Tenant!.Email)
                         .NotEmpty()
                         .WithMessage("El correo electrónico es obligatorio.")
+                        .MaximumLength(FieldLengths.Email)
+                        .WithMessage("El correo electrónico ingresado es demasiado largo.")
                         .Matches(RegexCatalog.EMAIL)
                         .When(
                             x => !string.IsNullOrWhiteSpace(x.Tenant!.Email),
@@ -46,6 +49,8 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Tenant!.PhoneNumber)
                         .NotEmpty()
                         .WithMessage("El número de celular es obligatorio.")
+                        .MaximumLength(FieldLengths.PhoneNumber)
+                        .WithMessage("El número de celular ingresado es demasiado largo.")
                         .Matches(RegexCatalog.PHONE_NUMBER)
                         .When(
                             x => !string.IsNullOrWhiteSpace(x.Tenant!.PhoneNumber),
@@ -59,7 +64,7 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Tenant!.Address)
                         .NotEmpty()
                         .WithMessage("La dirección es obligatoria.")
-                        .MaximumLength(255)
+                        .MaximumLength(FieldLengths.Address)
                         .WithMessage("La dirección ingresada es demasiado larga.");
                 });
 
@@ -75,6 +80,8 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Tenant!.IdentificationNumber)
                         .NotEmpty()
                         .WithMessage("El número de identificación es obligatorio.")
+                        .MaximumLength(FieldLengths.IdentificationNumber)
+                        .WithMessage("El número de identificación ingresado es demasiado largo.")
                         .Must((cmd, number) =>
                             IdentificationValidation.MatchesType(
                                 cmd.Tenant!.IdIdentificationType!.Value,
@@ -109,7 +116,7 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Owner!.Username)
                         .NotEmpty()
                         .WithMessage("El nombre de usuario es obligatorio.")
-                        .MaximumLength(30)
+                        .MaximumLength(FieldLengths.Username)
                         .WithMessage("El usuario ingresado es demasiado largo.")
                         .Matches(RegexCatalog.USERNAME)
                         .When(
@@ -124,7 +131,7 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Owner!.FirstName)
                         .NotEmpty()
                         .WithMessage("El nombre es obligatorio.")
-                        .MaximumLength(100)
+                        .MaximumLength(FieldLengths.PersonName)
                         .WithMessage("El nombre ingresado es demasiado largo.")
                         .Matches(RegexCatalog.NAME)
                         .When(
@@ -137,7 +144,7 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                 When(x => x.Owner!.SecondName is not null, () =>
                 {
                     RuleFor(x => x.Owner!.SecondName)
-                        .MaximumLength(100)
+                        .MaximumLength(FieldLengths.PersonName)
                         .WithMessage("El segundo nombre ingresado es demasiado largo.")
                         .Matches(RegexCatalog.NAME)
                         .When(
@@ -152,7 +159,7 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Owner!.FirstSurname)
                         .NotEmpty()
                         .WithMessage("El primer apellido es obligatorio.")
-                        .MaximumLength(100)
+                        .MaximumLength(FieldLengths.PersonName)
                         .WithMessage("El primer apellido ingresado es demasiado largo.")
                         .Matches(RegexCatalog.NAME)
                         .When(
@@ -165,7 +172,7 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                 When(x => x.Owner!.SecondSurname is not null, () =>
                 {
                     RuleFor(x => x.Owner!.SecondSurname)
-                        .MaximumLength(100)
+                        .MaximumLength(FieldLengths.PersonName)
                         .WithMessage("El segundo apellido ingresado es demasiado largo.")
                         .Matches(RegexCatalog.NAME)
                         .When(
@@ -188,6 +195,8 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Owner!.IdentificationNumber)
                         .NotEmpty()
                         .WithMessage("El número de identificación es obligatorio.")
+                        .MaximumLength(FieldLengths.IdentificationNumber)
+                        .WithMessage("El número de identificación ingresado es demasiado largo.")
                         .Must((cmd, number) =>
                             IdentificationValidation.MatchesType(
                                 cmd.Owner!.IdIdentificationType!.Value,
@@ -208,6 +217,8 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Owner!.PhoneNumber)
                         .NotEmpty()
                         .WithMessage("El número de celular es obligatorio.")
+                        .MaximumLength(FieldLengths.PhoneNumber)
+                        .WithMessage("El número de celular ingresado es demasiado largo.")
                         .Matches(RegexCatalog.PHONE_NUMBER)
                         .When(
                             x => !string.IsNullOrWhiteSpace(x.Owner!.PhoneNumber),
@@ -221,6 +232,8 @@ namespace Application.Features.Platform.Tenant.Command.UpdateTenant
                     RuleFor(x => x.Owner!.Email)
                         .NotEmpty()
                         .WithMessage("El correo electrónico es obligatorio.")
+                        .MaximumLength(FieldLengths.Email)
+                        .WithMessage("El correo electrónico ingresado es demasiado largo.")
                         .Matches(RegexCatalog.EMAIL)
                         .When(
                             x => !string.IsNullOrWhiteSpace(x.Owner!.Email),

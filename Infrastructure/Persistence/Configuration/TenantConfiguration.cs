@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,15 +19,24 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(t => t.IdIdentificationType);
 
-            builder.Property(t => t.IdentificationNumber).HasMaxLength(15);
+            builder.Property(t => t.IdentificationNumber)
+                .HasMaxLength(FieldLengths.IdentificationNumber);
 
-            builder.Property(t => t.ConsultoryName).IsRequired().HasMaxLength(255);
+            builder.Property(t => t.ConsultoryName)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.ConsultoryName);
 
-            builder.Property(t => t.Email).IsRequired();
+            builder.Property(t => t.Email)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.Email);
 
-            builder.Property(t => t.PhoneNumber).IsRequired();
+            builder.Property(t => t.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.PhoneNumber);
 
-            builder.Property(t => t.Address).IsRequired();
+            builder.Property(t => t.Address)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.Address);
 
             builder.Property(t => t.CreatedAt).IsRequired();
 

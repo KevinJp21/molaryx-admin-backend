@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,25 +19,39 @@ namespace Infrastructure.Persistence.Configuration
 
             builder.Property(u => u.IdTenant);
 
-            builder.Property(u => u.Username).IsRequired();
+            builder.Property(u => u.Username)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.Username);
 
-            builder.Property(u => u.FirstName).IsRequired();
+            builder.Property(u => u.FirstName)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.PersonName);
 
-            builder.Property(u => u.SecondName);
+            builder.Property(u => u.SecondName)
+                .HasMaxLength(FieldLengths.PersonName);
 
-            builder.Property(u => u.FirstSurname).IsRequired();
+            builder.Property(u => u.FirstSurname)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.PersonName);
 
-            builder.Property(u => u.SecondSurname);
+            builder.Property(u => u.SecondSurname)
+                .HasMaxLength(FieldLengths.PersonName);
 
             builder.Property(u => u.IdIdentificationType).IsRequired();
 
-            builder.Property(u => u.IdentificationNumber).IsRequired();
+            builder.Property(u => u.IdentificationNumber)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.IdentificationNumber);
 
             builder.Property(u => u.BirthDate).IsRequired();
 
-            builder.Property(u => u.PhoneNumber).IsRequired();
+            builder.Property(u => u.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.PhoneNumber);
 
-            builder.Property(u => u.Email).IsRequired();
+            builder.Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(FieldLengths.Email);
 
             builder.Property(u => u.Password).HasColumnType("bytea").IsRequired();
 

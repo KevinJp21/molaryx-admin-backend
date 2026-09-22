@@ -1,5 +1,6 @@
 using Application.Common.Regex;
 using Application.Common.Validation;
+using Domain.Constants;
 using Domain.Enums;
 using FluentValidation;
 
@@ -18,7 +19,7 @@ namespace Application.Features.Users.Command.CreateMember
             RuleFor(x => x.Username)
                 .NotEmpty()
                     .WithMessage("El nombre de usuario es obligatorio.")
-                    .MaximumLength(30)
+                    .MaximumLength(FieldLengths.Username)
                     .WithMessage("El usuario ingresado es demasiado largo.")
                     .Matches(RegexCatalog.USERNAME)
                     .When(
@@ -33,7 +34,7 @@ namespace Application.Features.Users.Command.CreateMember
             RuleFor(x => x.FirstName)
                     .NotEmpty()
                     .WithMessage("El nombre es obligatorio.")
-                    .MaximumLength(100)
+                    .MaximumLength(FieldLengths.PersonName)
                     .WithMessage("El nombre ingresado es demasiado largo.")
                     .Matches(RegexCatalog.NAME)
                     .When(
@@ -47,7 +48,7 @@ namespace Application.Features.Users.Command.CreateMember
                     );
 
             RuleFor(x => x.SecondName)
-                .MaximumLength(100)
+                .MaximumLength(FieldLengths.PersonName)
                 .WithMessage(
                     "El segundo nombre ingresado es demasiado largo."
                 )
@@ -67,7 +68,7 @@ namespace Application.Features.Users.Command.CreateMember
                 .WithMessage(
                     "El primer apellido es obligatorio."
                 )
-                .MaximumLength(100)
+                .MaximumLength(FieldLengths.PersonName)
                 .WithMessage(
                     "El primer apellido ingresado es demasiado largo."
                 )
@@ -83,7 +84,7 @@ namespace Application.Features.Users.Command.CreateMember
                 );
 
             RuleFor(x => x.SecondSurname)
-                .MaximumLength(100)
+                .MaximumLength(FieldLengths.PersonName)
                 .WithMessage(
                     "El segundo apellido ingresado es demasiado largo."
                 )
@@ -109,6 +110,8 @@ namespace Application.Features.Users.Command.CreateMember
                     .WithMessage(
                         "El número de identificación es obligatorio."
                     )
+                    .MaximumLength(FieldLengths.IdentificationNumber)
+                    .WithMessage("El número de identificación ingresado es demasiado largo.")
                     .Must((cmd, number) =>
                         IdentificationValidation.MatchesType(
                             cmd.IdIdentificationType,
@@ -141,6 +144,8 @@ namespace Application.Features.Users.Command.CreateMember
                     .WithMessage(
                         "El número de celular es obligatorio."
                     )
+                    .MaximumLength(FieldLengths.PhoneNumber)
+                    .WithMessage("El número de celular ingresado es demasiado largo.")
                     .Matches(RegexCatalog.PHONE_NUMBER)
                     .When(
                         x => !string.IsNullOrWhiteSpace(
@@ -157,6 +162,8 @@ namespace Application.Features.Users.Command.CreateMember
                     .WithMessage(
                         "El correo electrónico es obligatorio."
                     )
+                    .MaximumLength(FieldLengths.Email)
+                    .WithMessage("El correo electrónico ingresado es demasiado largo.")
                     .Matches(RegexCatalog.EMAIL)
                     .When(
                         x => !string.IsNullOrWhiteSpace(
