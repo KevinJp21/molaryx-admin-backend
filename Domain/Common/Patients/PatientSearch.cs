@@ -66,36 +66,5 @@ namespace Domain.Common.Patients
                     (patient.SecondSurname != null && patient.SecondSurname.ToLower().Contains(normalized))
             };
         }
-
-        public static Expression<Func<PatientTreatment, bool>> MatchesPatientTreatmentToken(
-            string token)
-        {
-            var normalized = token.ToLowerInvariant();
-
-            return ClassifyToken(token) switch
-            {
-                PatientSearchTermKind.Email =>
-                    patientTreatment =>
-                        patientTreatment.Patient.Email.ToLower().Contains(normalized),
-
-                PatientSearchTermKind.Numeric =>
-                    patientTreatment =>
-                        patientTreatment.Patient.PhoneNumber.Contains(token) ||
-                        patientTreatment.Patient.IdentificationNumber.ToLower().Contains(normalized),
-
-                PatientSearchTermKind.Identification =>
-                    patientTreatment =>
-                        patientTreatment.Patient.IdentificationNumber.ToLower().Contains(normalized),
-
-                _ => patientTreatment =>
-                    patientTreatment.Treatment.Name.ToLower().Contains(normalized) ||
-                    patientTreatment.Patient.FirstName.ToLower().Contains(normalized) ||
-                    (patientTreatment.Patient.SecondName != null &&
-                     patientTreatment.Patient.SecondName.ToLower().Contains(normalized)) ||
-                    patientTreatment.Patient.FirstSurname.ToLower().Contains(normalized) ||
-                    (patientTreatment.Patient.SecondSurname != null &&
-                     patientTreatment.Patient.SecondSurname.ToLower().Contains(normalized))
-            };
-        }
     }
 }

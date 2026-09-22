@@ -28,11 +28,11 @@ namespace Domain.Specifications
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var tokens = PatientSearch.GetTokens(search);
+                var tokens = PatientTreatmentSearch.GetTokens(search);
 
                 foreach (var token in tokens)
                 {
-                    Criteria = And(PatientSearch.MatchesPatientTreatmentToken(token));
+                    Criteria = And(PatientTreatmentSearch.MatchesToken(token));
                 }
             }
         }

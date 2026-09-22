@@ -18,9 +18,9 @@ namespace Application.Features.PatientTreatment.Query.GetPatientTreatments
             When(x => !string.IsNullOrWhiteSpace(x.Search), () =>
             {
                 RuleFor(x => x.Search)
-                    .Must(PatientSearch.HasValidSearch)
+                    .Must(PatientTreatmentSearch.HasValidSearch)
                     .WithMessage(
-                        $"Ingresa al menos {PatientSearch.MinTokenLength} caracteres para buscar.");
+                        $"Ingresa al menos {PatientTreatmentSearch.MinTokenLength} caracteres para buscar.");
             });
 
             When(x => x.IdPatientTreatmentStatus.HasValue, () =>

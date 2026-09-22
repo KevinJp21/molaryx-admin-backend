@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Common.ClinicalRecords;
 using Domain.Entities;
 
 namespace Domain.Specifications
@@ -10,6 +11,7 @@ namespace Domain.Specifications
             long? idPatient = null,
             long? idAppointment = null,
             long? idPatientTreatment = null,
+            string? search = null,
             DateTime? recordedFrom = null,
             DateTime? recordedToInclusive = null,
             bool orderAscending = false)
@@ -54,6 +56,16 @@ namespace Domain.Specifications
             if (idPatientTreatment.GetValueOrDefault() > 0)
             {
                 Criteria = And(c => c.IdPatientTreatment == idPatientTreatment);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var tokens = ClinicalRecordSearch.GetTokens(search);
+
+                foreach (var token in tokens)
+                {
+                    Criteria = And(ClinicalRecordSearch.MatchesToken(token));
+                }
             }
 
             if (recordedFrom.HasValue)
