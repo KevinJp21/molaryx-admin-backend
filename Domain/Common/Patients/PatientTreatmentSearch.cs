@@ -5,13 +5,13 @@ namespace Domain.Common.Patients
 {
     public static class PatientTreatmentSearch
     {
-        public const int MinTokenLength = PatientSearch.MinTokenLength;
+        public const int MinTokenLength = Search.MinTokenLength;
 
         public static string[] GetTokens(string? search)
-            => PatientSearch.GetTokens(search);
+            => Search.GetTokens(search);
 
         public static bool HasValidSearch(string? search)
-            => PatientSearch.HasValidSearch(search);
+            => Search.HasValidSearch(search);
 
         public static Expression<Func<PatientTreatment, bool>> MatchesToken(string token)
         {
@@ -19,7 +19,7 @@ namespace Domain.Common.Patients
                 patientTreatment => patientTreatment.Patient,
                 PatientSearch.MatchesToken(token));
 
-            if (PatientSearch.ClassifyToken(token) != PatientSearchTermKind.Name)
+            if (Search.ClassifyToken(token) != SearchTermKind.Name)
             {
                 return matchesPatient;
             }

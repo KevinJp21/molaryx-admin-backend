@@ -5,56 +5,20 @@ namespace Domain.Common.Tenants
 {
     public static class TenantSearch
     {
-        public const int MinTokenLength = 3;
-
-        public static string[] GetTokens(string? search)
-        {
-            if (string.IsNullOrWhiteSpace(search))
-            {
-                return [];
-            }
-
-            return [.. SearchText.Tokens(search)
-                .Where(token => token.Length >= MinTokenLength)];
-        }
-
-        public static bool HasValidSearch(string? search)
-            => GetTokens(search).Length > 0;
-
-        public static TenantSearchTermKind ClassifyToken(string token)
-        {
-            if (token.Contains('@'))
-            {
-                return TenantSearchTermKind.Email;
-            }
-
-            if (token.All(char.IsDigit))
-            {
-                return TenantSearchTermKind.Numeric;
-            }
-
-            if (token.Any(char.IsDigit) && token.Any(char.IsLetter))
-            {
-                return TenantSearchTermKind.Identification;
-            }
-
-            return TenantSearchTermKind.Name;
-        }
-
         public static Expression<Func<Tenant, bool>> MatchesToken(string token)
         {
             var normalized = token.ToLowerInvariant();
 
-            return ClassifyToken(token) switch
+            return Search.ClassifyToken(token) switch
             {
-                TenantSearchTermKind.Email =>
+                SearchTermKind.Email =>
                     tenant =>
                         tenant.Email.ToLower().Contains(normalized) ||
                         tenant.Users.Any(u =>
                             u.DeletedAt == null &&
                             u.Email.ToLower().Contains(normalized)),
 
-                TenantSearchTermKind.Numeric =>
+                SearchTermKind.Numeric =>
                     tenant =>
                         tenant.PhoneNumber.Contains(token) ||
                         (tenant.IdentificationNumber != null &&
@@ -64,7 +28,7 @@ namespace Domain.Common.Tenants
                             (u.PhoneNumber.Contains(token) ||
                              u.IdentificationNumber.ToLower().Contains(normalized))),
 
-                TenantSearchTermKind.Identification =>
+                SearchTermKind.Identification =>
                     tenant =>
                         (tenant.IdentificationNumber != null &&
                          tenant.IdentificationNumber.ToLower().Contains(normalized)) ||

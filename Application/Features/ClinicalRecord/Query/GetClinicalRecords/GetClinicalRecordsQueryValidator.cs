@@ -1,4 +1,4 @@
-using Domain.Common.ClinicalRecords;
+using Domain.Common;
 using FluentValidation;
 
 namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
@@ -10,9 +10,9 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
             When(x => !string.IsNullOrWhiteSpace(x.Search), () =>
             {
                 RuleFor(x => x.Search)
-                    .Must(ClinicalRecordSearch.HasValidSearch)
+                    .Must(Search.HasValidSearch)
                     .WithMessage(
-                        $"Ingresa al menos {ClinicalRecordSearch.MinTokenLength} caracteres para buscar.");
+                        $"Ingresa al menos {Search.MinTokenLength} caracteres para buscar.");
             });
         }
     }

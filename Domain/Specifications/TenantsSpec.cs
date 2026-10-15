@@ -29,7 +29,7 @@ namespace Domain.Specifications
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var tokens = TenantSearch.GetTokens(search);
+                var tokens = Search.GetTokens(search);
 
                 foreach (var token in tokens)
                 {

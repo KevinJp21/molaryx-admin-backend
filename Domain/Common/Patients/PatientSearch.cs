@@ -1,62 +1,25 @@
 using System.Linq.Expressions;
-using Domain.Common;
 using Domain.Entities;
 
 namespace Domain.Common.Patients
 {
     public static class PatientSearch
     {
-        public const int MinTokenLength = 3;
-
-        public static string[] GetTokens(string? search)
-        {
-            if (string.IsNullOrWhiteSpace(search))
-            {
-                return [];
-            }
-
-            return [.. SearchText.Tokens(search)
-                .Where(token => token.Length >= MinTokenLength)];
-        }
-
-        public static bool HasValidSearch(string? search)
-            => GetTokens(search).Length > 0;
-
-        public static PatientSearchTermKind ClassifyToken(string token)
-        {
-            if (token.Contains('@'))
-            {
-                return PatientSearchTermKind.Email;
-            }
-
-            if (token.All(char.IsDigit))
-            {
-                return PatientSearchTermKind.Numeric;
-            }
-
-            if (token.Any(char.IsDigit) && token.Any(char.IsLetter))
-            {
-                return PatientSearchTermKind.Identification;
-            }
-
-            return PatientSearchTermKind.Name;
-        }
-
         public static Expression<Func<Patient, bool>> MatchesToken(string token)
         {
             var normalized = token.ToLowerInvariant();
 
-            return ClassifyToken(token) switch
+            return Search.ClassifyToken(token) switch
             {
-                PatientSearchTermKind.Email =>
+                SearchTermKind.Email =>
                     patient => patient.Email.ToLower().Contains(normalized),
 
-                PatientSearchTermKind.Numeric =>
+                SearchTermKind.Numeric =>
                     patient =>
                         patient.PhoneNumber.Contains(token) ||
                         patient.IdentificationNumber.ToLower().Contains(normalized),
 
-                PatientSearchTermKind.Identification =>
+                SearchTermKind.Identification =>
                     patient => patient.IdentificationNumber.ToLower().Contains(normalized),
 
                 _ => patient =>

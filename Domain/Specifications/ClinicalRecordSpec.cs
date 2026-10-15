@@ -60,7 +60,7 @@ namespace Domain.Specifications
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var tokens = ClinicalRecordSearch.GetTokens(search);
+                var tokens = Search.GetTokens(search);
 
                 foreach (var token in tokens)
                 {

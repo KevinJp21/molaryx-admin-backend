@@ -23,7 +23,7 @@ namespace Domain.Specifications
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var tokens = PatientSearch.GetTokens(search);
+                var tokens = Search.GetTokens(search);
 
                 foreach (var token in tokens)
                 {

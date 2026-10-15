@@ -1,4 +1,4 @@
-using Domain.Common.Patients;
+using Domain.Common;
 using FluentValidation;
 
 namespace Application.Features.Patients.Query
@@ -10,9 +10,9 @@ namespace Application.Features.Patients.Query
             When(x => !string.IsNullOrWhiteSpace(x.Search), () =>
             {
                 RuleFor(x => x.Search)
-                    .Must(PatientSearch.HasValidSearch)
+                    .Must(Search.HasValidSearch)
                     .WithMessage(
-                        $"Ingresa al menos {PatientSearch.MinTokenLength} caracteres para buscar.");
+                        $"Ingresa al menos {Search.MinTokenLength} caracteres para buscar.");
             });
         }
     }

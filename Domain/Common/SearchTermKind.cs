@@ -1,6 +1,6 @@
-namespace Domain.Common.Patients
+namespace Domain.Common
 {
-    public enum PatientSearchTermKind
+    public enum SearchTermKind
     {
         Email,
         Numeric,

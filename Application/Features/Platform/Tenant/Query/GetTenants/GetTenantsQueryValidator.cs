@@ -1,4 +1,4 @@
-using Domain.Common.Tenants;
+using Domain.Common;
 using Domain.Enums;
 using FluentValidation;
 
@@ -11,9 +11,9 @@ namespace Application.Features.Platform.Tenant.Query.GetTenants
             When(x => !string.IsNullOrWhiteSpace(x.Search), () =>
             {
                 RuleFor(x => x.Search)
-                    .Must(TenantSearch.HasValidSearch)
+                    .Must(Search.HasValidSearch)
                     .WithMessage(
-                        $"Ingresa al menos {TenantSearch.MinTokenLength} caracteres para buscar.");
+                        $"Ingresa al menos {Search.MinTokenLength} caracteres para buscar.");
             });
 
             When(x => x.IdTenantStatus.HasValue, () =>
