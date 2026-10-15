@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Plataforma Molaryx · Arquitectura del backend",
+    "output": "artifacts/molaryx-architecture.html",
+    "locale": "es",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "primary-path", "label": "Vía principal", "focus": ["frontend", "api", "mediator", "infra", "postgres"], "note": "Del request del cliente al almacenamiento." },
+      { "id": "auth-flow", "label": "Autenticación y permisos", "focus": ["frontend", "api", "auth", "infra"], "note": "JWT, policies y tenant antes del handler." },
+      { "id": "data-flow", "label": "Dominio y persistencia", "focus": ["mediator", "domain", "infra", "postgres"], "note": "CQRS, Specifications y EF Core." }
+    ],
+    "repository": {
+      "url": "https://github.com/KevinJp21/molaryx-admin-backend.git",
+      "provider": "github",
+      "revision": "41a52ab79d9122668b2a707952adfe7af33b8c46"
+    }
+  },
+  "components": [
+    { "id": "frontend", "type": "external", "label": "Frontend SPA", "sublabel": "Clínica · Superadmin", "tag": "repo externo", "pos": [40, 150], "size": [140, 70], "sources": [{ "path": "docker-compose.yml", "line": 36, "label": "App__FrontendUrl (origen CORS)" }] },
+    { "id": "api", "type": "backend", "label": "API REST", "sublabel": "ASP.NET Core · .NET 10", "tag": "api/v1", "pos": [310, 140], "size": [150, 90], "sources": [{ "path": "Program.cs", "line": 147, "label": "MapControllers" }] },
+    { "id": "auth", "type": "security", "label": "Auth JWT", "sublabel": "Bearer · Refresh · Policies", "tag": "permisos por rol", "pos": [310, 40], "size": [150, 70], "sources": [{ "path": "Program.cs", "line": 64, "label": "AddJwtAuthentication" }] },
+    { "id": "mediator", "type": "backend", "label": "Application", "sublabel": "Mediator CQRS · Validación", "tag": "CQRS", "pos": [590, 140], "size": [150, 90], "sources": [{ "path": "README.md", "line": 97, "label": "Custom CQRS mediator" }] },
+    { "id": "infra", "type": "backend", "label": "Infrastructure", "sublabel": "EF Core · Servicios · PDF/Excel", "tag": "servicios", "pos": [870, 140], "size": [150, 90], "sources": [{ "path": "README.md", "line": 52, "label": "Responsabilidad de Infrastructure" }] },
+    { "id": "postgres", "type": "database", "label": "PostgreSQL", "sublabel": "multi-tenant · EF Core", "tag": "snake_case", "pos": [1180, 150], "size": [140, 70], "sources": [{ "path": "docker-compose.yml", "line": 2, "label": "Servicio postgres:17" }] },
+    { "id": "resend", "type": "external", "label": "Resend", "sublabel": "Email transaccional", "tag": "externo", "pos": [1180, 330], "size": [140, 70], "sources": [{ "path": "docker-compose.yml", "line": 34, "label": "Resend__ApiKey" }] },
+    { "id": "domain", "type": "backend", "label": "Domain", "sublabel": "Entidades · StatusRules · Contratos", "tag": "reglas", "pos": [590, 470], "size": [170, 80], "sources": [{ "path": "README.md", "line": 48, "label": "Responsabilidad de Domain" }] },
+    { "id": "signalr", "type": "messagebus", "label": "Hub SignalR", "sublabel": "/api/v1/hub/notifications", "tag": "tiempo real", "pos": [1180, 510], "size": [140, 80], "sources": [{ "path": "Program.cs", "line": 145, "label": "MapHub NotificationHub" }] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Molaryx Admin · backend (este repositorio)", "wraps": ["api", "auth", "mediator", "infra", "domain"] }
+  ],
+  "connections": [
+    { "id": "frontend-to-api", "from": "frontend", "to": "api", "label": "HTTPS · api/v1/*", "variant": "emphasis" },
+    { "id": "api-to-mediator", "from": "api", "to": "mediator", "label": "IMediator.Send" },
+    { "id": "mediator-to-infra", "from": "mediator", "to": "infra", "label": "servicios · UnitOfWork" },
+    { "id": "api-to-auth", "from": "api", "to": "auth", "label": "verifica JWT · policy", "variant": "security" },
+    { "id": "infra-to-postgres", "from": "infra", "to": "postgres", "label": "EF Core · Npgsql", "variant": "emphasis" },
+    { "id": "api-to-frontend", "from": "api", "to": "frontend", "label": "ApiResponse<T>" },
+    { "id": "infra-to-domain", "from": "infra", "to": "domain", "label": "implementa contratos" },
+    { "id": "infra-to-resend", "from": "infra", "to": "resend", "label": "EmailService · transaccional" },
+    { "id": "infra-to-signalr", "from": "infra", "to": "signalr", "label": "NotificationRealtimePublisher" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Vía principal", "items": ["Frontend SPA → API REST → Application (CQRS) → Infrastructure → PostgreSQL", "Respuesta uniforme ApiResponse<T> · errores 400 / 404 / 409", "Autorización server-side por policy antes de ejecutar el handler"] },
+    { "dot": "emerald", "title": "Autenticación y permisos", "items": ["JWT access + refresh; PermissionCodes mapea a policies por rol", "ITenantAccessService.RequireActiveAsync valida tenant + suscripción", "Sin permiso → 403 y el handler nunca corre"] },
+    { "dot": "violet", "title": "Núcleo CQRS + Domain", "items": ["Mediator propio (sin MediatR) con ValidationBehavior (FluentValidation)", "Comandos → IXxxService; queries → IUnitOfWork + Specifications", "StatusRules en Domain: EnsureCanEdit y EnsureCanTransition"] },
+    { "dot": "amber", "title": "Persistencia y externos", "items": ["PostgreSQL 17 · EF Core/Npgsql · snake_case · soft-delete", "Resend: email transaccional (registro, reset de contraseña, recordatorios)", "PDF de historia clínica (PDFsharp) y Excel de pagos (ClosedXML)"] },
+    { "dot": "rose", "title": "Tiempo real y jobs", "items": ["Hub SignalR · /api/v1/hub/notifications (mark_as_viewed, mark_all_as_viewed)", "NotificationRealtimePublisher publica al hub; el SPA se suscribe por WebSocket", "Background services: recordatorios de citas, planes y promociones"] }
+  ]
+}
