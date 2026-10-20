@@ -17,6 +17,12 @@ namespace Infrastructure.Services
         public byte[] GenerateClinicalHistoryTemplate(
             ClinicalHistoryTemplateInformation information)
         {
+
+            if (information is null || information.Records is null || information.Records.Count == 0)
+            {
+                throw new InvalidOperationException("No hay registros clínicos para el periodo seleccionado.");
+            }
+
             var document = new Document();
 
             document.Info.Title = "Historia clínica";

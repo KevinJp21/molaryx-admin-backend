@@ -19,7 +19,9 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
 
             var spec = new ClinicalRecordSpec(
                 access.IdTenant,
-                search: request.Search);
+                search: request.Search,
+                from: request.From,
+                to: request.To);
 
             var (totalItems, clinicalRecords) = await _unitOfWork.ClinicalRecordRepository.GetPagedAsync(
                 PaginationHelper.GetEffectivePage(request.Page),

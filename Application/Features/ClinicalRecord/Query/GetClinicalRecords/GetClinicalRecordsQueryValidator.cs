@@ -14,6 +14,13 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalRecords
                     .WithMessage(
                         $"Ingresa al menos {Search.MinTokenLength} caracteres para buscar.");
             });
+
+            When(x => x.From.HasValue && x.To.HasValue, () =>
+            {
+                RuleFor(x => x)
+                    .Must(x => x.From <= x.To)
+                    .WithMessage("La fecha inicial no puede ser posterior a la fecha final.");
+            });
         }
     }
 }

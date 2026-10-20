@@ -1,3 +1,4 @@
+
 using Domain.Common;
 using Domain.Common.ClinicalRecords;
 using Domain.Entities;
@@ -12,21 +13,82 @@ namespace Domain.Specifications
             long? idAppointment = null,
             long? idPatientTreatment = null,
             string? search = null,
-            DateTime? recordedFrom = null,
-            DateTime? recordedToInclusive = null,
-            bool orderAscending = false)
+            DateOnly? from = null,
+            DateOnly? to = null)
         {
             Criteria = c => c.IdTenant == idTenant;
 
-            if (orderAscending)
+            AddIncludes();
+
+            if (idPatient is > 0)
+                Criteria = And(c => c.IdPatient == idPatient.Value);
+
+            if (idAppointment is > 0)
+                Criteria = And(c => c.IdAppointment == idAppointment.Value);
+
+            if (idPatientTreatment is > 0)
+                Criteria = And(c => c.IdPatientTreatment == idPatientTreatment.Value);
+
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                OrderBy = c => c.RecordedAt;
-            }
-            else
-            {
-                OrderByDescending = c => c.RecordedAt;
+                var tokens = Search.GetTokens(search);
+
+                foreach (var token in tokens)
+                    Criteria = And(ClinicalRecordSearch.MatchesToken(token));
             }
 
+            if (from is not null)
+            {
+                DateTime fromDate = from.Value.ToDateTime(TimeOnly.MinValue);
+
+                Criteria = And (c => c.RecordedAt >= fromDate);
+            }
+
+            if (to is not null)
+            {
+                DateTime toDate = to.Value.AddDays(1).ToDateTime(TimeOnly.MinValue);
+
+                Criteria = And (c => c.RecordedAt < toDate);
+            }
+
+
+        }
+
+        public static ClinicalRecordSpec ById(long idClinicalRecord)
+        {
+            return new ClinicalRecordSpec
+            {
+                Criteria = c => c.IdClinicalRecord == idClinicalRecord
+            };
+        }
+
+        public static ClinicalRecordSpec ExportClinicalHistory(
+            long idTenant,
+            long idPatient,
+            DateOnly? from = null,
+            DateOnly? to = null)
+        {
+            DateTime? fromDate = from?.ToDateTime(TimeOnly.MinValue);
+            DateTime? toDate = to?.AddDays(1).ToDateTime(TimeOnly.MinValue);
+
+            var spec = new ClinicalRecordSpec
+            {
+                Criteria = c =>
+                    c.IdTenant == idTenant &&
+                    c.IdPatient == idPatient &&
+                    (!fromDate.HasValue || c.RecordedAt >= fromDate.Value) &&
+                    (!toDate.HasValue || c.RecordedAt < toDate.Value),
+
+                    OrderByDescending = c => c.RecordedAt
+            };
+
+            spec.AddIncludes();
+
+            return spec;
+        }
+
+        private void AddIncludes()
+        {
             AddInclude(c => c.Patient);
             AddInclude(c => c.Patient.IdentificationType);
             AddInclude(c => c.Procedure!);
@@ -42,49 +104,6 @@ namespace Domain.Specifications
             AddInclude(c => c.PatientTreatment!);
             AddInclude($"{nameof(ClinicalRecord.PatientTreatment)}.{nameof(PatientTreatment.Treatment)}");
             AddInclude($"{nameof(ClinicalRecord.PatientTreatment)}.{nameof(PatientTreatment.PatientTreatmentStatus)}");
-
-            if (idPatient.GetValueOrDefault() > 0)
-            {
-                Criteria = And(c => c.IdPatient == idPatient);
-            }
-
-            if (idAppointment.GetValueOrDefault() > 0)
-            {
-                Criteria = And(c => c.IdAppointment == idAppointment);
-            }
-
-            if (idPatientTreatment.GetValueOrDefault() > 0)
-            {
-                Criteria = And(c => c.IdPatientTreatment == idPatientTreatment);
-            }
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                var tokens = Search.GetTokens(search);
-
-                foreach (var token in tokens)
-                {
-                    Criteria = And(ClinicalRecordSearch.MatchesToken(token));
-                }
-            }
-
-            if (recordedFrom.HasValue)
-            {
-                Criteria = And(c => c.RecordedAt >= recordedFrom.Value);
-            }
-
-            if (recordedToInclusive.HasValue)
-            {
-                Criteria = And(c => c.RecordedAt <= recordedToInclusive.Value);
-            }
-        }
-
-        public static ClinicalRecordSpec ById(long idClinicalRecord)
-        {
-            return new ClinicalRecordSpec
-            {
-                Criteria = c => c.IdClinicalRecord == idClinicalRecord
-            };
         }
 
         private ClinicalRecordSpec()

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Common;
-
+//TODO: agregar nuevo campo numero de la cita
 namespace Domain.Entities
 {
     public class Appointment : BaseEntity

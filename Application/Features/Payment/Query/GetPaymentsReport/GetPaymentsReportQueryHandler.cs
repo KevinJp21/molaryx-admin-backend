@@ -19,16 +19,14 @@ namespace Application.Features.Payment.Query.GetPaymentsReport
         {
             var access = await _tenantAccessService.RequireActiveAsync(cancellationToken);
 
-            var paidFrom = NormalizeFrom(request.From);
-            var paidToInclusive = NormalizeToInclusive(request.To);
 
-            var spec = new PaymentsSpec(
+            var spec = PaymentsSpec.ExportPaymentsReport(
                 access.IdTenant,
                 request.IdPatient,
                 request.IdAppointment,
                 request.IdPatientTreatment,
-                paidFrom,
-                paidToInclusive);
+                request.From,
+                request.To);
 
             var payments = await _unitOfWork.PaymentRepository.GetAll(spec, cancellationToken)
                 ?? [];
@@ -45,20 +43,6 @@ namespace Application.Features.Payment.Query.GetPaymentsReport
             return (
                 _paymentReportService.GeneratePaymentReport(reportInformation),
                 BuildFileName(access.Tenant.ConsultoryName));
-        }
-
-        private static DateTime? NormalizeFrom(DateOnly? from)
-        {
-            return from.HasValue
-                ? from.Value.ToDateTime(TimeOnly.MinValue)
-                : null;
-        }
-
-        private static DateTime? NormalizeToInclusive(DateOnly? to)
-        {
-            return to.HasValue
-                ? to.Value.ToDateTime(TimeOnly.MinValue).AddDays(1).AddTicks(-1)
-                : null;
         }
 
         private static PaymentReportRowInformation MapRow(Domain.Entities.Payment payment)

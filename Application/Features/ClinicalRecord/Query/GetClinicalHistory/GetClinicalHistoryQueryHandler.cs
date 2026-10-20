@@ -38,15 +38,12 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
                     cancellationToken))?.Name;
             }
 
-            var recordedFrom = NormalizeFrom(request.From);
-            var recordedToInclusive = NormalizeToInclusive(request.To);
-
-            var spec = new ClinicalRecordSpec(
+            var spec =  ClinicalRecordSpec.ExportClinicalHistory(
                 access.IdTenant,
                 request.IdPatient,
-                recordedFrom: recordedFrom,
-                recordedToInclusive: recordedToInclusive,
-                orderAscending: false);
+                request.From,
+                request.To
+                );
 
             var records = await _unitOfWork.ClinicalRecordRepository.GetAll(spec, cancellationToken)
                 ?? [];
@@ -188,20 +185,6 @@ namespace Application.Features.ClinicalRecord.Query.GetClinicalHistory
         private static string FormatGivenNames(string first, string? second)
         {
             return $"{first}{(!string.IsNullOrEmpty(second) ? $" {second}" : string.Empty)}";
-        }
-
-        private static DateTime? NormalizeFrom(DateOnly? from)
-        {
-            return from.HasValue
-                ? from.Value.ToDateTime(TimeOnly.MinValue)
-                : null;
-        }
-
-        private static DateTime? NormalizeToInclusive(DateOnly? to)
-        {
-            return to.HasValue
-                ? to.Value.ToDateTime(TimeOnly.MinValue).AddDays(1).AddTicks(-1)
-                : null;
         }
 
         private static string BuildFileName(Patient patient)

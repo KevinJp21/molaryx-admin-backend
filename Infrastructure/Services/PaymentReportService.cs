@@ -20,6 +20,12 @@ namespace Infrastructure.Services
 
         public byte[] GeneratePaymentReport(PaymentReportInformation information)
         {
+
+            if (information is null || information.Rows is null || information.Rows.Count == 0)
+            {
+                throw new InvalidOperationException("No hay pagos para el periodo seleccionado.");
+            }
+
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Pagos");
 
